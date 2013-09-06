@@ -1,9 +1,13 @@
 "C:\Users\jaru2815\Documents\IAR Embedded Workbench\8051\EnvironmentalMonitoringSystem\RFTemperaturHumiditySensor\main.c"
 -std=c99
 -I
+C:\Users\jaru2815\Documents\IAR Embedded Workbench\8051\EnvironmentalMonitoringSystem\RFTemperaturHumiditySensor
+-I
 C:\Program Files (x86)\IAR Systems\Embedded Workbench 6.4\8051\inc
 -I
 C:\Program Files (x86)\IAR Systems\Embedded Workbench 6.4\8051\inc\clib
+-I
+C:\Users\jaru2815\Documents\IAR Embedded Workbench\8051\EnvironmentalMonitoringSystem\RFTemperaturHumiditySensor
 -D__CHAR_BITS__=8
 -D__CHAR_MAX__=0xff
 -D__CHAR_MIN__=0
@@ -299,7 +303,7 @@ C:\Program Files (x86)\IAR Systems\Embedded Workbench 6.4\8051\inc\clib
 -D__PLAIN_INT_BITFIELD_IS_SIGNED__=1
 -D__IAR_COMPILERBASE__=592903
 -D__DATE__="Sep  6 2013"
--D__TIME__="10:03:39"
+-D__TIME__="14:19:55"
 -D__STDC__=1
 -D__STDC_VERSION__=199901L
 -D__STDC_HOSTED__=1

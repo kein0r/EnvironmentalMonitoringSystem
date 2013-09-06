@@ -1,3 +1,4 @@
+#include "PlatformTypes.h"
 
 int main( void )
 {

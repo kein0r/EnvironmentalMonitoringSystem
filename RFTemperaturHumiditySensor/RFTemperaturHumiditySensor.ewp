@@ -334,7 +334,7 @@
         </option>
         <option>
           <name>LangConform</name>
-          <state>0</state>
+          <state>2</state>
         </option>
         <option>
           <name>CharIs</name>
@@ -439,7 +439,7 @@
         </option>
         <option>
           <name>CCIncludePath2</name>
-          <state></state>
+          <state>$PROJ_DIR$</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -710,7 +710,7 @@
         </option>
         <option>
           <name>OutputFile</name>
-          <state>templproj.d51</state>
+          <state>RFTemperaturHumiditySensor.d51</state>
         </option>
         <option>
           <name>OutputFormat</name>
@@ -776,7 +776,7 @@
         </option>
         <option>
           <name>XclFile</name>
-          <state>$TOOLKIT_DIR$\config\lnk51ew.xcl</state>
+          <state>$TOOLKIT_DIR$\config\devices\_generic\lnk51ew_plain.xcl</state>
         </option>
         <option>
           <name>XclFileSlave</name>
@@ -904,7 +904,7 @@
         </option>
         <option>
           <name>ExtraOutputFile</name>
-          <state>c.sim</state>
+          <state>RFTemperaturHumiditySensor.sim</state>
         </option>
         <option>
           <name>ExtraOutputFormat</name>
@@ -922,7 +922,7 @@
         </option>
         <option>
           <name>xcProgramEntryLabelSelect</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>ListOutputFormat</name>
@@ -2091,7 +2091,16 @@
     </settings>
   </configuration>
   <file>
+    <name>$PROJ_DIR$\DHT22\dht22.c</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\DHT22\dht22.h</name>
+  </file>
+  <file>
     <name>$PROJ_DIR$\main.c</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\PlatformTypes.h</name>
   </file>
 </project>
 
