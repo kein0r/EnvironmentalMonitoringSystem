@@ -53,9 +53,16 @@ UseAuto=0
 TypeViolation=1
 UnspecRange=1
 ActionState=1
-[Aliases]
-Count=0
-SuppressDialog=0
 [Trace1]
 Enabled=0
 ShowSource=1
+[BreakpointUsageDialog]
+Placement=_ 498 289 943 571
+[Breakpoints]
+Count=0
+[ChipconEmu]
+Stop timers on halt=1
+Leave target running=1
+[Aliases]
+Count=0
+SuppressDialog=0
