@@ -3,11 +3,19 @@
 -I
 C:\Users\jaru2815\Documents\IAR Embedded Workbench\8051\EnvironmentalMonitoringSystem\RFTemperaturHumiditySensor
 -I
+C:\Users\jaru2815\Documents\IAR Embedded Workbench\8051\EnvironmentalMonitoringSystem\RFTemperaturHumiditySensor/DHT22
+-I
+C:\Users\jaru2815\Documents\IAR Embedded Workbench\8051\EnvironmentalMonitoringSystem\RFTemperaturHumiditySensor/CC2530Generic
+-I
 C:\Program Files (x86)\IAR Systems\Embedded Workbench 6.4\8051\inc
 -I
 C:\Program Files (x86)\IAR Systems\Embedded Workbench 6.4\8051\inc\clib
 -I
 C:\Users\jaru2815\Documents\IAR Embedded Workbench\8051\EnvironmentalMonitoringSystem\RFTemperaturHumiditySensor
+-I
+C:\Users\jaru2815\Documents\IAR Embedded Workbench\8051\EnvironmentalMonitoringSystem\RFTemperaturHumiditySensor\DHT22
+-I
+C:\Users\jaru2815\Documents\IAR Embedded Workbench\8051\EnvironmentalMonitoringSystem\RFTemperaturHumiditySensor\CC2530Generic
 -D__CHAR_BITS__=8
 -D__CHAR_MAX__=0xff
 -D__CHAR_MIN__=0
@@ -112,10 +120,10 @@ C:\Users\jaru2815\Documents\IAR Embedded Workbench\8051\EnvironmentalMonitoringS
 -D__LONG_DOUBLE_ALIGN__=1
 -D__NAN_HAS_HIGH_MANTISSA_BIT_SET__=1
 -D__SUBNORMAL_FLOATING_POINTS__=0
--D__SIZE_T_TYPE__=unsigned char
--D__SIZE_T_MAX__=0xff
--D__PTRDIFF_T_TYPE__=signed char
--D__PTRDIFF_T_MAX__=127
+-D__SIZE_T_TYPE__=unsigned int
+-D__SIZE_T_MAX__=0xffffU
+-D__PTRDIFF_T_TYPE__=signed int
+-D__PTRDIFF_T_MAX__=32767
 -D__PTRDIFF_T_MIN__=(-__PTRDIFF_T_MAX__-1)
 -D__INTPTR_T_TYPE__=signed long int
 -D__INTPTR_T_MAX__=2147483647L
@@ -130,7 +138,7 @@ C:\Users\jaru2815\Documents\IAR Embedded Workbench\8051\EnvironmentalMonitoringS
 -D__SUBVERSION__=1
 -D__BUILD_NUMBER__=829
 -D__IAR_SYSTEMS_ICC__=8
--D__VA_STACK_DECREASING__=0
+-D__VA_STACK_DECREASING__=1
 -D__VA_STACK_ALIGN__=1
 -D__VA_STACK_ALIGN_EXTRA_BEFORE__=1
 -D__LITTLE_ENDIAN__=1
@@ -138,7 +146,7 @@ C:\Users\jaru2815\Documents\IAR Embedded Workbench\8051\EnvironmentalMonitoringS
 -D__WCHAR_T_TYPE__=unsigned short int
 -D__WCHAR_T_SIZE__=2
 -D__WCHAR_T_MAX__=0xffff
--D__DEF_PTR_MEM__=__idata
+-D__DEF_PTR_MEM__=__xdata
 -D__DATA_MEM0__=__sfr
 -D__DATA_MEM0_POINTER_OK__=0
 -D__DATA_MEM0_UNIQUE_POINTER__=0
@@ -271,7 +279,7 @@ C:\Users\jaru2815\Documents\IAR Embedded Workbench\8051\EnvironmentalMonitoringS
 -D__MULTIPLE_INHERITANCE__=0
 -D_CLIB_FP_INF_NAN=1
 -D_DIFUNCT_MEMORY=__code
--D__CALLING_CONVENTION__=2
+-D__CALLING_CONVENTION__=4
 -D__CC_DO__=0
 -D__CC_ER__=5
 -D__CC_IO__=1
@@ -283,14 +291,14 @@ C:\Users\jaru2815\Documents\IAR Embedded Workbench\8051\EnvironmentalMonitoringS
 -D__CM_FAR__=3
 -D__CM_NEAR__=1
 -D__CM_TINY__=0
--D__CODE_MODEL__=1
+-D__CODE_MODEL__=2
 -D__CONSTANT_LOCATION__=0
 -D__CORE_EXTENDED1__=2
 -D__CORE_EXTENDED2__=3
 -D__CORE_PLAIN__=1
 -D__CORE_TINY__=0
 -D__CORE__=0
--D__DATA_MODEL__=1
+-D__DATA_MODEL__=2
 -D__DM_FAR_GENERIC__=5
 -D__DM_FAR__=4
 -D__DM_GENERIC__=3
@@ -302,19 +310,19 @@ C:\Users\jaru2815\Documents\IAR Embedded Workbench\8051\EnvironmentalMonitoringS
 -D__XOR_DPSEL_SELECT__=1
 -D__PLAIN_INT_BITFIELD_IS_SIGNED__=1
 -D__IAR_COMPILERBASE__=592903
--D__DATE__="Sep  6 2013"
--D__TIME__="14:19:55"
+-D__DATE__="Oct 23 2013"
+-D__TIME__="15:54:15"
 -D__STDC__=1
 -D__STDC_VERSION__=199901L
 -D__STDC_HOSTED__=1
 -D__EDG_TYPE_TRAITS_ENABLED=1
 -D__EDG__=1
 -D__EDG_VERSION__=403
--D__EDG_SIZE_TYPE__=unsigned char
--D__EDG_PTRDIFF_TYPE__=signed char
+-D__EDG_SIZE_TYPE__=unsigned int
+-D__EDG_PTRDIFF_TYPE__=int
 -D__EDG_JMP_BUF_ELEMENT_TYPE=signed char
 -D__EDG_JMP_BUF_NUM_ELEMENTS=48
--D__EDG_DELTA_TYPE=signed char
+-D__EDG_DELTA_TYPE=int
 -D__EDG_VIRTUAL_FUNCTION_INDEX_TYPE=unsigned short
 -D__EDG_VAR_HANDLE_TYPE=unsigned short
 -D__EDG_REGION_NUMBER_TYPE=unsigned short

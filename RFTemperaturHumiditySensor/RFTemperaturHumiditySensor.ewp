@@ -17,15 +17,15 @@
         <debug>1</debug>
         <option>
           <name>DerivativeDescriptionFile</name>
-          <state>$TOOLKIT_DIR$\config\devices\_generic\plain.i51</state>
+          <state>$TOOLKIT_DIR$\config\devices\Texas Instruments\CC2530F256.i51</state>
         </option>
         <option>
           <name>Previous Derivative File</name>
-          <state>$TOOLKIT_DIR$\config\devices\_generic\plain.i51</state>
+          <state>$TOOLKIT_DIR$\config\devices\Texas Instruments\CC2530F256.i51</state>
         </option>
         <option>
           <name>Showed Derivative</name>
-          <state>plain</state>
+          <state>CC2530F256</state>
         </option>
         <option>
           <name>CPU Core</name>
@@ -40,22 +40,22 @@
         <option>
           <name>Code Memory Model</name>
           <version>1</version>
-          <state>1</state>
+          <state>2</state>
         </option>
         <option>
           <name>Code Memory Model slave</name>
           <version>1</version>
-          <state>1</state>
+          <state>2</state>
         </option>
         <option>
           <name>Data Memory Model</name>
           <version>0</version>
-          <state>1</state>
+          <state>2</state>
         </option>
         <option>
           <name>Data Memory Model slave</name>
           <version>0</version>
-          <state>1</state>
+          <state>2</state>
         </option>
         <option>
           <name>Use extended stack</name>
@@ -72,7 +72,7 @@
         <option>
           <name>Calling convention</name>
           <version>0</version>
-          <state>2</state>
+          <state>4</state>
         </option>
         <option>
           <name>Workseg Size</name>
@@ -94,19 +94,19 @@
         </option>
         <option>
           <name>Switch Method</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>Mask Value</name>
-          <state>0x00</state>
+          <state>0xFF</state>
         </option>
         <option>
           <name>DPS Address</name>
-          <state></state>
+          <state>0x92</state>
         </option>
         <option>
           <name>Sfr Visibility</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>DPTR Addresses</name>
@@ -114,7 +114,7 @@
         </option>
         <option>
           <name>CodeBankReg</name>
-          <state>0x90</state>
+          <state>0x9F</state>
         </option>
         <option>
           <name>CodeBankStart</name>
@@ -150,25 +150,25 @@
         </option>
         <option>
           <name>RTLibraryPath</name>
-          <state>$TOOLKIT_DIR$\LIB\CLIB\cl-pli-nsid-1e16x01.r51</state>
+          <state>$TOOLKIT_DIR$\LIB\CLIB\cl-pli-blxd-1e16x01.r51</state>
         </option>
         <option>
           <name>Input variant</name>
           <version>1</version>
-          <state>3</state>
+          <state>0</state>
         </option>
         <option>
           <name>Input description</name>
-          <state>No float.</state>
+          <state>Automatic choice of formatter.</state>
         </option>
         <option>
           <name>Output variant</name>
           <version>1</version>
-          <state>4</state>
+          <state>0</state>
         </option>
         <option>
           <name>Output description</name>
-          <state>No float, no field width, no precision.</state>
+          <state>Automatic choice of formatter.</state>
         </option>
         <option>
           <name>GeneralEnableMisra</name>
@@ -208,11 +208,11 @@
         </option>
         <option>
           <name>CodeBankNrOfs</name>
-          <state>0x03</state>
+          <state>0x07</state>
         </option>
         <option>
           <name>CodeBankRegMask</name>
-          <state>0x30</state>
+          <state>0xFF</state>
         </option>
         <option>
           <name>GeneralMisraRules98</name>
@@ -221,11 +221,11 @@
         </option>
         <option>
           <name>PDATA 8-15 register address</name>
-          <state>0xA0</state>
+          <state>0x93</state>
         </option>
         <option>
           <name>PDATA 16-31 register address</name>
-          <state>0xEA</state>
+          <state></state>
         </option>
         <option>
           <name>General Far22 Heap Size</name>
@@ -334,7 +334,7 @@
         </option>
         <option>
           <name>LangConform</name>
-          <state>2</state>
+          <state>0</state>
         </option>
         <option>
           <name>CharIs</name>
@@ -355,7 +355,7 @@
         <option>
           <name>CCAllowList</name>
           <version>1</version>
-          <state>00000</state>
+          <state>11111</state>
         </option>
         <option>
           <name>CCObjUseModuleName</name>
@@ -440,6 +440,8 @@
         <option>
           <name>CCIncludePath2</name>
           <state>$PROJ_DIR$</state>
+          <state>$PROJ_DIR$/DHT22</state>
+          <state>$PROJ_DIR$/CC2530Generic</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -464,7 +466,7 @@
         </option>
         <option>
           <name>CCOptLevel</name>
-          <state>1</state>
+          <state>3</state>
         </option>
         <option>
           <name>CCOptStrategy</name>
@@ -473,7 +475,7 @@
         </option>
         <option>
           <name>CCOptLevelSlave</name>
-          <state>1</state>
+          <state>3</state>
         </option>
         <option>
           <name>CompilerMisraRules04</name>
@@ -776,7 +778,7 @@
         </option>
         <option>
           <name>XclFile</name>
-          <state>$TOOLKIT_DIR$\config\devices\_generic\lnk51ew_plain.xcl</state>
+          <state>$TOOLKIT_DIR$\config\devices\Texas Instruments\lnk51ew_CC2530F256_banked.xcl</state>
         </option>
         <option>
           <name>XclFileSlave</name>
@@ -2090,12 +2092,24 @@
       <data/>
     </settings>
   </configuration>
-  <file>
-    <name>$PROJ_DIR$\DHT22\dht22.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$\DHT22\dht22.h</name>
-  </file>
+  <group>
+    <name>CC2530Generic</name>
+    <file>
+      <name>$PROJ_DIR$\CC2530Generic\board.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\CC2530Generic\board.h</name>
+    </file>
+  </group>
+  <group>
+    <name>DHT22</name>
+    <file>
+      <name>$PROJ_DIR$\DHT22\dht22.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\DHT22\dht22.h</name>
+    </file>
+  </group>
   <file>
     <name>$PROJ_DIR$\main.c</name>
   </file>
