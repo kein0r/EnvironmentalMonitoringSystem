@@ -11,7 +11,7 @@
 /*
  * Platform specific function to set data line to output
 */ 
-#define DHT22_SetDataLineOutput()
+#define DHT22_SetDataLineOutput() P0DIR = 
 
 /*
  * Platform specific function to set data line to input

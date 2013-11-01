@@ -4,5 +4,6 @@
 
 int main( void )
 {
+  P0.1 = 1;
   return 0;
 }
