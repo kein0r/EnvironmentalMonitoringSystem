@@ -310,8 +310,8 @@ C:\Users\jaru2815\Documents\IAR Embedded Workbench\8051\EnvironmentalMonitoringS
 -D__XOR_DPSEL_SELECT__=1
 -D__PLAIN_INT_BITFIELD_IS_SIGNED__=1
 -D__IAR_COMPILERBASE__=592903
--D__DATE__="Nov  1 2013"
--D__TIME__="15:13:57"
+-D__DATE__="Nov  4 2013"
+-D__TIME__="16:19:10"
 -D__STDC__=1
 -D__STDC_VERSION__=199901L
 -D__STDC_HOSTED__=1

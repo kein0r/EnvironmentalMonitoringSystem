@@ -6,35 +6,37 @@
 
 /*******************| Inclusions |*************************************/
 #include <board.h>
+#include <ioCC2530.h>
    
 /*******************| Macros |*****************************************/   
+
+#define DHT22_DATALINE_LOW              (uint8)HAL_LOW
+#define DHT22_DATALINE_HIGH             (uint8)HAL_HIGH
+
 /*
  * Platform specific function to set data line to output
 */ 
-#define DHT22_SetDataLineOutput() P0DIR = 
+#define DHT22_SetDataLineOutput()       P0DIR_2 = HAL_PINOUTPUT
 
 /*
  * Platform specific function to set data line to input
 */ 
-#define DHT22_SetDataLineInput()
+#define DHT22_SetDataLineInput()        P0DIR_2 = HAL_PININPUT
 
 /*
  * Platform specific function to write logic low to sensor
 */ 
-#define DHT22_WriteDataBitLow()                   
+#define DHT22_WriteDataBitLow()         P0_2 = DHT22_DATALINE_LOW
 
 /*
  * Platform specific function to write logic high to sensor
 */ 
-#define DHT22_WriteDataBitHigh()
+#define DHT22_WriteDataBitHigh()        P0_2 = DHT22_DATALINE_HIGH
 
 /*
  * Platform specific function to read bit from data line
 */ 
-#define DHT22_ReadDataBit()             DHT22_DATALINE_LOW
-
-#define DHT22_DATALINE_LOW              (uint8)0
-#define DHT22_DATALINE_HIGH             (uint8)1
+#define DHT22_ReadDataBit()             P0_2
 
 /* 
  **************************************************************************
