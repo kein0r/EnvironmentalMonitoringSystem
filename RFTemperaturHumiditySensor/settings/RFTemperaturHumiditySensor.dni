@@ -9,7 +9,7 @@ TriggerName=main
 LimitSize=0
 ByteLimit=50
 [DebugChecksum]
-Checksum=-1507433996
+Checksum=-1281233531
 [CallStack]
 ShowArgs=0
 [Disassembly]
@@ -51,18 +51,19 @@ Enabled=0
 ShowSource=1
 [BreakpointUsageDialog]
 Placement=_ 498 289 943 571
-[Breakpoints]
-Count=0
-[ChipconEmu]
-Stop timers on halt=1
-Leave target running=1
+[TermIOLog]
+LoggingEnabled=_ 0
+LogFile=_ ""
 [Log file]
 LoggingEnabled=_ 0
 LogFile=_ ""
 Category=_ 0
-[TermIOLog]
-LoggingEnabled=_ 0
-LogFile=_ ""
+[Breakpoints]
+Bp0=_ "STD_CODE" "{$PROJ_DIR$\DHT22\dht22.c}.60.31" 1 0 0 0 "" 0 ""
+Count=1
+[ChipconEmu]
+Stop timers on halt=1
+Leave target running=1
 [Aliases]
 Count=0
 SuppressDialog=0
