@@ -6,11 +6,13 @@
 int main( void )
 {
   volatile DHT22State_t DHT22State;
-  /** TODO: needs to be changed to only alter bit by bit */
-  P0DIR = HAL_PINOUTPUT;
-  /* switch on sensor (P0.0 connected to GND, P0.1 connected to VCC) */
+  P0DIR_0 = HAL_PINOUTPUT;
+  P0DIR_2 = HAL_PINOUTPUT;
+  P0DIR_4 = HAL_PINOUTPUT;
+  /* switch on sensor (P0.0 connected to GND, P0.2 connected to VCC) */
+  P0 = HAL_LOW;
   P0_0 = HAL_LOW;
-  P0_1 = HAL_HIGH;
+  P0_2 = HAL_HIGH;
   ledInit();
   DHT22_init();
   while(1)
