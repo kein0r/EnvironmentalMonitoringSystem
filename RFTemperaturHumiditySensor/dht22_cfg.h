@@ -48,7 +48,7 @@
  * Time for the start signal of the MCU in uS. According to datasheet at least 
  * 500ms better between 1ms and 10ms
 */
-#define DHT22_MCUSendStartSignalTime            (uint16)1000
+#define DHT22_MCUSendStartSignalTime            (uint16)10000
 
 /*
  * Time to wait for sensor response after start signal in uS. According to 
