@@ -6,13 +6,11 @@
 int main( void )
 {
   volatile DHT22State_t DHT22State;
+  int i;
+  Board_init();
   P0DIR_0 = HAL_PINOUTPUT;
   P0DIR_2 = HAL_PINOUTPUT;
   P0DIR_4 = HAL_PINOUTPUT;
-  /* switch on sensor (P0.0 connected to GND, P0.2 connected to VCC) */
-  P0 = HAL_LOW;
-  P0_0 = HAL_LOW;
-  P0_2 = HAL_HIGH;
   ledInit();
   DHT22_init();
   while(1)
@@ -22,7 +20,9 @@ int main( void )
     DHT22State++;
     DHT22_init();
     ledOff();
-    delay_us(10000);
+    delay_us(30000);
+    delay_us(30000);
+    delay_us(30000);
   }
   return 0;
 }
