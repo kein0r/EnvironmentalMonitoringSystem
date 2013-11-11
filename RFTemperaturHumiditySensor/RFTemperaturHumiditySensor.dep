@@ -6,40 +6,54 @@
   <configuration>
     <name>Debug</name>
     <outputs>
-      <file>$PROJ_DIR$\CC2530Generic\board.h</file>
+      <file>$PROJ_DIR$\main.c</file>
       <file>$PROJ_DIR$\CC2530Generic\board.c</file>
+      <file>$PROJ_DIR$\CC2530Generic\board.h</file>
       <file>$PROJ_DIR$\DHT22\dht22.c</file>
       <file>$PROJ_DIR$\DHT22\dht22.h</file>
-      <file>$PROJ_DIR$\main.c</file>
       <file>$PROJ_DIR$\PlatformTypes.h</file>
       <file>$PROJ_DIR$\Debug\Obj\board.r51</file>
       <file>$PROJ_DIR$\Debug\Obj\main.r51</file>
       <file>$PROJ_DIR$\Debug\Obj\dht22.pbi</file>
-      <file>$PROJ_DIR$\Debug\Obj\RFTemperaturHumiditySensor.pbd</file>
-      <file>$PROJ_DIR$\dht22_cfg.h</file>
-      <file>$PROJ_DIR$\Debug\Obj\main.pbi</file>
-      <file>$PROJ_DIR$\Debug\Obj\board.pbi</file>
-      <file>$PROJ_DIR$\Debug\Obj\dht22.r51</file>
       <file>$TOOLKIT_DIR$\config\devices\Texas Instruments\lnk51ew_CC2530F256_banked.xcl</file>
-      <file>$TOOLKIT_DIR$\inc\ioCC2530.h</file>
       <file>$TOOLKIT_DIR$\lib\clib\cl-pli-blxd-1e16x01.r51</file>
+      <file>$TOOLKIT_DIR$\inc\ioCC2530.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\dht22.r51</file>
+      <file>$PROJ_DIR$\Debug\Obj\board.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\main.pbi</file>
+      <file>$PROJ_DIR$\dht22_cfg.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\RFTemperaturHumiditySensor.pbd</file>
       <file>$PROJ_DIR$\Debug\Exe\RFTemperaturHumiditySensor.d51</file>
     </outputs>
     <file>
-      <name>[ROOT_NODE]</name>
+      <name>$PROJ_DIR$\main.c</name>
       <outputs>
         <tool>
-          <name>XLINK</name>
-          <file> 17</file>
+          <name>BICOMP</name>
+          <file> 14</file>
+        </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 7</file>
         </tool>
       </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 11 5 2 4</file>
+        </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 11 5 2 4</file>
+        </tool>
+      </inputs>
     </file>
     <file>
       <name>$PROJ_DIR$\CC2530Generic\board.c</name>
       <outputs>
         <tool>
           <name>BICOMP</name>
-          <file> 12</file>
+          <file> 13</file>
         </tool>
         <tool>
           <name>ICC8051</name>
@@ -49,11 +63,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 0 5 15</file>
+          <file> 2 5 11</file>
         </tool>
         <tool>
           <name>ICC8051</name>
-          <file> 0 5 15</file>
+          <file> 2 5 11</file>
         </tool>
       </inputs>
     </file>
@@ -66,40 +80,17 @@
         </tool>
         <tool>
           <name>ICC8051</name>
-          <file> 13</file>
+          <file> 12</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 3 5 10 0 15</file>
+          <file> 4 5 15 2 11</file>
         </tool>
         <tool>
           <name>ICC8051</name>
-          <file> 3 5 10 0 15</file>
-        </tool>
-      </inputs>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\main.c</name>
-      <outputs>
-        <tool>
-          <name>BICOMP</name>
-          <file> 11</file>
-        </tool>
-        <tool>
-          <name>ICC8051</name>
-          <file> 7</file>
-        </tool>
-      </outputs>
-      <inputs>
-        <tool>
-          <name>BICOMP</name>
-          <file> 15 5 0 3</file>
-        </tool>
-        <tool>
-          <name>ICC8051</name>
-          <file> 15 5 0 3</file>
+          <file> 4 5 15 2 11</file>
         </tool>
       </inputs>
     </file>
@@ -108,9 +99,18 @@
       <inputs>
         <tool>
           <name>XLINK</name>
-          <file> 14 6 13 7 16</file>
+          <file> 9 6 12 7 10</file>
         </tool>
       </inputs>
+    </file>
+    <file>
+      <name>[ROOT_NODE]</name>
+      <outputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 17</file>
+        </tool>
+      </outputs>
     </file>
   </configuration>
   <configuration>

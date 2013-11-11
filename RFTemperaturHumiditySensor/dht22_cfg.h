@@ -46,7 +46,7 @@
 
 /*
  * Time for the start signal of the MCU in uS. According to datasheet at least 
- * 500ms better between 1ms and 10ms
+ * 18ms
 */
 #define DHT22_MCUSendStartSignalTime            (uint16)10000
 
@@ -60,7 +60,7 @@
  * Time in uS to wait for sensor to detect a zero. According to datasheet
  * time is 26uS to 28uS.
 */
-#define DHT22_MCUWaitForSensorSendZero          (uint16)28
+#define DHT22_MCUWaitForSensorSendZero          (uint16)2
 
 /*
  * Time in uS to wait for sensor to detect a one. According to datasheet
