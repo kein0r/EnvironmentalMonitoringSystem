@@ -50,20 +50,20 @@
 #define DHT22_ReadDataBit()             P0_4
 
 /**
- * Number of cycle to wait for the start signal of the MCU. According to 
- * datasheet at least 18ms
- * Enable DHT22_DEBUG and look at the value in DHT22_sensorWaitCounter[0] to
- * find a good values to set here.
-*/
-#define DHT22_MCUSendStartSignalTime            (uint16)500
+ * Number of uS to wait using delay_us function for the start signal of the MCU. 
+ * According to datasheet at least 18ms
+ */
+#define DHT22_MCUSendStartSignalTime            (uint16)10000
 
 /**
  * Number of cycle for sensor response after start signal in uS. According to 
  * datasheet 20-40uS.
- * Enable DHT22_DEBUG and look at the value in DHT22_sensorWaitCounter[0] to
- * find a good values to set here.
+ * Enable DHT22_DEBUG and look at the value in DHT22_sensorWaitCounter[0] and
+ * DHT22_sensorWaitCounter[1] to find a good values to set here. The values
+ * in the debugging variables should be after readout approx. half of the 
+ * values you set here
 */
-#define DHT22_MCUWaitForSensorResponse          (uint16)500
+#define DHT22_MCUWaitForSensorResponse          (uint8)200
 
 /**
  * Number of cycle to wait for sensor to detect a zero. According to datasheet
@@ -71,7 +71,7 @@
  * Enable DHT22_DEBUG and look at the values in DHT22_sensorBitWaitCounter to
  * find a good values to set here
 */
-#define DHT22_MCUWaitForSensorSendZero          (uint16)40
+#define DHT22_MCUWaitForSensorSendZero          (uint8)80
    
 /*******************| Type definitions |*******************************/
 

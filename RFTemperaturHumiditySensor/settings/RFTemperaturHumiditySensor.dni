@@ -9,7 +9,7 @@ TriggerName=main
 LimitSize=0
 ByteLimit=50
 [DebugChecksum]
-Checksum=1136770165
+Checksum=-1321606806
 [CallStack]
 ShowArgs=0
 [Disassembly]
@@ -55,7 +55,7 @@ Placement=_ 498 289 943 571
 Show=1 1
 Sort=4 0
 [array_types]
-Fmt0=uint8 [5]	3	0
+Fmt0=uint8 [5]	1	0
 [Breakpoints]
 Bp0=_ "STD_CODE" "{$PROJ_DIR$\DHT22\dht22.c}.104.5" 1 0 0 0 "" 0 ""
 Count=1
