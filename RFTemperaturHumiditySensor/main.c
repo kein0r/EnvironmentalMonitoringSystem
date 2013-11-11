@@ -17,11 +17,8 @@ int main( void )
     ledOn();
     DHT22State = DHT22_readValues();
     DHT22State++;
-    DHT22_init();
     ledOff();
-    delay_us(30000);
-    delay_us(30000);
-    delay_us(30000);
+    delay_ms(1000);
   }
   return 0;
 }
