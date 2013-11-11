@@ -8,8 +8,19 @@
 #include <board.h>
 #include <ioCC2530.h>
    
-/*******************| Macros |*****************************************/   
+/*******************| Macros |*****************************************/ 
 
+/**
+ * Debug macro for sensor timing analysis. To global variables will be added
+ * which contain the counter values when MCU communicates with the sensor.
+ * These values can be used to adapt the counter values in this file to your
+ * set-up.
+*/
+#define DHT22_DEBUG
+
+/*
+ * use macros from HAL layer for internal comparison.
+*/
 #define DHT22_DATALINE_LOW              (uint8)HAL_LOW
 #define DHT22_DATALINE_HIGH             (uint8)HAL_HIGH
 
@@ -38,41 +49,29 @@
 */ 
 #define DHT22_ReadDataBit()             P0_4
 
-/* 
- **************************************************************************
- * Usually nothing has to be changed below this line. Change values only if
- * your sensor or set-up needs different timing than normal.
- */
-
-/*
- * Time for the start signal of the MCU in uS. According to datasheet at least 
- * 18ms
+/**
+ * Number of cycle to wait for the start signal of the MCU. According to 
+ * datasheet at least 18ms
+ * Enable DHT22_DEBUG and look at the value in DHT22_sensorWaitCounter[0] to
+ * find a good values to set here.
 */
-#define DHT22_MCUSendStartSignalTime            (uint16)10000
+#define DHT22_MCUSendStartSignalTime            (uint16)500
 
-/*
- * Time to wait for sensor response after start signal in uS. According to 
- * datasheet 20-40uS
+/**
+ * Number of cycle for sensor response after start signal in uS. According to 
+ * datasheet 20-40uS.
+ * Enable DHT22_DEBUG and look at the value in DHT22_sensorWaitCounter[0] to
+ * find a good values to set here.
 */
-#define DHT22_MCUWaitForSensorResponse          (uint16)40
+#define DHT22_MCUWaitForSensorResponse          (uint16)500
 
-/*
- * Time in uS to wait for sensor to detect a zero. According to datasheet
+/**
+ * Number of cycle to wait for sensor to detect a zero. According to datasheet
  * time is 26uS to 28uS.
+ * Enable DHT22_DEBUG and look at the values in DHT22_sensorBitWaitCounter to
+ * find a good values to set here
 */
-#define DHT22_MCUWaitForSensorSendZero          (uint16)2
-
-/*
- * Time in uS to wait for sensor to detect a one. According to datasheet
- * time is 70uS.
-*/
-#define DHT22_MCUWaitForSensorSendOne           (uint16)70
-
-/*
- * Time to wait for sensor to detect read timeout. Should more than time to
- * detect a one
-*/
-#define DHT22_MCUWaitForSensorReadTimeout       2 * DHT22_MCUWaitForSensorSendOne
+#define DHT22_MCUWaitForSensorSendZero          (uint16)40
    
 /*******************| Type definitions |*******************************/
 
