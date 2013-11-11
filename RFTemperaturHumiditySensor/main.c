@@ -6,7 +6,6 @@
 int main( void )
 {
   volatile DHT22State_t DHT22State;
-  int i;
   Board_init();
   P0DIR_0 = HAL_PINOUTPUT;
   P0DIR_2 = HAL_PINOUTPUT;
