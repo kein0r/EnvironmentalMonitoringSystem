@@ -2,7 +2,7 @@
 
 <project>
   <fileVersion>2</fileVersion>
-  <fileChecksum>2789518033</fileChecksum>
+  <fileChecksum>4273783413</fileChecksum>
   <configuration>
     <name>Debug</name>
     <outputs>
@@ -24,6 +24,11 @@
       <file>$PROJ_DIR$\Debug\Obj\dht22.r51</file>
       <file>$TOOLKIT_DIR$\config\devices\Texas Instruments\lnk51ew_CC2530F256_banked.xcl</file>
       <file>$PROJ_DIR$\Debug\Exe\RFTemperaturHumiditySensor.d51</file>
+      <file>$PROJ_DIR$\Debug\Obj\IEEE_802.15.4.r51</file>
+      <file>$PROJ_DIR$\Debug\Obj\IEEE_802.15.4.pbi</file>
+      <file>$PROJ_DIR$\IEEE_802.15.4\mac.h</file>
+      <file>$PROJ_DIR$\IEEE_802.15.4\IEEE_802.15.4.c</file>
+      <file>$PROJ_DIR$\IEEE_802.15.4\IEEE_802.15.4.h</file>
     </outputs>
     <file>
       <name>$PROJ_DIR$\CC2530Generic\board.c</name>
@@ -65,10 +70,6 @@
           <name>ICC8051</name>
           <file> 3 5 9 0 12</file>
         </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 3 5 9 0 12</file>
-        </tool>
       </inputs>
     </file>
     <file>
@@ -99,7 +100,7 @@
       <inputs>
         <tool>
           <name>XLINK</name>
-          <file> 16 6 15 7 13</file>
+          <file> 16 18 6 15 7 13</file>
         </tool>
       </inputs>
     </file>
@@ -111,6 +112,29 @@
           <file> 17</file>
         </tool>
       </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\IEEE_802.15.4\IEEE_802.15.4.c</name>
+      <outputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 18</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 19</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 22 5</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 22 5</file>
+        </tool>
+      </inputs>
     </file>
   </configuration>
   <configuration>
