@@ -2,7 +2,7 @@
 
 <project>
   <fileVersion>2</fileVersion>
-  <fileChecksum>4273783413</fileChecksum>
+  <fileChecksum>3705038736</fileChecksum>
   <configuration>
     <name>Debug</name>
     <outputs>
@@ -26,6 +26,8 @@
       <file>$PROJ_DIR$\Debug\Exe\RFTemperaturHumiditySensor.d51</file>
       <file>$PROJ_DIR$\Debug\Obj\IEEE_802.15.4.r51</file>
       <file>$PROJ_DIR$\Debug\Obj\IEEE_802.15.4.pbi</file>
+      <file>$PROJ_DIR$\IEEE_802.15.4\mac.c</file>
+      <file>$PROJ_DIR$\IEEE_802.15.4_cfg.h</file>
       <file>$PROJ_DIR$\IEEE_802.15.4\mac.h</file>
       <file>$PROJ_DIR$\IEEE_802.15.4\IEEE_802.15.4.c</file>
       <file>$PROJ_DIR$\IEEE_802.15.4\IEEE_802.15.4.h</file>
@@ -68,6 +70,10 @@
       <inputs>
         <tool>
           <name>ICC8051</name>
+          <file> 3 5 9 0 12</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
           <file> 3 5 9 0 12</file>
         </tool>
       </inputs>
@@ -128,11 +134,11 @@
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 22 5</file>
+          <file> 24 5 21 12 0</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 22 5</file>
+          <file> 24 5 21 12 0</file>
         </tool>
       </inputs>
     </file>
