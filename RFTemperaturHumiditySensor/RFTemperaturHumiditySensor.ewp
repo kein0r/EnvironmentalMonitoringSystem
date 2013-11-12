@@ -442,6 +442,7 @@
           <state>$PROJ_DIR$</state>
           <state>$PROJ_DIR$/DHT22</state>
           <state>$PROJ_DIR$/CC2530Generic</state>
+          <state>$PROJ_DIR$/IEEE_802.15.4</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -2108,6 +2109,15 @@
     </file>
     <file>
       <name>$PROJ_DIR$\DHT22\dht22.h</name>
+    </file>
+  </group>
+  <group>
+    <name>IEEE_802.15.4</name>
+    <file>
+      <name>$PROJ_DIR$\IEEE_802.15.4\IEEE_802.15.4.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\IEEE_802.15.4\IEEE_802.15.4.h</name>
     </file>
   </group>
   <file>
