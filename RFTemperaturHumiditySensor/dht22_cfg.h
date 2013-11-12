@@ -72,6 +72,16 @@
  * find a good values to set here
 */
 #define DHT22_MCUWaitForSensorSendZero          (uint8)80
+
+/** 
+ * Invalid value for temperatur in case CRC does not match (sint16)
+*/
+#define DHT22_TemperaturInvalidValue            (sint16)0xffff
+
+/** 
+ * Invalid value for relative humidity in case CRC does not match (uint16)
+*/
+#define DHT22_RelativeHumidityInvalidValue      (uint16)0xffff
    
 /*******************| Type definitions |*******************************/
 
