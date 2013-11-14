@@ -9,7 +9,7 @@ TriggerName=main
 LimitSize=0
 ByteLimit=50
 [DebugChecksum]
-Checksum=-1884561423
+Checksum=-928910701
 [CallStack]
 ShowArgs=0
 [Disassembly]
@@ -62,6 +62,12 @@ Fmt1={W}0:test1	1	0
 Fmt2={W}0:test2	1	0
 Fmt3={W}0:test3	1	0
 Fmt4={W}0:test4	1	0
+[Breakpoints]
+Bp0=_ "STD_CODE" "{$PROJ_DIR$\DHT22\dht22.c}.118.3" 1 0 0 0 "" 0 ""
+Count=1
+[ChipconEmu]
+Stop timers on halt=0
+Leave target running=1
 [Log file]
 LoggingEnabled=_ 0
 LogFile=_ ""
@@ -69,12 +75,6 @@ Category=_ 0
 [TermIOLog]
 LoggingEnabled=_ 0
 LogFile=_ ""
-[Breakpoints]
-Bp0=_ "STD_CODE" "{$PROJ_DIR$\DHT22\dht22.c}.118.4" 1 0 0 0 "" 0 ""
-Count=1
-[ChipconEmu]
-Stop timers on halt=0
-Leave target running=1
 [Aliases]
 Count=0
 SuppressDialog=0
