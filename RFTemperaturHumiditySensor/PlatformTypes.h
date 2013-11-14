@@ -9,6 +9,12 @@
 /*******************| Macros |*****************************************/
 #define STD_ON                  1
 #define STD_OFF                 0
+
+/**
+ * Macros to access high and low part of 16bit word separately 
+*/
+#define HI_UINT16(a)            (((uint16)(a) >> 8) & 0xFF)
+#define LO_UINT16(a)            ((uint16)(a) & 0xFF)
    
 /*******************| Type definitions |*******************************/
 
