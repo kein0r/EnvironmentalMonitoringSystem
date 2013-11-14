@@ -93,11 +93,11 @@
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 12 5 0 3</file>
+          <file> 12 5 0 3 24 21</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 12 5 0 3</file>
+          <file> 12 5 0 3 24 21</file>
         </tool>
       </inputs>
     </file>
