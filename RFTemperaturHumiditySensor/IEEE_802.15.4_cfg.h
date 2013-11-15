@@ -19,7 +19,8 @@
 #define IEE802154_ENABLE_PANID_COMPRESSION      STD_ON
 
 /** 
- * Channel to be used for IEEE 802.15.4 radio
+ * Channel to be used for IEEE 802.15.4 radio. The channels are numbered 11 
+ * through 26.
 */
 #define IEEE802154_Channel                      25
 

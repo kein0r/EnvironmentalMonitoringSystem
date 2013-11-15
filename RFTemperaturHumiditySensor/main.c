@@ -30,11 +30,30 @@ int main( void )
   ledInit();
   DHT22_init();
   IEE802154_radioInit();
+  
+  /* prepare header for message */
+  sentFrameOne.fcf.frameType = IEEE802154_FRAME_TYPE_DATA;  /* 3: 0x01 */
+  sentFrameOne.fcf.securityEnabled = IEEE802154_SECURITY_DISABLED; /* 1: 0x0 */
+  sentFrameOne.fcf.framePending = 0x0; /* 1:0x0 */
+  sentFrameOne.fcf.ackRequired = IEEE802154_ACKNOWLEDGE_REQUIRED; /* 1: 0x1 */
+  sentFrameOne.fcf.panIdCompression = IEEE802154_PANIDCOMPRESSION_DISABLED; /* 1: 0x0 */
+  sentFrameOne.fcf.destinationAddressMode = IEEE802154_ADDRESS_MODE_16BIT;
+  sentFrameOne.fcf.frameVersion = 0x00;
+  sentFrameOne.fcf.SourceAddressMode = IEEE802154_ADDRESS_MODE_16BIT;
+  sentFrameOne.sequenceNumber = 0x00;
+  sentFrameOne.destinationPANID = 0xffff;
+  sentFrameOne.destinationAddress = 0xffff;
+  sentFrameOne.sourceAddress = 0xaffe;
+  sensorInformation.id = 0x42;
+
   while(1)
   {
     ledOn();
     DHT22State = DHT22_readValues();
-    DHT22State++;
+    /* prepare values */
+    sensorInformation.dht22Temperatur = DHT22_SensorValue.values.Temperatur;
+    sensorInformation.dht22RelativeHumidity = DHT22_SensorValue.values.RelativeHumidity;
+    IEE802154_radioSentDataFrame(&sentFrameOne, sizeof(sensorInformation_t));
     ledOff();
     delay_ms(1000);
   }
