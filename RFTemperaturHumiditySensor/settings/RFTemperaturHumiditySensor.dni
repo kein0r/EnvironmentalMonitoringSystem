@@ -54,6 +54,9 @@ Placement=_ 498 289 943 571
 [SfrWindow]
 Show=1 1
 Sort=4 0
+[struct_types]
+Fmt0=sensorInformation_t-dht22Temperatur	3	0
+Fmt1=struct __Unnamed_2_139-Temperatur	3	0
 [array_types]
 Fmt0=uint8 [5]	1	0
 [watch_formats]
@@ -62,12 +65,6 @@ Fmt1={W}0:test1	1	0
 Fmt2={W}0:test2	1	0
 Fmt3={W}0:test3	1	0
 Fmt4={W}0:test4	1	0
-[Breakpoints]
-Bp0=_ "STD_CODE" "{$PROJ_DIR$\DHT22\dht22.c}.118.3" 1 0 0 0 "" 0 ""
-Count=1
-[ChipconEmu]
-Stop timers on halt=0
-Leave target running=1
 [Log file]
 LoggingEnabled=_ 0
 LogFile=_ ""
@@ -75,6 +72,11 @@ Category=_ 0
 [TermIOLog]
 LoggingEnabled=_ 0
 LogFile=_ ""
+[Breakpoints]
+Count=0
+[ChipconEmu]
+Stop timers on halt=0
+Leave target running=1
 [Aliases]
 Count=0
 SuppressDialog=0
