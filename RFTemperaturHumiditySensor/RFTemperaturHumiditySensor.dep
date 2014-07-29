@@ -2,7 +2,7 @@
 
 <project>
   <fileVersion>2</fileVersion>
-  <fileChecksum>628018099</fileChecksum>
+  <fileChecksum>2164313395</fileChecksum>
   <configuration>
     <name>Debug</name>
     <outputs>
@@ -29,6 +29,10 @@
       <file>$PROJ_DIR$\Debug\Exe\RFTemperaturHumiditySensor.d51</file>
       <file>$PROJ_DIR$\Debug\Obj\IEEE_802.15.4.r51</file>
       <file>$PROJ_DIR$\Debug\Obj\IEEE_802.15.4.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\CC253x.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\CC253x.r51</file>
+      <file>$PROJ_DIR$\CC253x\CC253x.c</file>
+      <file>$PROJ_DIR$\CC253x\CC253x.h</file>
     </outputs>
     <file>
       <name>$PROJ_DIR$\CC2530Generic\board.c</name>
@@ -45,11 +49,11 @@
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 0 8 14</file>
+          <file> 0 8 14 26</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 0 8 14</file>
+          <file> 0 8 14 26</file>
         </tool>
       </inputs>
     </file>
@@ -114,11 +118,11 @@
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 14 8 0 3 5 6</file>
+          <file> 14 8 0 3 5 6 26</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 14 8 0 3 5 6</file>
+          <file> 14 8 0 3 5 6 26</file>
         </tool>
       </inputs>
     </file>
@@ -127,7 +131,7 @@
       <inputs>
         <tool>
           <name>XLINK</name>
-          <file> 13 21 9 16 10 12</file>
+          <file> 13 24 21 9 16 10 12</file>
         </tool>
       </inputs>
     </file>
@@ -139,6 +143,29 @@
           <file> 20</file>
         </tool>
       </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\CC253x\CC253x.c</name>
+      <outputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 24</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 23</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 26 14 8</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 26 14 8</file>
+        </tool>
+      </inputs>
     </file>
     <forcedrebuild>
       <name>[MULTI_TOOL]</name>

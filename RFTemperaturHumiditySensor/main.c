@@ -3,6 +3,7 @@
 #include <board.h>
 #include <dht22.h>
 #include <IEEE_802.15.4.h>
+#include <CC253x.h>
 
 /**
   * \brief No buffer is used to temporary store the received and sent frames.
@@ -23,6 +24,7 @@ IEE802154_DataFrameHeader_t sentFrameOne = {{0,0,0,0,0,0,0,0,0} ,0 ,0 ,0 ,0, (ui
 int main( void )
 {
   volatile DHT22State_t DHT22State;
+  sleepTimer_t sleepTime;
   Board_init();
   P0DIR_0 = HAL_PINOUTPUT;
   P0DIR_2 = HAL_PINOUTPUT;
@@ -46,6 +48,7 @@ int main( void )
   sentFrameOne.sourceAddress = 0xaffe;
   sensorInformation.id = 0x42;
 
+  sleepTime.value = 0xfff;
   while(1)
   {
     ledOn();
@@ -55,7 +58,8 @@ int main( void )
     sensorInformation.dht22RelativeHumidity = DHT22_SensorValue.values.RelativeHumidity;
     IEE802154_radioSentDataFrame(&sentFrameOne, sizeof(sensorInformation_t));
     ledOff();
-    delay_ms(1000);
+    CC253x_IncrementSleepTimer(sleepTime);
+    CC253x_ActivatePowerMode(SLEEPCMD_MODE_PM2);
   }
   return 0;
 }
