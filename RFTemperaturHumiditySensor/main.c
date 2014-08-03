@@ -21,7 +21,7 @@ typedef struct {
 sensorInformation_t sensorInformation;
 IEE802154_DataFrameHeader_t sentFrameOne = {{0,0,0,0,0,0,0,0,0} ,0 ,0 ,0 ,0, (uint8*)&sensorInformation};
 
-int main( void )
+void main( void )
 {
   volatile DHT22State_t DHT22State;
   sleepTimer_t sleepTime;
@@ -48,7 +48,7 @@ int main( void )
   sentFrameOne.sourceAddress = 0xaffe;
   sensorInformation.id = 0x42;
 
-  sleepTime.value = 0xfff;
+  sleepTime.value = 0xffff;
   while(1)
   {
     ledOn();
@@ -61,5 +61,4 @@ int main( void )
     CC253x_IncrementSleepTimer(sleepTime);
     CC253x_ActivatePowerMode(SLEEPCMD_MODE_PM2);
   }
-  return 0;
 }

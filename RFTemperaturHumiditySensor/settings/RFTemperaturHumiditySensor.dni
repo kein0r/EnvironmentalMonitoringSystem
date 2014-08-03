@@ -9,7 +9,7 @@ TriggerName=main
 LimitSize=0
 ByteLimit=50
 [DebugChecksum]
-Checksum=-1430957684
+Checksum=1141993588
 [CallStack]
 ShowArgs=0
 [Disassembly]
@@ -56,7 +56,6 @@ Show=1 1
 Sort=4 0
 [struct_types]
 Fmt0=sensorInformation_t-dht22Temperatur	3	0
-Fmt1=struct __Unnamed_2_139-Temperatur	3	0
 [array_types]
 Fmt0=uint8 [5]	1	0
 [watch_formats]
@@ -65,13 +64,13 @@ Fmt1={W}0:test1	1	0
 Fmt2={W}0:test2	1	0
 Fmt3={W}0:test3	1	0
 Fmt4={W}0:test4	1	0
-[TermIOLog]
-LoggingEnabled=_ 0
-LogFile=_ ""
 [Log file]
 LoggingEnabled=_ 0
 LogFile=_ ""
 Category=_ 0
+[TermIOLog]
+LoggingEnabled=_ 0
+LogFile=_ ""
 [Breakpoints]
 Count=0
 [ChipconEmu]
