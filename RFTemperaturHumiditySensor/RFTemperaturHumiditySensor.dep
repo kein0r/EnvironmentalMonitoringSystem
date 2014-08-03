@@ -143,6 +143,10 @@
           <name>ICC8051</name>
           <file> 23 11 0 5 7 9 3</file>
         </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 23 11 0 5 7 9 3</file>
+        </tool>
       </inputs>
     </file>
     <file>
