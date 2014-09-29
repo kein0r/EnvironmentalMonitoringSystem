@@ -2,6 +2,9 @@
 
 <workspace>
   <project>
+    <path>$WS_DIR$\CC2530Bee\CC2530Bee.ewp</path>
+  </project>
+  <project>
     <path>$WS_DIR$\RFTemperaturHumiditySensor\RFTemperaturHumiditySensor.ewp</path>
   </project>
   <batchBuild/>
