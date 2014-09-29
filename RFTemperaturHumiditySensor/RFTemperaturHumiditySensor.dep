@@ -55,6 +55,10 @@
           <name>BICOMP</name>
           <file> 3</file>
         </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 4</file>
+        </tool>
       </outputs>
       <inputs>
         <tool>
