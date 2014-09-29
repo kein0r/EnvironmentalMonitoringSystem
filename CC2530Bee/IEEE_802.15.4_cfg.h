@@ -1,4 +1,4 @@
-/** @ingroup DHT22
+/** @ingroup IEEE_802.15.4
  * @{
  */
 #ifndef IEEE_802_15_4_H_CFG_H_
