@@ -27,12 +27,12 @@
 /**
  * Short address of this note
 */
-#define IEEE802154_ShortAddress                 (uint16)0x0033
+#define IEEE802154_ShortAddress                 (uint16_t)0x0033
 
 /**
  * Short address of this note
 */
-#define IEEE802154_PanID                        (uint16)0xaffe
+#define IEEE802154_PanID                        (uint16_t)0xaffe
    
 /*******************| Type definitions |*******************************/
 
