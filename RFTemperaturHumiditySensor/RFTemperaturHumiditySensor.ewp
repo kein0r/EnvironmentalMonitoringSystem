@@ -2111,6 +2111,9 @@
     <file>
       <name>$PROJ_DIR$\CC253x\CC253x.h</name>
     </file>
+    <file>
+      <name>$PROJ_DIR$\CC253x\PlatformTypes.h</name>
+    </file>
   </group>
   <group>
     <name>DHT22</name>
@@ -2138,9 +2141,6 @@
   </file>
   <file>
     <name>$PROJ_DIR$\main.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$\PlatformTypes.h</name>
   </file>
 </project>
 
