@@ -21,8 +21,8 @@
 /*
  * use macros from HAL layer for internal comparison.
 */
-#define DHT22_DATALINE_LOW              (uint8)HAL_LOW
-#define DHT22_DATALINE_HIGH             (uint8)HAL_HIGH
+#define DHT22_DATALINE_LOW              (uint8_t)HAL_LOW
+#define DHT22_DATALINE_HIGH             (uint8_t)HAL_HIGH
 
 /*
  * Platform specific function to set data line to output
@@ -53,7 +53,7 @@
  * Number of uS to wait using delay_us function for the start signal of the MCU. 
  * According to datasheet at least 18ms
  */
-#define DHT22_MCUSendStartSignalTime            (uint16)10000
+#define DHT22_MCUSendStartSignalTime            (uint16_t)10000
 
 /**
  * Number of cycle for sensor response after start signal in uS. According to 
@@ -63,7 +63,7 @@
  * in the debugging variables should be after readout approx. half of the 
  * values you set here
 */
-#define DHT22_MCUWaitForSensorResponse          (uint8)200
+#define DHT22_MCUWaitForSensorResponse          (uint8_t)200
 
 /**
  * Number of cycle to wait for sensor to detect a zero. According to datasheet
@@ -71,17 +71,17 @@
  * Enable DHT22_DEBUG and look at the values in DHT22_sensorBitWaitCounter to
  * find a good values to set here
 */
-#define DHT22_MCUWaitForSensorSendZero          (uint8)80
+#define DHT22_MCUWaitForSensorSendZero          (uint8_t)80
 
 /** 
  * Invalid value for temperatur in case CRC does not match (sint16)
 */
-#define DHT22_TemperaturInvalidValue            (sint16)0xffff
+#define DHT22_TemperaturInvalidValue            (sint16_t)0xffff
 
 /** 
  * Invalid value for relative humidity in case CRC does not match (uint16)
 */
-#define DHT22_RelativeHumidityInvalidValue      (uint16)0xffff
+#define DHT22_RelativeHumidityInvalidValue      (uint16_t)0xffff
    
 /*******************| Type definitions |*******************************/
 
