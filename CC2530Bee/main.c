@@ -19,7 +19,7 @@ typedef struct {
 } sensorInformation_t;
 
 sensorInformation_t sensorInformation;
-IEE802154_DataFrameHeader_t sentFrameOne = {{0,0,0,0,0,0,0,0,0} ,0 ,0 ,0 ,0, (uint8_t*)&sensorInformation};
+IEE802154_DataFrameHeader_t sentFrameOne = {{0,0,0,0,0,0,0,0,0} ,0 ,0 ,0 ,0, (IEE802154_PayloadPointer)&sensorInformation};
 
 void main( void )
 {
