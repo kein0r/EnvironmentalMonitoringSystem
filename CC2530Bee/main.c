@@ -1,9 +1,10 @@
 #include <ioCC2530.h>
-#include "PlatformTypes.h"
+#include <PlatformTypes.h>
 #include <board.h>
 #include <USART.h>
 #include <IEEE_802.15.4.h>
 #include <CC253x.h>
+#include "CC2530Bee.h"
 
 /**
   * \brief No buffer is used to temporary store the received and sent frames.
@@ -21,6 +22,8 @@ typedef struct {
 sensorInformation_t sensorInformation;
 IEE802154_DataFrameHeader_t sentFrameOne = {{0,0,0,0,0,0,0,0,0} ,0 ,0 ,0 ,0, (IEE802154_PayloadPointer)&sensorInformation};
 
+CC2530Bee_Config_t CC2530Bee_Config;
+
 void main( void )
 {
   sleepTimer_t sleepTime;
@@ -29,7 +32,8 @@ void main( void )
   P0DIR_2 = HAL_PINOUTPUT;
   P0DIR_4 = HAL_PINOUTPUT;
   ledInit();
-  USART_init(USART_BAUDRATE_DEFAULT);
+  USART_setBaudrate(CC2530Bee_Config.USART_Baudrate);
+  USART_setParity(CC2530Bee_Config.USART_Parity);
   IEE802154_radioInit();
   
   /* prepare header for message */
