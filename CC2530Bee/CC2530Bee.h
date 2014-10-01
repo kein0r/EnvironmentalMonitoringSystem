@@ -26,5 +26,7 @@ typedef struct {
 
 /*******************| Function prototypes |****************************/
 
+void CC2530Bee_loadConfig(CC2530Bee_Config_t *config);
+
 #endif
 /** @}*/

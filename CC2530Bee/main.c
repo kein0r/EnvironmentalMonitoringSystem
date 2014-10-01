@@ -26,12 +26,20 @@ CC2530Bee_Config_t CC2530Bee_Config;
 
 void main( void )
 {
+  uint8_t temp;
+  uint8_t led_status = 0;
   sleepTimer_t sleepTime;
   Board_init();
-  P0DIR_0 = HAL_PINOUTPUT;
+  /*P0DIR_0 = HAL_PINOUTPUT;
   P0DIR_2 = HAL_PINOUTPUT;
-  P0DIR_4 = HAL_PINOUTPUT;
+  P0DIR_3 = HAL_PINOUTPUT;
+  P0DIR_4 = HAL_PINOUTPUT;*/
+  P0DIR_4 = HAL_PININPUT;
+  P0DIR_5 = HAL_PININPUT;
+
   ledInit();
+  CC2530Bee_loadConfig(&CC2530Bee_Config);
+  UART_init();
   USART_setBaudrate(CC2530Bee_Config.USART_Baudrate);
   USART_setParity(CC2530Bee_Config.USART_Parity);
   IEE802154_radioInit();
@@ -50,15 +58,30 @@ void main( void )
   sentFrameOne.destinationAddress = 0xffff;
   sentFrameOne.sourceAddress = 0xaffe;
   sensorInformation.id = 0x42;
-
+  
   sleepTime.value = 0xffff;
   while(1)
   {
+    /* wait for reception */
+    while(!(U0CSR & 0x04)) ;
+    temp = U0DBUF;
+    U0DBUF = temp;
+    led_status = ~led_status;
+    P1_0 = led_status;
+    /*
     ledOn();
-    /* prepare values */
     IEE802154_radioSentDataFrame(&sentFrameOne, sizeof(sensorInformation_t));
     ledOff();
     CC253x_IncrementSleepTimer(sleepTime);
-    CC253x_ActivatePowerMode(SLEEPCMD_MODE_PM2);
+    CC253x_ActivatePowerMode(SLEEPCMD_MODE_PM2);*/
   }
+}
+
+/**
+ * Load config from EEPROM. If invalid CRC found default config is loaded
+ */
+void CC2530Bee_loadConfig(CC2530Bee_Config_t *config)
+{
+  config->USART_Baudrate = USART_Baudrate_57600;
+  config->USART_Parity = USART_Parity_8BitNoParity;
 }
