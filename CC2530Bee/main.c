@@ -43,6 +43,7 @@ void main( void )
   USART_setBaudrate(CC2530Bee_Config.USART_Baudrate);
   USART_setParity(CC2530Bee_Config.USART_Parity);
   IEE802154_radioInit();
+  enableAllInterrupt();
   
   /* prepare header for message */
   sentFrameOne.fcf.frameType = IEEE802154_FRAME_TYPE_DATA;  /* 3: 0x01 */
@@ -65,7 +66,7 @@ void main( void )
     /* wait for reception */
     while(!(U0CSR & 0x04)) ;
     temp = U0DBUF;
-    U0DBUF = temp;
+    USART_write("OMG Test");
     led_status = ~led_status;
     P1_0 = led_status;
     /*
