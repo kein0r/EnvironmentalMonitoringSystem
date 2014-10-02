@@ -8,8 +8,10 @@
 #include <PlatformTypes.h>
    
 /*******************| Macros |*****************************************/
-#define USART_SIZE_OF_USART_TX_BUFFER   10
-#define USART_SIZE_OF_USART_RX_BUFFER   10
+/**
+ Size for USART Rx and Tx buffer. Thus, twice the size will be allocated in RAM.
+*/
+#define USART_RING_BUFFER_SIZE   16
 
 /*******************| Global variables |*******************************/
 

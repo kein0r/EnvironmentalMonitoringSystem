@@ -6,6 +6,20 @@
   <configuration>
     <name>Debug</name>
     <outputs>
+      <file>$PROJ_DIR$\Debug\Obj\IEEE_802.15.4.pbi</file>
+      <file>$PROJ_DIR$\Debug\Exe\RFTemperaturHumiditySensor.d51</file>
+      <file>$PROJ_DIR$\Debug\Obj\board.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\IEEE_802.15.4.r51</file>
+      <file>$PROJ_DIR$\Debug\Obj\main.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\main.r51</file>
+      <file>$PROJ_DIR$\Debug\Obj\CC253x.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\dht22.r51</file>
+      <file>$TOOLKIT_DIR$\lib\clib\cl-pli-blxd-1e16x01.r51</file>
+      <file>$PROJ_DIR$\Debug\Obj\CC253x.r51</file>
+      <file>$PROJ_DIR$\Debug\Obj\board.r51</file>
+      <file>$TOOLKIT_DIR$\config\devices\Texas Instruments\lnk51ew_CC2530F256_banked.xcl</file>
+      <file>$TOOLKIT_DIR$\inc\ioCC2530.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\dht22.pbi</file>
       <file>$PROJ_DIR$\CC2530Generic\board.h</file>
       <file>$PROJ_DIR$\CC253x\CC253x.c</file>
       <file>$PROJ_DIR$\CC2530Generic\board.c</file>
@@ -18,41 +32,36 @@
       <file>$PROJ_DIR$\dht22_cfg.h</file>
       <file>$PROJ_DIR$\IEEE_802.15.4_cfg.h</file>
       <file>$PROJ_DIR$\main.c</file>
-      <file>$PROJ_DIR$\Debug\Obj\IEEE_802.15.4.pbi</file>
-      <file>$PROJ_DIR$\Debug\Exe\RFTemperaturHumiditySensor.d51</file>
-      <file>$PROJ_DIR$\Debug\Obj\board.pbi</file>
-      <file>$PROJ_DIR$\Debug\Obj\IEEE_802.15.4.r51</file>
-      <file>$PROJ_DIR$\Debug\Obj\main.pbi</file>
-      <file>$PROJ_DIR$\Debug\Obj\main.r51</file>
-      <file>$PROJ_DIR$\Debug\Obj\CC253x.pbi</file>
-      <file>$TOOLKIT_DIR$\lib\clib\cl-pli-blxd-1e16x01.r51</file>
-      <file>$PROJ_DIR$\Debug\Obj\CC253x.r51</file>
-      <file>$PROJ_DIR$\Debug\Obj\dht22.r51</file>
-      <file>$PROJ_DIR$\Debug\Obj\board.r51</file>
-      <file>$TOOLKIT_DIR$\config\devices\Texas Instruments\lnk51ew_CC2530F256_banked.xcl</file>
-      <file>$TOOLKIT_DIR$\inc\ioCC2530.h</file>
-      <file>$PROJ_DIR$\Debug\Obj\dht22.pbi</file>
     </outputs>
+    <file>
+      <name>$PROJ_DIR$\Debug\Exe\RFTemperaturHumiditySensor.d51</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 11 9 3 10 7 5 8</file>
+        </tool>
+      </inputs>
+    </file>
     <file>
       <name>$PROJ_DIR$\CC253x\CC253x.c</name>
       <outputs>
         <tool>
           <name>ICC8051</name>
-          <file> 20</file>
+          <file> 9</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 18</file>
+          <file> 6</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 3 24 4</file>
+          <file> 17 12 18</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 3 24 4</file>
+          <file> 17 12 18</file>
         </tool>
       </inputs>
     </file>
@@ -61,21 +70,21 @@
       <outputs>
         <tool>
           <name>ICC8051</name>
-          <file> 22</file>
+          <file> 10</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 14</file>
+          <file> 2</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 0 4 24 3</file>
+          <file> 14 18 12 17</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 0 4 24 3</file>
+          <file> 14 18 12 17</file>
         </tool>
       </inputs>
     </file>
@@ -84,21 +93,21 @@
       <outputs>
         <tool>
           <name>ICC8051</name>
-          <file> 21</file>
+          <file> 7</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 25</file>
+          <file> 13</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 6 4 9 0 24</file>
+          <file> 20 18 23 14 12</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 6 4 9 0 24</file>
+          <file> 20 18 23 14 12</file>
         </tool>
       </inputs>
     </file>
@@ -107,21 +116,21 @@
       <outputs>
         <tool>
           <name>ICC8051</name>
-          <file> 15</file>
+          <file> 3</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 12</file>
+          <file> 0</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 8 4 10 24 0</file>
+          <file> 22 18 24 12 14</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 8 4 10 24 0</file>
+          <file> 22 18 24 12 14</file>
         </tool>
       </inputs>
     </file>
@@ -130,30 +139,21 @@
       <outputs>
         <tool>
           <name>ICC8051</name>
-          <file> 17</file>
+          <file> 5</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 16</file>
+          <file> 4</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 24 4 0 6 8 10 3</file>
+          <file> 12 18 14 20 22 24 17</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 24 4 0 6 8 10 3</file>
-        </tool>
-      </inputs>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\Debug\Exe\RFTemperaturHumiditySensor.d51</name>
-      <inputs>
-        <tool>
-          <name>XLINK</name>
-          <file> 23 20 15 22 21 17 19</file>
+          <file> 12 18 14 20 22 24 17</file>
         </tool>
       </inputs>
     </file>
@@ -162,7 +162,7 @@
       <outputs>
         <tool>
           <name>XLINK</name>
-          <file> 13</file>
+          <file> 1</file>
         </tool>
       </outputs>
     </file>
