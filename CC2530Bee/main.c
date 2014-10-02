@@ -26,7 +26,7 @@ CC2530Bee_Config_t CC2530Bee_Config;
 
 void main( void )
 {
-  uint8_t temp;
+  char test[20];
   uint8_t led_status = 0;
   sleepTimer_t sleepTime;
   Board_init();
@@ -64,13 +64,11 @@ void main( void )
   while(1)
   {
     /* wait for reception */
-    while(!(U0CSR & 0x04)) ;
-    temp = U0DBUF;
-    USART_write("OMG Test");
+    USART_getc(test);
+    USART_write("Another test");
     led_status = ~led_status;
     P1_0 = led_status;
-    /*
-    ledOn();
+    /* ledOn();
     IEE802154_radioSentDataFrame(&sentFrameOne, sizeof(sensorInformation_t));
     ledOff();
     CC253x_IncrementSleepTimer(sleepTime);
