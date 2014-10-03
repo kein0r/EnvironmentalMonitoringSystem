@@ -38,6 +38,7 @@
       <file>$PROJ_DIR$\Debug\Obj\RFTemperaturHumiditySensor.pbd</file>
       <file>$PROJ_DIR$\..\CC2530Bee\CC2530Bee.h</file>
       <file>$PROJ_DIR$\..\CC2530Bee\main.c</file>
+      <file>$PROJ_DIR$\..\CC2530Bee\CC253x\USART.c</file>
     </outputs>
     <file>
       <name>$PROJ_DIR$\CC253x\CC253x.c</name>
