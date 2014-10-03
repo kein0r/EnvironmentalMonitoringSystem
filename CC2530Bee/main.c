@@ -64,8 +64,9 @@ void main( void )
   while(1)
   {
     /* wait for reception */
-    USART_getc(test);
-    USART_write("Another test");
+    USART_read(test, 2);
+    test[2] = 0;
+    USART_write(test);
     led_status = ~led_status;
     P1_0 = led_status;
     /* ledOn();
