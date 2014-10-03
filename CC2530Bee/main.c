@@ -13,15 +13,7 @@
   * For this a message element (struct, array etc.) must be declared and allocated
   * to which the payload pointer of the IEE802154_header_t will point.
   */
-typedef struct {
-  uint8_t id;      /*!< message id must always come first */
-  sint16_t test;   /*!< temperatur of dht22 */
-  uint16_t test2;  /*!< relative humidity of dht22 */
-} sensorInformation_t;
-
-sensorInformation_t sensorInformation;
-IEE802154_DataFrameHeader_t sentFrameOne = {{0,0,0,0,0,0,0,0,0} ,0 ,0 ,0 ,0, (IEE802154_PayloadPointer)&sensorInformation};
-
+IEE802154_Payload txPayload[30];
 CC2530Bee_Config_t CC2530Bee_Config;
 
 void main( void )
@@ -37,30 +29,17 @@ void main( void )
   P0DIR_4 = HAL_PININPUT;
   P0DIR_5 = HAL_PININPUT;
 
-  ledInit();
   CC2530Bee_loadConfig(&CC2530Bee_Config);
+  ledInit();
   UART_init();
   USART_setBaudrate(CC2530Bee_Config.USART_Baudrate);
   USART_setParity(CC2530Bee_Config.USART_Parity);
-  IEE802154_radioInit();
+  IEE802154_radioInit(&(CC2530Bee_Config.IEEE802154_config));
   enableAllInterrupt();
   
-  /* prepare header for message */
-  sentFrameOne.fcf.frameType = IEEE802154_FRAME_TYPE_DATA;  /* 3: 0x01 */
-  sentFrameOne.fcf.securityEnabled = IEEE802154_SECURITY_DISABLED; /* 1: 0x0 */
-  sentFrameOne.fcf.framePending = 0x0; /* 1:0x0 */
-  sentFrameOne.fcf.ackRequired = IEEE802154_ACKNOWLEDGE_REQUIRED; /* 1: 0x1 */
-  sentFrameOne.fcf.panIdCompression = IEEE802154_PANIDCOMPRESSION_DISABLED; /* 1: 0x0 */
-  sentFrameOne.fcf.destinationAddressMode = IEEE802154_ADDRESS_MODE_16BIT;
-  sentFrameOne.fcf.frameVersion = 0x00;
-  sentFrameOne.fcf.SourceAddressMode = IEEE802154_ADDRESS_MODE_16BIT;
-  sentFrameOne.sequenceNumber = 0x00;
-  sentFrameOne.destinationPANID = 0xffff;
-  sentFrameOne.destinationAddress = 0xffff;
-  sentFrameOne.sourceAddress = 0xaffe;
-  sensorInformation.id = 0x42;
-  
   sleepTime.value = 0xffff;
+  
+  /* now everyhting is set-up, start main loop now */
   while(1)
   {
     /* wait for reception */
@@ -84,4 +63,20 @@ void CC2530Bee_loadConfig(CC2530Bee_Config_t *config)
 {
   config->USART_Baudrate = USART_Baudrate_57600;
   config->USART_Parity = USART_Parity_8BitNoParity;
+  
+  /* prepare header for IEEE 802.15.4 Tx message */
+  config->IEEE802154_TxDataFrame.fcf.frameType = IEEE802154_FRAME_TYPE_DATA;  /* 3: 0x01 */
+  config->IEEE802154_TxDataFrame.fcf.securityEnabled = IEEE802154_SECURITY_DISABLED; /* 1: 0x0 */
+  config->IEEE802154_TxDataFrame.fcf.framePending = 0x0; /* 1:0x0 */
+  config->IEEE802154_TxDataFrame.fcf.ackRequired = IEEE802154_ACKNOWLEDGE_REQUIRED; /* 1: 0x1 */
+  config->IEEE802154_TxDataFrame.fcf.panIdCompression = IEEE802154_PANIDCOMPRESSION_DISABLED; /* 1: 0x0 */
+  config->IEEE802154_TxDataFrame.fcf.destinationAddressMode = IEEE802154_ADDRESS_MODE_16BIT;
+  config->IEEE802154_TxDataFrame.fcf.frameVersion = 0x00;
+  config->IEEE802154_TxDataFrame.fcf.SourceAddressMode = IEEE802154_ADDRESS_MODE_16BIT;
+  /* preset variable to some meaningfull values */
+  config->IEEE802154_TxDataFrame.sequenceNumber = 0x00;
+  config->IEEE802154_TxDataFrame.destinationPANID = 0xffff;
+  config->IEEE802154_TxDataFrame.destinationAddress = 0xffff;
+  config->IEEE802154_TxDataFrame.sourceAddress = 0xaffe;
+  
 }
