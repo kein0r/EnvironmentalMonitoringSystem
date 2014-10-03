@@ -11,9 +11,9 @@
   * For each frame that is sent or received a buffer must be allocated before
   * sending or receiving.
   * For this a message element (struct, array etc.) must be declared and allocated
-  * to which the payload pointer of the IEE802154_header_t will point.
+  * to which the payload pointer of the IEEE802154_header_t will point.
   */
-IEE802154_Payload txPayload[30];
+IEEE802154_Payload txPayload[30];
 CC2530Bee_Config_t CC2530Bee_Config;
 
 void main( void )
@@ -34,7 +34,7 @@ void main( void )
   UART_init();
   USART_setBaudrate(CC2530Bee_Config.USART_Baudrate);
   USART_setParity(CC2530Bee_Config.USART_Parity);
-  IEE802154_radioInit(&(CC2530Bee_Config.IEEE802154_config));
+  IEEE802154_radioInit(&(CC2530Bee_Config.IEEE802154_config));
   enableAllInterrupt();
   
   sleepTime.value = 0xffff;
@@ -49,7 +49,7 @@ void main( void )
     led_status = ~led_status;
     P1_0 = led_status;
     /* ledOn();
-    IEE802154_radioSentDataFrame(&sentFrameOne, sizeof(sensorInformation_t));
+    IEEE802154_radioSentDataFrame(&sentFrameOne, sizeof(sensorInformation_t));
     ledOff();
     CC253x_IncrementSleepTimer(sleepTime);
     CC253x_ActivatePowerMode(SLEEPCMD_MODE_PM2);*/
