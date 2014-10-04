@@ -12,7 +12,7 @@
       <name>General</name>
       <archiveVersion>1</archiveVersion>
       <data>
-        <version>5</version>
+        <version>6</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
         <option>
@@ -249,6 +249,18 @@
           <name>GRuntimeLibSelectSlave2</name>
           <version>0</version>
           <state>3</state>
+        </option>
+        <option>
+          <name>Extended stack address</name>
+          <state>0x9B</state>
+        </option>
+        <option>
+          <name>Extended stack mask</name>
+          <state>0x03</state>
+        </option>
+        <option>
+          <name>Extended stack is offset</name>
+          <state>0</state>
         </option>
       </data>
     </settings>
@@ -1060,7 +1072,7 @@
       <name>General</name>
       <archiveVersion>1</archiveVersion>
       <data>
-        <version>5</version>
+        <version>6</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>0</debug>
         <option>
@@ -1297,6 +1309,18 @@
           <name>GRuntimeLibSelectSlave2</name>
           <version>0</version>
           <state>3</state>
+        </option>
+        <option>
+          <name>Extended stack address</name>
+          <state>0x9B</state>
+        </option>
+        <option>
+          <name>Extended stack mask</name>
+          <state>0x03</state>
+        </option>
+        <option>
+          <name>Extended stack is offset</name>
+          <state>0</state>
         </option>
       </data>
     </settings>
@@ -2133,6 +2157,9 @@
       <name>$PROJ_DIR$\IEEE_802.15.4\IEEE_802.15.4.h</name>
     </file>
   </group>
+  <file>
+    <name>$PROJ_DIR$\..\CC2530Bee\CC2530Bee.h</name>
+  </file>
   <file>
     <name>$PROJ_DIR$\dht22_cfg.h</name>
   </file>
