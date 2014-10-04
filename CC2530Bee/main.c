@@ -64,19 +64,31 @@ void CC2530Bee_loadConfig(CC2530Bee_Config_t *config)
   config->USART_Baudrate = USART_Baudrate_57600;
   config->USART_Parity = USART_Parity_8BitNoParity;
   
+  /* General radio configuration */
+  config->IEEE802154_config.Channel = IEEE802154_Default_Channel;
+  config->IEEE802154_config.PanID = IEEE802154_Default_PanID;
+  config->IEEE802154_config.ShortAddress = IEEE802154_Default_ShortAddress;
+  
   /* prepare header for IEEE 802.15.4 Tx message */
-  config->IEEE802154_TxDataFrame.fcf.frameType = IEEE802154_FRAME_TYPE_DATA;  /* 3: 0x01 */
-  config->IEEE802154_TxDataFrame.fcf.securityEnabled = IEEE802154_SECURITY_DISABLED; /* 1: 0x0 */
+  config->IEEE802154_TxDataFrame.fcf.frameType = IEEE802154_FCF_FRAME_TYPE_DATA;  /* 3: 0x01 */
+  config->IEEE802154_TxDataFrame.fcf.securityEnabled = IEEE802154_FCF_SECURITY_DISABLED; /* 1: 0x0 */
   config->IEEE802154_TxDataFrame.fcf.framePending = 0x0; /* 1:0x0 */
-  config->IEEE802154_TxDataFrame.fcf.ackRequired = IEEE802154_ACKNOWLEDGE_REQUIRED; /* 1: 0x1 */
-  config->IEEE802154_TxDataFrame.fcf.panIdCompression = IEEE802154_PANIDCOMPRESSION_DISABLED; /* 1: 0x0 */
-  config->IEEE802154_TxDataFrame.fcf.destinationAddressMode = IEEE802154_ADDRESS_MODE_16BIT;
+  config->IEEE802154_TxDataFrame.fcf.ackRequired = IEEE802154_FCF_ACKNOWLEDGE_REQUIRED; /* 1: 0x1 */
+#ifdef IEEE802154_ENABLE_PANID_COMPRESSION
+  config->IEEE802154_TxDataFrame.fcf.panIdCompression = IEEE802154_FCF_PANIDCOMPRESSION_ENABLED; /* 1: 0x1 */
+#else
+  config->IEEE802154_TxDataFrame.fcf.panIdCompression = IEEE802154_FCF_PANIDCOMPRESSION_DISABLED; /* 1: 0x1 */
+#endif
+  
+  config->IEEE802154_TxDataFrame.fcf.destinationAddressMode = IEEE802154_Default_DestinationAdressingMode;
   config->IEEE802154_TxDataFrame.fcf.frameVersion = 0x00;
-  config->IEEE802154_TxDataFrame.fcf.SourceAddressMode = IEEE802154_ADDRESS_MODE_16BIT;
+  config->IEEE802154_TxDataFrame.fcf.SourceAddressMode = IEEE802154_Default_SourceAdressingMode;
   /* preset variable to some meaningfull values */
   config->IEEE802154_TxDataFrame.sequenceNumber = 0x00;
-  config->IEEE802154_TxDataFrame.destinationPANID = 0xffff;
-  config->IEEE802154_TxDataFrame.destinationAddress = 0xffff;
-  config->IEEE802154_TxDataFrame.sourceAddress = 0xaffe;
+  config->IEEE802154_TxDataFrame.destinationPANID = IEEE802154_Default_PanID;
+  config->IEEE802154_TxDataFrame.destinationAddress = 0xffff;   /* broadcast */
+  config->IEEE802154_TxDataFrame.sourceAddress = IEEE802154_Default_ShortAddress;
+  
+  config->RO_PacketizationTimeout = IEEE802154_Default_RO_PacketizationTimeout * 1000;
   
 }
