@@ -17,14 +17,26 @@
 #define IEEE802154_Default_Channel                      25
 
 /**
- * Short address of this note
+ * Default Short address of this note
 */
-#define IEEE802154_Default_ShortAddress                 (uint16_t)0x0033
+#define IEEE802154_Default_ShortAddress                 (uint16_t)0xaffe
 
 /**
- * Short address of this note
+ * Default PanID of this note
 */
-#define IEEE802154_Default_PanID                        (uint16_t)0xaffe
+#define IEEE802154_Default_PanID                        (uint16_t)0x3332
+
+/**
+ * Default source and destination address mode
+*/
+#define IEEE802154_Default_DestinationAdressingMode     IEEE802154_FCF_ADDRESS_MODE_16BIT
+#define IEEE802154_Default_SourceAdressingMode          IEEE802154_FCF_ADDRESS_MODE_16BIT
+
+
+/**
+ * Default RO Time in multiple of character times
+*/
+#define IEEE802154_Default_RO_PacketizationTimeout      (uint8_t)0x03
 
 /*******************| Type definitions |*******************************/
 
@@ -36,8 +48,9 @@ typedef struct {
   USART_Baudrate_t USART_Baudrate;
   USART_Parity_t USART_Parity;
   IEEE802154_Config_t IEEE802154_config;
-  IEE802154_DataFrameHeader_t  IEEE802154_TxDataFrame;
-  IEE802154_DataFrameHeader_t  IEEE802154_RxDataFrame;
+  IEEE802154_DataFrameHeader_t  IEEE802154_TxDataFrame;
+  IEEE802154_DataFrameHeader_t  IEEE802154_RxDataFrame;
+  uint8_t RO_PacketizationTimeout;  /*!< Timout in milliseconds after which data received via UART will be packed and sent via radio. */
   uint8_t crc;                 /*!< crc to be saved in EEPROM to check if data is valid */
 } CC2530Bee_Config_t;
 

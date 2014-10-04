@@ -2158,9 +2158,6 @@
     </file>
   </group>
   <file>
-    <name>$PROJ_DIR$\..\CC2530Bee\CC2530Bee.h</name>
-  </file>
-  <file>
     <name>$PROJ_DIR$\dht22_cfg.h</name>
   </file>
   <file>

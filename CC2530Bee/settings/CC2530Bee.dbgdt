@@ -35,7 +35,7 @@
         
       <PreferedWindows><Position>2</Position><ScreenPosX>0</ScreenPosX><ScreenPosY>0</ScreenPosY><Windows/></PreferedWindows><ShowCodeCoverage>1</ShowCodeCoverage><ShowInstrProfiling>1</ShowInstrProfiling></Disassembly>
       <Register><PreferedWindows><Position>2</Position><ScreenPosX>0</ScreenPosX><ScreenPosY>0</ScreenPosY><Windows/></PreferedWindows></Register>
-    <WATCH_1><expressions><item>dataPointer</item><item>USART_TxRingBuffer</item><item>USART_RxRingBuffer</item><item></item></expressions><col-names><item>Expression</item><item>Location</item><item>Type</item><item>Value</item></col-names><col-widths><item>203</item><item>150</item><item>100</item><item>191</item></col-widths></WATCH_1></Static>
+    <WATCH_1><expressions><item>dataPointer</item><item>USART_TxRingBuffer</item><item>USART_RxRingBuffer</item><item/></expressions><col-names><item>Expression</item><item>Location</item><item>Type</item><item>Value</item></col-names><col-widths><item>203</item><item>150</item><item>100</item><item>191</item></col-widths></WATCH_1></Static>
     <Windows>
       
       

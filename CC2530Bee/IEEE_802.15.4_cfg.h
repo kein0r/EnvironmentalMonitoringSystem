@@ -9,10 +9,12 @@
    
 /*******************| Macros |*****************************************/ 
 /**
-* Add explenation here
-*/
-#define IEEE802154_ENABLE_PANID_COMPRESSION      STD_ON
-   
+ * Sets whether or not PanID should be available twice in frame frame header (not defined)
+ * or could be ommited (defined) and assumed that source PanID equals to destination
+ * PanID.
+ */
+#define IEEE802154_ENABLE_PANID_COMPRESSION
+     
 /*******************| Type definitions |*******************************/
 
 /*******************| Global variables |*******************************/
