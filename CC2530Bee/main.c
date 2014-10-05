@@ -43,8 +43,8 @@ void main( void )
   while(1)
   {
     /* wait for reception */
-    USART_read(test, 2);
-    test[2] = 0;
+    USART_read(test, 4);
+    test[4] = 0;
     USART_write(test);
     led_status = ~led_status;
     P1_0 = led_status;
@@ -77,7 +77,7 @@ void CC2530Bee_loadConfig(CC2530Bee_Config_t *config)
 #ifdef IEEE802154_ENABLE_PANID_COMPRESSION
   config->IEEE802154_TxDataFrame.fcf.panIdCompression = IEEE802154_FCF_PANIDCOMPRESSION_ENABLED; /* 1: 0x1 */
 #else
-  config->IEEE802154_TxDataFrame.fcf.panIdCompression = IEEE802154_FCF_PANIDCOMPRESSION_DISABLED; /* 1: 0x1 */
+  config->IEEE802154_TxDataFrame.fcf.panIdCompression = IEEE802154_FCF_PANIDCOMPRESSION_DISABLED; /* 1: 0x0 */
 #endif
   
   config->IEEE802154_TxDataFrame.fcf.destinationAddressMode = IEEE802154_Default_DestinationAdressingMode;
