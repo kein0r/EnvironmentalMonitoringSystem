@@ -35,9 +35,14 @@
 #define IEEE802154_ENABLE_PANID_COMPRESSION
 
 /**
- Size for USART Rx and Tx buffer. Thus, twice the size will be allocated in RAM.
+ * Size for USART Rx and Tx buffer. Thus, twice the size will be allocated in RAM.
 */
 #define USART_RING_BUFFER_SIZE   16
+
+/**
+ * #define to let other modules know that timer2 is used
+ */
+#define TIMER2_TIMER2_IN_USE
 
 /*******************| Type definitions |*******************************/
 
