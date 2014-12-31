@@ -1,0 +1,9 @@
+[submodule "CC2530Bee/CC253x"]
+	path = CC2530Bee/CC253x
+	url = https://github.com/kein0r/CC253x.git
+[submodule "CC2530Bee/CC2530Generic"]
+	path = CC2530Bee/CC2530Generic
+	url = https://github.com/kein0r/CC2530Generic.git
+[submodule "CC2530Bee/IEEE_802.15.4"]
+	path = CC2530Bee/IEEE_802.15.4
+	url = https://github.com/kein0r/IEEE_802.15.4.git
