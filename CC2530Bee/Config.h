@@ -42,7 +42,7 @@
 /**
  * #define to let other modules know that timer2 is used
  */
-#define TIMER2_TIMER2_IN_USE
+//#define TIMER2_TIMER2_IN_USE
 
 /*******************| Type definitions |*******************************/
 
