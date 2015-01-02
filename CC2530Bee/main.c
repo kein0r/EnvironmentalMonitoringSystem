@@ -104,8 +104,8 @@ void CC2530Bee_loadConfig(CC2530Bee_Config_t *config)
 }
 
 /**
- * Receives a frame via USART by und  un-escaping the data, copying the result to data
- * pointer of frame and calculating crc.
+ * Receives a frame via USART, un-escapes the data, copy the result to data
+ * pointer of frame and calculates crc.
  * Enough space must be provided in frame->data pointer
  * @param frame: UART API frame with pre-filled header
  * @return UARTFrame_CRC_OK if crc matched, UARTFrame_CRC_Not_OK else
