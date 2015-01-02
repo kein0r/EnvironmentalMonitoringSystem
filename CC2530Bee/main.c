@@ -16,8 +16,11 @@
 IEEE802154_Payload txPayload[30];
 CC2530Bee_Config_t CC2530Bee_Config;
 
+APIFrame_t rxAPIFrame;
+
 void main( void )
 {
+  uint8_t UART_rxLength = 0;
   char test[20];
   uint8_t led_status = 0;
   sleepTimer_t sleepTime;
@@ -28,7 +31,7 @@ void main( void )
   P0DIR_4 = HAL_PINOUTPUT;*/
   P0DIR_4 = HAL_PININPUT;
   P0DIR_5 = HAL_PININPUT;
-
+  
   CC2530Bee_loadConfig(&CC2530Bee_Config);
   ledInit();
   UART_init();
@@ -42,8 +45,15 @@ void main( void )
   /* now everyhting is set-up, start main loop now */
   while(1)
   {
-    /* wait for reception */
-    USART_read(test, 4);
+    /* receive header via UART */
+    UART_rxLength = USART_read((char *)&(rxAPIFrame.header), sizeof(APIFrameHeader_t));
+    if ( (UART_rxLength == sizeof(APIFrameHeader_t)) && (rxAPIFrame.header.delimiter == UARTFrame_Delimiter) )
+    {
+      /* only proceed if CRC was ok */
+      if (UARTAPI_receiveFrame(&rxAPIFrame) == UARTFrame_CRC_OK)
+      {
+      }
+    }
     test[4] = 0;
     USART_write(test);
     led_status = ~led_status;
@@ -91,4 +101,40 @@ void CC2530Bee_loadConfig(CC2530Bee_Config_t *config)
   
   config->RO_PacketizationTimeout = IEEE802154_Default_RO_PacketizationTimeout * 1000;
   
+}
+
+/**
+ * Receives a frame via USART by und  un-escaping the data, copying the result to data
+ * pointer of frame and calculating crc.
+ * Enough space must be provided in frame->data pointer
+ * @param frame: UART API frame with pre-filled header
+ * @return UARTFrame_CRC_OK if crc matched, UARTFrame_CRC_Not_OK else
+ */
+uint8_t UARTAPI_receiveFrame(APIFrame_t *frame)
+{
+  APIFrameData_t *dataPtr = frame->data;
+  uint8_t crc = 0;
+  for (uint16_t i=0; i<frame->header.length; i++)
+  {
+    USART_getc((char *) dataPtr);
+    /* if needed un-escape the data */
+    if ( (*dataPtr == UARTFrame_Delimiter) || (*dataPtr == UARTFrame_Escape_Character) || (*dataPtr == UARTFrame_XON) || (*dataPtr == UARTFrame_XOFF) )
+    {
+      USART_getc((char *) dataPtr);
+      *dataPtr ^= UARTFrame_Escape_Mask;
+    }
+    crc += *dataPtr;
+    dataPtr++;
+  }
+  /* Check crc. The sum of received data + received crc must be 0xff */
+  USART_getc((char *) &(frame->crc));
+  crc += frame->crc;
+  if (crc == 0xff)
+  {
+    return UARTFrame_CRC_OK;
+  } 
+  else
+  {
+    return UARTFrame_CRC_Not_OK;
+  }
 }

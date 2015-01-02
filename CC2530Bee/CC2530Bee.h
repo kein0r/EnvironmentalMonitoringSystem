@@ -10,6 +10,7 @@
 #include <IEEE_802.15.4.h>
    
 /*******************| Macros |*****************************************/
+   
 /** 
  * Channel to be used for IEEE 802.15.4 radio. The channels are numbered 11 
  * through 26.
@@ -37,6 +38,41 @@
  * Default RO Time in multiple of character times
 */
 #define IEEE802154_Default_RO_PacketizationTimeout      (uint8_t)0x03
+   
+/** 
+ * UART crc ok
+*/
+#define UARTFrame_CRC_OK                                (uint8_t) 0x01
+   
+/** 
+ * UART crc not ok
+*/
+#define UARTFrame_CRC_Not_OK                            (uint8_t) 0x00
+
+/**
+ * UART rx frame escape mask
+*/
+#define UARTFrame_Escape_Mask                           (uint8_t)0x20
+
+/**
+ * UART rx frame delimiter (needs to be escaped)
+*/
+#define UARTFrame_Delimiter                             (uint8_t)0x7e
+
+/**
+ * UART rx frame escape character (needs to be escaped)
+*/
+#define UARTFrame_Escape_Character                      (uint8_t)0x7d
+
+/**
+ * UART rx frame XON character (needs to be escaped)
+*/
+#define UARTFrame_XON                                   (uint8_t)0x11
+
+/**
+ * UART rx frame XOFF character (needs to be escaped)
+*/
+#define UARTFrame_XOFF                                  (uint8_t)0x13
 
 /*******************| Type definitions |*******************************/
 
@@ -64,13 +100,33 @@ typedef struct {
   CC2530CmdHeader_t header;
   CC2530Bee_CmdFrameData *cmdFrameDataPtr;
   uint8_t crc;
-} CC2530Bee_Cmd;
+} CC2530Bee_Cmd_t;
+
+/**
+ * Struct to send/receive API frame header.
+ * @note: Only works on 8-bit systems or if #pragma pack is used
+*/
+typedef struct {
+  uint8_t delimiter; 
+  uint16_t length;
+} APIFrameHeader_t;
+
+typedef uint8_t APIFrameData_t;
+
+typedef struct {
+  APIFrameHeader_t header;
+  uint8_t apiIdentifier;
+  APIFrameData_t *data;
+  uint8_t crc;
+} APIFrame_t;
 
 /*******************| Global variables |*******************************/
 
 /*******************| Function prototypes |****************************/
 
 void CC2530Bee_loadConfig(CC2530Bee_Config_t *config);
+
+uint8_t UARTAPI_receiveFrame(APIFrame_t *frame);
 
 #endif
 /** @}*/
