@@ -111,12 +111,11 @@ typedef struct {
   uint16_t length;
 } APIFrameHeader_t;
 
-typedef uint8_t APIFrameData_t;
+typedef uint8_t APIFramePayload_t;
 
 typedef struct {
   APIFrameHeader_t header;
-  uint8_t apiIdentifier;
-  APIFrameData_t *data;
+  APIFramePayload_t *data;
   uint8_t crc;
 } APIFrame_t;
 

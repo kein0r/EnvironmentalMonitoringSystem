@@ -9,7 +9,7 @@ TriggerName=main
 LimitSize=0
 ByteLimit=50
 [DebugChecksum]
-Checksum=1095450859
+Checksum=-2001343204
 [CallStack]
 ShowArgs=0
 [Disassembly]
@@ -49,10 +49,12 @@ ActionState=1
 [Trace1]
 Enabled=0
 ShowSource=1
+[struct_types]
+Fmt0=APIFrameHeader_t-length	4	0
 [Breakpoints]
 Count=0
 [ChipconEmu]
-Stop timers on halt=1
+Stop timers on halt=0
 Leave target running=1
 [Log file]
 LoggingEnabled=_ 0
