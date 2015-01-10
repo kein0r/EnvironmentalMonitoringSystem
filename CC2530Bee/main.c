@@ -16,6 +16,8 @@
 IEEE802154_Payload txPayload[30];
 CC2530Bee_Config_t CC2530Bee_Config;
 
+APIFramePayload_t uartRxPayload[20];
+
 APIFrame_t rxAPIFrame;
 
 void main( void )
@@ -24,7 +26,7 @@ void main( void )
   char test[20];
   uint8_t led_status = 0;
   sleepTimer_t sleepTime;
-  Board_init();
+  Board_init(); /* calls CC253x_Init */
   /*P0DIR_0 = HAL_PINOUTPUT;
   P0DIR_2 = HAL_PINOUTPUT;
   P0DIR_3 = HAL_PINOUTPUT;
@@ -42,21 +44,40 @@ void main( void )
   
   sleepTime.value = 0xffff;
   
+  /* Prepare rx and tx UART frames */
+  rxAPIFrame.data = uartRxPayload;
+  
   /* now everyhting is set-up, start main loop now */
   while(1)
   {
-    /* receive header via UART */
+    /* receive header via UART and convert length to little-endian */
     UART_rxLength = USART_read((char *)&(rxAPIFrame.header), sizeof(APIFrameHeader_t));
+    SWAP_UINT16(rxAPIFrame.header.length);
     if ( (UART_rxLength == sizeof(APIFrameHeader_t)) && (rxAPIFrame.header.delimiter == UARTFrame_Delimiter) )
     {
+      /* TODO: Check for frame length to be maximum of buffer */
       /* only proceed if CRC was ok */
       if (UARTAPI_receiveFrame(&rxAPIFrame) == UARTFrame_CRC_OK)
       {
+        switch (rxAPIFrame.data[0])
+          {
+            case 0x01:
+              USART_writeline("Option 01 selected");
+              break;
+            default:
+              USART_writeline("Nothing selected");
+          }
       }
+      else {
+        USART_writeline("ERROR (CRC)");
+      }
+      led_status = ~led_status;
     }
-    test[4] = 0;
-    USART_write(test);
-    led_status = ~led_status;
+    else {
+      USART_writeline("ERROR (Header)");
+    }
+    //test[4] = 0;
+    //USART_write(test);
     P1_0 = led_status;
     /* ledOn();
     IEEE802154_radioSentDataFrame(&sentFrameOne, sizeof(sensorInformation_t));
@@ -106,13 +127,15 @@ void CC2530Bee_loadConfig(CC2530Bee_Config_t *config)
 /**
  * Receives a frame via USART, un-escapes the data, copy the result to data
  * pointer of frame and calculates crc.
- * Enough space must be provided in frame->data pointer
+ * This function used blocking USART_getc function to read data from UART. Also 
+ * make sure that enough space is be provided in frame->data pointer to receive
+ * frame.
  * @param frame: UART API frame with pre-filled header
  * @return UARTFrame_CRC_OK if crc matched, UARTFrame_CRC_Not_OK else
  */
 uint8_t UARTAPI_receiveFrame(APIFrame_t *frame)
 {
-  APIFrameData_t *dataPtr = frame->data;
+  APIFramePayload_t *dataPtr = frame->data;
   uint8_t crc = 0;
   for (uint16_t i=0; i<frame->header.length; i++)
   {
