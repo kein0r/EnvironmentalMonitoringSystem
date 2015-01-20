@@ -42,12 +42,12 @@
 /** 
  * UART crc ok
 */
-#define UARTFrame_CRC_OK                                (uint8_t) 0x01
+#define UARTFrame_CRC_OK                                (uint8_t)0x01
    
 /** 
  * UART crc not ok
 */
-#define UARTFrame_CRC_Not_OK                            (uint8_t) 0x00
+#define UARTFrame_CRC_Not_OK                            (uint8_t)0x00
 
 /**
  * UART rx frame escape mask
@@ -73,6 +73,29 @@
  * UART rx frame XOFF character (needs to be escaped)
 */
 #define UARTFrame_XOFF                                  (uint8_t)0x13
+
+#define UARTAPI_APIIDENTIFIER_LENGTH                    (uint8_t)0x01
+
+#define UARTAPI_MODEMSTATUS                             (uint8_t)0x8a
+#define UARTAPI_ATCOMMAND                               (uint8_t)0x08
+#define UARTAPI_ATCOMMAND_QUEUE                         (uint8_t)0x09
+#define UARTAPI_ATCOMMAND_RESPONSE                      (uint8_t)0x88
+#define UARTAPI_REMOTE_AT_COMMAND_REQUEST               (uint8_t)0x17
+#define UARTAPI_REMOTE_AT_COMMAND_RESPONSE              (uint8_t)0x97
+#define UARTAPI_TRAMSMIT_REQUEST_64BIT                  (uint8_t)0x00
+#define UARTAPI_TRAMSMIT_REQUEST_16BIT                  (uint8_t)0x01
+#define UARTAPI_TRANSMIT_STATUS                         (unit8_t)0x89
+#define UARTAPI_RECEIVE_PACKAGE_64BIT                   (uint8_t)0x80
+#define UARTAPI_RECEIVE_PACKAGE_16BIT                   (uint8_t)0x81
+
+
+#define UARTAPI_MODEMSTATUS_HARDWARE_RESET              (uint8_t)0x00
+#define UARTAPI_MODEMSTATUS_WATCHDOG_RESET              (uint8_t)0x00
+#define UARTAPI_MODEMSTATUS_ASSOCIATED                  (uint8_t)0x00
+#define UARTAPI_MODEMSTATUS_DISASSOCIATED               (uint8_t)0x00
+#define UARTAPI_MODEMSTATUS_SYNC_LOST                   (uint8_t)0x00
+#define UARTAPI_MODEMSTATUS_COORDINATOR_REALIGNMENT     (uint8_t)0x00
+#define UARTAPI_MODEMSTATUS_COORDINATOR_STARTED         (uint8_t)0x00
 
 /*******************| Type definitions |*******************************/
 

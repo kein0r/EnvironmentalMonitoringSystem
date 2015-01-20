@@ -9,7 +9,7 @@ TriggerName=main
 LimitSize=0
 ByteLimit=50
 [DebugChecksum]
-Checksum=-2001343204
+Checksum=-1623307783
 [CallStack]
 ShowArgs=0
 [Disassembly]
@@ -51,11 +51,7 @@ Enabled=0
 ShowSource=1
 [struct_types]
 Fmt0=APIFrameHeader_t-length	4	0
-[Breakpoints]
-Count=0
-[ChipconEmu]
-Stop timers on halt=0
-Leave target running=1
+Fmt1=IEEE802154_Adress_t-shortAddress	4	0
 [Log file]
 LoggingEnabled=_ 0
 LogFile=_ ""
@@ -63,6 +59,12 @@ Category=_ 0
 [TermIOLog]
 LoggingEnabled=_ 0
 LogFile=_ ""
+[Breakpoints]
+Bp0=_ "STD_CODE" "{$PROJ_DIR$\IEEE_802.15.4\IEEE_802.15.4.c}.119.3" 1 0 0 0 "" 0 ""
+Count=1
+[ChipconEmu]
+Stop timers on halt=0
+Leave target running=1
 [Aliases]
 Count=0
 SuppressDialog=0
