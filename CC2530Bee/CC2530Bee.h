@@ -15,29 +15,34 @@
  * Channel to be used for IEEE 802.15.4 radio. The channels are numbered 11 
  * through 26.
 */
-#define IEEE802154_Default_Channel                      25
+#define CC2530BEE_Default_Channel                       25
 
 /**
  * Default Short address of this note
 */
-#define IEEE802154_Default_ShortAddress                 (uint16_t)0xaffe
+#define CC2530BEE_Default_ShortAddress                  (IEEE802154_ShortAddress_t)0xaffe
+
+/**
+ * Value for short address to note that 64bit addressing is to be used.
+*/
+#define CC2530BEE_USE_64BIT_ADDRESSING                  (IEEE802154_ShortAddress_t)0xfffe
 
 /**
  * Default PanID of this note
 */
-#define IEEE802154_Default_PanID                        (uint16_t)0x3332
+#define CC2530BEE_Default_PanID                         (IEEE802154_PANIdentifier_t)0x3332
 
 /**
  * Default source and destination address mode
 */
-#define IEEE802154_Default_DestinationAdressingMode     IEEE802154_FCF_ADDRESS_MODE_16BIT
-#define IEEE802154_Default_SourceAdressingMode          IEEE802154_FCF_ADDRESS_MODE_16BIT
+#define CC2530BEE_Default_DestinationAdressingMode      IEEE802154_FCF_ADDRESS_MODE_16BIT
+#define CC2530BEE_Default_SourceAdressingMode           IEEE802154_FCF_ADDRESS_MODE_16BIT
 
 
 /**
  * Default RO Time in multiple of character times
 */
-#define IEEE802154_Default_RO_PacketizationTimeout      (uint8_t)0x03
+#define CC2530BEE_Default_RO_PacketizationTimeout       (uint8_t)0x03
    
 /** 
  * UART crc ok

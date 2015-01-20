@@ -87,9 +87,8 @@ void main( void )
               if (rxAPIFrame.data[UARTAPI_64BITTRANSMIT_OPTIONS] & UARTAPI_TRANSMIT_OPTIONS_BROADCASTPANID) {
                 CC2530Bee_Config.IEEE802154_TxDataFrame.destinationPANID = IEEE802154_BROADCAST_PAN_ID;
               }
-              /* set correct address mode in fcf */
+              /* set correct address mode in fcf for destination address. The corresponding bit for source address will be set whenever source address is changed */
               CC2530Bee_Config.IEEE802154_TxDataFrame.fcf.destinationAddressMode = IEEE802154_FCF_ADDRESS_MODE_64BIT;
-              CC2530Bee_Config.IEEE802154_TxDataFrame.fcf.sourceAddressMode = IEEE802154_FCF_ADDRESS_MODE_64BIT;
               /* point IEEE802154 payload pointer to data received via UART */
               CC2530Bee_Config.IEEE802154_TxDataFrame.payload = &(rxAPIFrame.data[UARTAPI_64BITTRANSMIT_DATA]);
               IEEE802154_radioSentDataFrame(&(CC2530Bee_Config.IEEE802154_TxDataFrame), rxAPIFrame.header.length - UARTAPI_64BITTRANSMIT_DATA);
@@ -108,9 +107,8 @@ void main( void )
               if (rxAPIFrame.data[UARTAPI_16BITTRANSMIT_OPTIONS] & UARTAPI_TRANSMIT_OPTIONS_BROADCASTPANID) {
                 CC2530Bee_Config.IEEE802154_TxDataFrame.destinationPANID = IEEE802154_BROADCAST_PAN_ID;
               }
-              /* set correct address mode in fcf */
+              /* set correct address mode in fcf for destination address. The corresponding bit for source address will be set whenever source address is changed */
               CC2530Bee_Config.IEEE802154_TxDataFrame.fcf.destinationAddressMode = IEEE802154_FCF_ADDRESS_MODE_16BIT;
-              CC2530Bee_Config.IEEE802154_TxDataFrame.fcf.sourceAddressMode = IEEE802154_FCF_ADDRESS_MODE_16BIT;
               /* point IEEE802154 payload pointer to data received via UART */
               CC2530Bee_Config.IEEE802154_TxDataFrame.payload = &(rxAPIFrame.data[UARTAPI_16BITTRANSMIT_DATA]);
               IEEE802154_radioSentDataFrame(&(CC2530Bee_Config.IEEE802154_TxDataFrame), rxAPIFrame.header.length - UARTAPI_16BITTRANSMIT_DATA);
@@ -146,9 +144,9 @@ void CC2530Bee_loadConfig(CC2530Bee_Config_t *config)
   config->USART_Parity = USART_Parity_8BitNoParity;
   
   /* General radio configuration */
-  config->IEEE802154_config.Channel = IEEE802154_Default_Channel;
-  config->IEEE802154_config.PanID = IEEE802154_Default_PanID;
-  config->IEEE802154_config.address.shortAddress = IEEE802154_Default_ShortAddress;
+  config->IEEE802154_config.Channel = CC2530BEE_Default_Channel;
+  config->IEEE802154_config.PanID = CC2530BEE_Default_PanID;
+  config->IEEE802154_config.address.shortAddress = CC2530BEE_Default_ShortAddress;
   
   /* prepare header for IEEE 802.15.4 Tx message */
   config->IEEE802154_TxDataFrame.fcf.frameType = IEEE802154_FCF_FRAME_TYPE_DATA;  /* 3: 0x01 */
@@ -161,16 +159,16 @@ void CC2530Bee_loadConfig(CC2530Bee_Config_t *config)
   config->IEEE802154_TxDataFrame.fcf.panIdCompression = IEEE802154_FCF_PANIDCOMPRESSION_DISABLED; /* 1: 0x0 */
 #endif
   
-  config->IEEE802154_TxDataFrame.fcf.destinationAddressMode = IEEE802154_Default_DestinationAdressingMode;
+  config->IEEE802154_TxDataFrame.fcf.destinationAddressMode = CC2530BEE_Default_DestinationAdressingMode;
   config->IEEE802154_TxDataFrame.fcf.frameVersion = 0x00;
-  config->IEEE802154_TxDataFrame.fcf.sourceAddressMode = IEEE802154_Default_SourceAdressingMode;
+  config->IEEE802154_TxDataFrame.fcf.sourceAddressMode = CC2530BEE_Default_SourceAdressingMode;
   /* preset variable to some meaningfull values */
   config->IEEE802154_TxDataFrame.sequenceNumber = 0x00;
-  config->IEEE802154_TxDataFrame.destinationPANID = IEEE802154_Default_PanID;
+  config->IEEE802154_TxDataFrame.destinationPANID = CC2530BEE_Default_PanID;
   config->IEEE802154_TxDataFrame.destinationAddress.shortAddress = 0xffff;   /* broadcast */
-  config->IEEE802154_TxDataFrame.sourceAddress.shortAddress = IEEE802154_Default_ShortAddress;
+  config->IEEE802154_TxDataFrame.sourceAddress.shortAddress = CC2530BEE_Default_ShortAddress;
   
-  config->RO_PacketizationTimeout = IEEE802154_Default_RO_PacketizationTimeout * 10;
+  config->RO_PacketizationTimeout = CC2530BEE_Default_RO_PacketizationTimeout * 10;
   
 }
 
