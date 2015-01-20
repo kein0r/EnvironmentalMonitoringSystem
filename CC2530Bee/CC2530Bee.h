@@ -74,8 +74,6 @@
 */
 #define UARTFrame_XOFF                                  (uint8_t)0x13
 
-#define UARTAPI_APIIDENTIFIER_LENGTH                    (uint8_t)0x01
-
 #define UARTAPI_MODEMSTATUS                             (uint8_t)0x8a
 #define UARTAPI_ATCOMMAND                               (uint8_t)0x08
 #define UARTAPI_ATCOMMAND_QUEUE                         (uint8_t)0x09
@@ -96,6 +94,19 @@
 #define UARTAPI_MODEMSTATUS_SYNC_LOST                   (uint8_t)0x00
 #define UARTAPI_MODEMSTATUS_COORDINATOR_REALIGNMENT     (uint8_t)0x00
 #define UARTAPI_MODEMSTATUS_COORDINATOR_STARTED         (uint8_t)0x00
+
+#define UARTAPI_TRANSMIT_OPTIONS_DISABLEACK             (uint8_t)0x01
+#define UARTAPI_TRANSMIT_OPTIONS_BROADCASTPANID         (uint8_t)0x04
+
+#define UARTAPI_16BITTRANSMIT_FRAMEID                   (uint8_t)0x01
+#define UARTAPI_16BITTRANSMIT_ADDRESS                   (uint8_t)0x02
+#define UARTAPI_16BITTRANSMIT_OPTIONS                   (uint8_t)0x04
+#define UARTAPI_16BITTRANSMIT_DATA                      (uint8_t)0x05
+
+#define UARTAPI_64BITTRANSMIT_FRAMEID                   (uint8_t)0x01
+#define UARTAPI_64BITTRANSMIT_ADDRESS                   (uint8_t)0x02
+#define UARTAPI_64BITTRANSMIT_OPTIONS                   (uint8_t)0x0a
+#define UARTAPI_64BITTRANSMIT_DATA                      (uint8_t)0x0b
 
 /*******************| Type definitions |*******************************/
 
