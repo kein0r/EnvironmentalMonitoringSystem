@@ -16,9 +16,11 @@
 IEEE802154_Payload txPayload[30];
 CC2530Bee_Config_t CC2530Bee_Config;
 
-APIFramePayload_t uartRxPayload[20];
-
 APIFrame_t rxAPIFrame;
+APIFramePayload_t uartRxPayload[20];
+APIFrame_t txAPIFrame;
+APIFramePayload_t uartTxPayload[20];
+
 
 void main( void )
 {
@@ -36,16 +38,18 @@ void main( void )
   
   CC2530Bee_loadConfig(&CC2530Bee_Config);
   ledInit();
+  
+  /* Prepare rx and tx UART frames */
+  rxAPIFrame.data = uartRxPayload;
+  txAPIFrame.data = uartTxPayload;
   UART_init();
   USART_setBaudrate(CC2530Bee_Config.USART_Baudrate);
   USART_setParity(CC2530Bee_Config.USART_Parity);
+  
   IEEE802154_radioInit(&(CC2530Bee_Config.IEEE802154_config));
   enableAllInterrupt();
   
   sleepTime.value = 0xffff;
-  
-  /* Prepare rx and tx UART frames */
-  rxAPIFrame.data = uartRxPayload;
   
   /* now everyhting is set-up, start main loop now */
   while(1)
@@ -61,11 +65,22 @@ void main( void )
       {
         switch (rxAPIFrame.data[0])
           {
-            case 0x01:
+            case UARTAPI_ATCOMMAND:
               USART_writeline("Option 01 selected");
               break;
-            default:
-              USART_writeline("Nothing selected");
+            case UARTAPI_ATCOMMAND_QUEUE:
+              USART_writeline("Option 01 selected");
+              break;
+            case UARTAPI_REMOTE_AT_COMMAND_REQUEST:
+              USART_writeline("Option 01 selected");
+              break;
+            case UARTAPI_TRAMSMIT_REQUEST_64BIT:
+            case UARTAPI_TRAMSMIT_REQUEST_16BIT:
+              /* point IEEE802154 payload pointer to data received via UART offset 1 byte API identifier */
+              CC2530Bee_Config.IEEE802154_TxDataFrame.payload = &(rxAPIFrame.data[UARTAPI_APIIDENTIFIER_LENGTH]);
+              IEEE802154_radioSentDataFrame(&(CC2530Bee_Config.IEEE802154_TxDataFrame), rxAPIFrame.header.length - UARTAPI_APIIDENTIFIER_LENGTH);
+              break;
+            /* no default as the frame will be silently discarded */
           }
       }
       else {
@@ -76,9 +91,6 @@ void main( void )
     else {
       USART_writeline("ERROR (Header)");
     }
-    //test[4] = 0;
-    //USART_write(test);
-    P1_0 = led_status;
     /* ledOn();
     IEEE802154_radioSentDataFrame(&sentFrameOne, sizeof(sensorInformation_t));
     ledOff();
@@ -92,13 +104,13 @@ void main( void )
  */
 void CC2530Bee_loadConfig(CC2530Bee_Config_t *config)
 {
-  config->USART_Baudrate = USART_Baudrate_57600;
+  config->USART_Baudrate = USART_Baudrate_9600;
   config->USART_Parity = USART_Parity_8BitNoParity;
   
   /* General radio configuration */
   config->IEEE802154_config.Channel = IEEE802154_Default_Channel;
   config->IEEE802154_config.PanID = IEEE802154_Default_PanID;
-  config->IEEE802154_config.ShortAddress = IEEE802154_Default_ShortAddress;
+  config->IEEE802154_config.address.shortAddress = IEEE802154_Default_ShortAddress;
   
   /* prepare header for IEEE 802.15.4 Tx message */
   config->IEEE802154_TxDataFrame.fcf.frameType = IEEE802154_FCF_FRAME_TYPE_DATA;  /* 3: 0x01 */
@@ -117,10 +129,10 @@ void CC2530Bee_loadConfig(CC2530Bee_Config_t *config)
   /* preset variable to some meaningfull values */
   config->IEEE802154_TxDataFrame.sequenceNumber = 0x00;
   config->IEEE802154_TxDataFrame.destinationPANID = IEEE802154_Default_PanID;
-  config->IEEE802154_TxDataFrame.destinationAddress = 0xffff;   /* broadcast */
-  config->IEEE802154_TxDataFrame.sourceAddress = IEEE802154_Default_ShortAddress;
+  config->IEEE802154_TxDataFrame.destinationAddress.shortAddress = 0xffff;   /* broadcast */
+  config->IEEE802154_TxDataFrame.sourceAddress.shortAddress = IEEE802154_Default_ShortAddress;
   
-  config->RO_PacketizationTimeout = IEEE802154_Default_RO_PacketizationTimeout * 1000;
+  config->RO_PacketizationTimeout = IEEE802154_Default_RO_PacketizationTimeout * 10;
   
 }
 
