@@ -4,6 +4,7 @@
 #include <USART.h>
 #include <IEEE_802.15.4.h>
 #include <CC253x.h>
+#include <string.h>
 #include "CC2530Bee.h"
 
 /**
@@ -24,8 +25,8 @@ APIFramePayload_t uartTxPayload[20];
 
 void main( void )
 {
+  IEEE802154_PANIdentifier_t tempPanID;
   uint8_t UART_rxLength = 0;
-  char test[20];
   uint8_t led_status = 0;
   sleepTimer_t sleepTime;
   Board_init(); /* calls CC253x_Init */
@@ -56,6 +57,7 @@ void main( void )
   {
     /* receive header via UART and convert length to little-endian */
     UART_rxLength = USART_read((char *)&(rxAPIFrame.header), sizeof(APIFrameHeader_t));
+    /* received data is big-endian, mcu is little endian */
     SWAP_UINT16(rxAPIFrame.header.length);
     if ( (UART_rxLength == sizeof(APIFrameHeader_t)) && (rxAPIFrame.header.delimiter == UARTFrame_Delimiter) )
     {
@@ -75,11 +77,47 @@ void main( void )
               USART_writeline("Option 01 selected");
               break;
             case UARTAPI_TRAMSMIT_REQUEST_64BIT:
-            case UARTAPI_TRAMSMIT_REQUEST_16BIT:
-              /* point IEEE802154 payload pointer to data received via UART offset 1 byte API identifier */
-              CC2530Bee_Config.IEEE802154_TxDataFrame.payload = &(rxAPIFrame.data[UARTAPI_APIIDENTIFIER_LENGTH]);
-              IEEE802154_radioSentDataFrame(&(CC2530Bee_Config.IEEE802154_TxDataFrame), rxAPIFrame.header.length - UARTAPI_APIIDENTIFIER_LENGTH);
+              CC2530Bee_Config.IEEE802154_TxDataFrame.sequenceNumber = rxAPIFrame.data[UARTAPI_64BITTRANSMIT_FRAMEID];
+              memcpy(&(CC2530Bee_Config.IEEE802154_TxDataFrame.destinationAddress.extendedAdress), &(rxAPIFrame.data[UARTAPI_64BITTRANSMIT_ADDRESS]), sizeof(IEEE802154_ExtendedAddress_t) );
+              /* save PAN ID in temporary variable in case it needs to be altered for this transmission */
+              tempPanID = CC2530Bee_Config.IEEE802154_TxDataFrame.destinationPANID;
+              if (rxAPIFrame.data[UARTAPI_64BITTRANSMIT_OPTIONS] & UARTAPI_TRANSMIT_OPTIONS_DISABLEACK) {
+                CC2530Bee_Config.IEEE802154_TxDataFrame.fcf.ackRequired = 0;
+              }
+              if (rxAPIFrame.data[UARTAPI_64BITTRANSMIT_OPTIONS] & UARTAPI_TRANSMIT_OPTIONS_BROADCASTPANID) {
+                CC2530Bee_Config.IEEE802154_TxDataFrame.destinationPANID = IEEE802154_BROADCAST_PAN_ID;
+              }
+              /* set correct address mode in fcf */
+              CC2530Bee_Config.IEEE802154_TxDataFrame.fcf.destinationAddressMode = IEEE802154_FCF_ADDRESS_MODE_64BIT;
+              CC2530Bee_Config.IEEE802154_TxDataFrame.fcf.sourceAddressMode = IEEE802154_FCF_ADDRESS_MODE_64BIT;
+              /* point IEEE802154 payload pointer to data received via UART */
+              CC2530Bee_Config.IEEE802154_TxDataFrame.payload = &(rxAPIFrame.data[UARTAPI_64BITTRANSMIT_DATA]);
+              IEEE802154_radioSentDataFrame(&(CC2530Bee_Config.IEEE802154_TxDataFrame), rxAPIFrame.header.length - UARTAPI_64BITTRANSMIT_DATA);
+              /* reset values back to "normal" which might have been changed above */
+              CC2530Bee_Config.IEEE802154_TxDataFrame.destinationPANID = tempPanID;
+              CC2530Bee_Config.IEEE802154_TxDataFrame.fcf.ackRequired = 1;
               break;
+            case UARTAPI_TRAMSMIT_REQUEST_16BIT:
+              CC2530Bee_Config.IEEE802154_TxDataFrame.sequenceNumber = rxAPIFrame.data[UARTAPI_16BITTRANSMIT_FRAMEID];
+              CC2530Bee_Config.IEEE802154_TxDataFrame.destinationAddress.shortAddress = (IEEE802154_ShortAddress_t) rxAPIFrame.data[UARTAPI_16BITTRANSMIT_ADDRESS];
+              /* save PAN ID in temporary variable in case it needs to be altered for this transmission */
+              tempPanID = CC2530Bee_Config.IEEE802154_TxDataFrame.destinationPANID;
+              if (rxAPIFrame.data[UARTAPI_16BITTRANSMIT_OPTIONS] & UARTAPI_TRANSMIT_OPTIONS_DISABLEACK) {
+                CC2530Bee_Config.IEEE802154_TxDataFrame.fcf.ackRequired = 0;
+              }
+              if (rxAPIFrame.data[UARTAPI_16BITTRANSMIT_OPTIONS] & UARTAPI_TRANSMIT_OPTIONS_BROADCASTPANID) {
+                CC2530Bee_Config.IEEE802154_TxDataFrame.destinationPANID = IEEE802154_BROADCAST_PAN_ID;
+              }
+              /* set correct address mode in fcf */
+              CC2530Bee_Config.IEEE802154_TxDataFrame.fcf.destinationAddressMode = IEEE802154_FCF_ADDRESS_MODE_16BIT;
+              CC2530Bee_Config.IEEE802154_TxDataFrame.fcf.sourceAddressMode = IEEE802154_FCF_ADDRESS_MODE_16BIT;
+              /* point IEEE802154 payload pointer to data received via UART */
+              CC2530Bee_Config.IEEE802154_TxDataFrame.payload = &(rxAPIFrame.data[UARTAPI_16BITTRANSMIT_DATA]);
+              IEEE802154_radioSentDataFrame(&(CC2530Bee_Config.IEEE802154_TxDataFrame), rxAPIFrame.header.length - UARTAPI_16BITTRANSMIT_DATA);
+              /* reset values back to "normal" which might have been changed above */
+              CC2530Bee_Config.IEEE802154_TxDataFrame.destinationPANID = tempPanID;
+              CC2530Bee_Config.IEEE802154_TxDataFrame.fcf.ackRequired = 1;
+            break;
             /* no default as the frame will be silently discarded */
           }
       }
@@ -125,7 +163,7 @@ void CC2530Bee_loadConfig(CC2530Bee_Config_t *config)
   
   config->IEEE802154_TxDataFrame.fcf.destinationAddressMode = IEEE802154_Default_DestinationAdressingMode;
   config->IEEE802154_TxDataFrame.fcf.frameVersion = 0x00;
-  config->IEEE802154_TxDataFrame.fcf.SourceAddressMode = IEEE802154_Default_SourceAdressingMode;
+  config->IEEE802154_TxDataFrame.fcf.sourceAddressMode = IEEE802154_Default_SourceAdressingMode;
   /* preset variable to some meaningfull values */
   config->IEEE802154_TxDataFrame.sequenceNumber = 0x00;
   config->IEEE802154_TxDataFrame.destinationPANID = IEEE802154_Default_PanID;
