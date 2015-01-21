@@ -15,7 +15,7 @@
  * Channel to be used for IEEE 802.15.4 radio. The channels are numbered 11 
  * through 26.
 */
-#define CC2530BEE_Default_Channel                       25
+#define CC2530BEE_Default_Channel                       0x19
 
 /**
  * Default Short address of this note
@@ -100,6 +100,32 @@
 #define UARTAPI_MODEMSTATUS_COORDINATOR_REALIGNMENT     (uint8_t)0x00
 #define UARTAPI_MODEMSTATUS_COORDINATOR_STARTED         (uint8_t)0x00
 
+#define UARTAPI_ATCOMMAND_FRAMEID                       (uint8_t)0x01
+#define UARTAPI_ATCOMMAND_COMMAND                       (uint8_t)0x02
+#define UARTAPI_ATCOMMAND_DATA                          (uint8_t)0x04
+#define UARTAPI_ATCOMMAND_READ_LENGTH                   (uint16_t)0x04
+
+#define UARTAPI_ATCOMMAND_WRITE                         (uint16_t)0x5752        /* WR */
+#define UARTAPI_ATCOMMAND_RESTOREDEFAULTS               (uint16_t)0x5245        /* RE */
+#define UARTAPI_ATCOMMAND_SOFTWARERESET                 (uint16_t)0x4652        /* FR */
+#define UARTAPI_ATCOMMAND_CHANNEL                       (uint16_t)0x4348        /* CH */
+#define UARTAPI_ATCOMMAND_PANID                         (uint16_t)0x4944        /* ID */
+#define UARTAPI_ATCOMMAND_DESTINATIONADDRESSHIGH        (uint16_t)0x4448        /* DH */
+#define UARTAPI_ATCOMMAND_DESTINATIONADDRESSLOW         (uint16_t)0x444c        /* DL */
+#define UARTAPI_ATCOMMAND_SOURCEADDRESS16BIT            (uint16_t)0x4d59        /* MY */
+#define UARTAPI_ATCOMMAND_SERIALNUMBERHIGH              (uint16_t)0x5348        /* SH */
+#define UARTAPI_ATCOMMAND_SERIALNUMBERLOW               (uint16_t)0x534c        /* SL */
+
+#define UARTAPI_ATCOMMAND_RESPONSE_FRAMEID              (uint8_t)0x01
+#define UARTAPI_ATCOMMAND_RESPONSE_COMMAND              (uint8_t)0x02
+#define UARTAPI_ATCOMMAND_RESPONSE_STATUS               (uint8_t)0x04
+#define UARTAPI_ATCOMMAND_RESPONSE_DATA                 (uint8_t)0x05
+
+#define UARTAPI_ATCOMMAND_RESPONSE_STATUS_OK            (uint8_t)0x00
+#define UARTAPI_ATCOMMAND_RESPONSE_STATUS_ERROR         (uint8_t)0x01
+#define UARTAPI_ATCOMMAND_RESPONSE_STATUS_INVALID_CMD   (uint8_t)0x02
+#define UARTAPI_ATCOMMAND_RESPONSE_STATUS_INVALID_PARAM (uint8_t)0x03
+
 #define UARTAPI_TRANSMIT_OPTIONS_DISABLEACK             (uint8_t)0x01
 #define UARTAPI_TRANSMIT_OPTIONS_BROADCASTPANID         (uint8_t)0x04
 
@@ -112,6 +138,7 @@
 #define UARTAPI_64BITTRANSMIT_ADDRESS                   (uint8_t)0x02
 #define UARTAPI_64BITTRANSMIT_OPTIONS                   (uint8_t)0x0a
 #define UARTAPI_64BITTRANSMIT_DATA                      (uint8_t)0x0b
+
 
 /*******************| Type definitions |*******************************/
 
@@ -165,6 +192,9 @@ typedef struct {
 void CC2530Bee_loadConfig(CC2530Bee_Config_t *config);
 
 uint8_t UARTAPI_receiveFrame(APIFrame_t *frame);
+
+void UARTAPI_readParameter(APIFramePayload_t *data);
+void UARTAPI_setParameter(APIFramePayload_t *data);
 
 #endif
 /** @}*/
