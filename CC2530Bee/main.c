@@ -25,6 +25,7 @@ APIFramePayload_t uartTxPayload[20];
 
 void main( void )
 {
+  uint16_t atCommand;
   IEEE802154_PANIdentifier_t tempPanID;
   uint8_t UART_rxLength = 0;
   uint8_t led_status = 0;
@@ -68,10 +69,16 @@ void main( void )
         switch (rxAPIFrame.data[0])
           {
             case UARTAPI_ATCOMMAND:
-              USART_writeline("Option 01 selected");
+              
               break;
             case UARTAPI_ATCOMMAND_QUEUE:
-              USART_writeline("Option 01 selected");
+              if (rxAPIFrame.header.length == UARTAPI_ATCOMMAND_READ_LENGTH)
+              {
+                UARTAPI_readParameter(txAPIFrame.data);
+              }
+              else {
+                UARTAPI_setParameter(rxAPIFrame.data);
+              }
               break;
             case UARTAPI_REMOTE_AT_COMMAND_REQUEST:
               USART_writeline("Option 01 selected");
@@ -87,7 +94,8 @@ void main( void )
               if (rxAPIFrame.data[UARTAPI_64BITTRANSMIT_OPTIONS] & UARTAPI_TRANSMIT_OPTIONS_BROADCASTPANID) {
                 CC2530Bee_Config.IEEE802154_TxDataFrame.destinationPANID = IEEE802154_BROADCAST_PAN_ID;
               }
-              /* set correct address mode in fcf for destination address. The corresponding bit for source address will be set whenever source address is changed */
+              /* set correct address mode in fcf for destination address. The corresponding bit for source address will 
+               * be set whenever source address is changed */
               CC2530Bee_Config.IEEE802154_TxDataFrame.fcf.destinationAddressMode = IEEE802154_FCF_ADDRESS_MODE_64BIT;
               /* point IEEE802154 payload pointer to data received via UART */
               CC2530Bee_Config.IEEE802154_TxDataFrame.payload = &(rxAPIFrame.data[UARTAPI_64BITTRANSMIT_DATA]);
@@ -107,7 +115,8 @@ void main( void )
               if (rxAPIFrame.data[UARTAPI_16BITTRANSMIT_OPTIONS] & UARTAPI_TRANSMIT_OPTIONS_BROADCASTPANID) {
                 CC2530Bee_Config.IEEE802154_TxDataFrame.destinationPANID = IEEE802154_BROADCAST_PAN_ID;
               }
-              /* set correct address mode in fcf for destination address. The corresponding bit for source address will be set whenever source address is changed */
+              /* set correct address mode in fcf for destination address. The corresponding bit for source address will 
+               * be set whenever source address is changed */
               CC2530Bee_Config.IEEE802154_TxDataFrame.fcf.destinationAddressMode = IEEE802154_FCF_ADDRESS_MODE_16BIT;
               /* point IEEE802154 payload pointer to data received via UART */
               CC2530Bee_Config.IEEE802154_TxDataFrame.payload = &(rxAPIFrame.data[UARTAPI_16BITTRANSMIT_DATA]);
@@ -140,7 +149,7 @@ void main( void )
  */
 void CC2530Bee_loadConfig(CC2530Bee_Config_t *config)
 {
-  config->USART_Baudrate = USART_Baudrate_9600;
+  config->USART_Baudrate = USART_Baudrate_57600;
   config->USART_Parity = USART_Parity_8BitNoParity;
   
   /* General radio configuration */
@@ -208,4 +217,79 @@ uint8_t UARTAPI_receiveFrame(APIFrame_t *frame)
   {
     return UARTFrame_CRC_Not_OK;
   }
+}
+
+/* Sends */
+void UARTAPI_sentFrame(APIFramePayload_t *data, uint16_t length)
+{
+  uint16_t i;
+  uint8_t crc = 0;
+  txAPIFrame.header.delimiter = UARTFrame_Delimiter;
+  /* convert from little-endian to big-endian */
+  SWAP_UINT16(length);
+  txAPIFrame.header.length = length;
+  for (i=0; i<length; i++)
+  {
+    txAPIFrame.data[i] = data[i];
+    crc += data[i];
+  }
+  crc = 0xff-crc;
+  txAPIFrame.crc = crc;
+  USART_write((char const*)&txAPIFrame, length + sizeof(APIFrameHeader_t) + sizeof(uint8_t));
+}
+
+/**
+ * Reads different system parametes via AT commands
+ * Prepares and sents tx frame according to the atCommand requested.
+ * @param data pointer to data received within UART API frame
+*/
+void UARTAPI_readParameter(APIFramePayload_t *data)
+{
+  uint16_t atCommand;
+  /* get AT command and convert to little-endian */
+  atCommand = (uint16_t) data[UARTAPI_ATCOMMAND_COMMAND];
+  SWAP_UINT16(atCommand);
+  /* Prepare general tx frame data. Copy frame ID an AT command to sent frame */  
+  txAPIFrame.data[0] = UARTAPI_ATCOMMAND_RESPONSE;
+  txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_FRAMEID] = data[UARTAPI_ATCOMMAND_FRAMEID];
+  txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_COMMAND] = data[UARTAPI_ATCOMMAND_COMMAND];
+  txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_COMMAND + 1] = data[UARTAPI_ATCOMMAND_COMMAND + 1];
+  /* as we will handle response status for each command, preset command status to "invalid command" */
+  txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_STATUS] = UARTAPI_ATCOMMAND_RESPONSE_STATUS_INVALID_CMD;
+  switch (atCommand)
+  {
+  case UARTAPI_ATCOMMAND_WRITE:
+    /* not implemented for read */
+    break;
+  case UARTAPI_ATCOMMAND_RESTOREDEFAULTS:
+    /* not implemented for read */
+    break;
+  case UARTAPI_ATCOMMAND_SOFTWARERESET:
+    /* not implemented for read */
+    break;
+  case UARTAPI_ATCOMMAND_CHANNEL:
+    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_STATUS] = UARTAPI_ATCOMMAND_RESPONSE_STATUS_OK;
+    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_DATA] = CC2530Bee_Config.IEEE802154_config.Channel;
+    break;
+  case UARTAPI_ATCOMMAND_PANID:
+    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_STATUS] = UARTAPI_ATCOMMAND_RESPONSE_STATUS_OK;
+    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_DATA] = CC2530Bee_Config.IEEE802154_config.PanID;
+    break;
+  case UARTAPI_ATCOMMAND_DESTINATIONADDRESSHIGH:
+    break;
+  case UARTAPI_ATCOMMAND_DESTINATIONADDRESSLOW:
+    break;
+  case UARTAPI_ATCOMMAND_SOURCEADDRESS16BIT:
+    break;
+  case UARTAPI_ATCOMMAND_SERIALNUMBERHIGH:
+    break;
+  case UARTAPI_ATCOMMAND_SERIALNUMBERLOW:
+    break;
+  default:
+    break;
+  }
+}
+
+void UARTAPI_setParameter(APIFramePayload_t *data)
+{
 }
