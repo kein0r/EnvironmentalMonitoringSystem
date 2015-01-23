@@ -90,6 +90,7 @@
 #define UARTAPI_TRANSMIT_STATUS                         (unit8_t)0x89
 #define UARTAPI_RECEIVE_PACKAGE_64BIT                   (uint8_t)0x80
 #define UARTAPI_RECEIVE_PACKAGE_16BIT                   (uint8_t)0x81
+#define UARTAPI_ECHOTEST                                (uint8_t)0x44
 
 
 #define UARTAPI_MODEMSTATUS_HARDWARE_RESET              (uint8_t)0x00
