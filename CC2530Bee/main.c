@@ -69,16 +69,15 @@ void main( void )
         switch (rxAPIFrame.data[0])
           {
             case UARTAPI_ATCOMMAND:
-              
-              break;
-            case UARTAPI_ATCOMMAND_QUEUE:
               if (rxAPIFrame.header.length == UARTAPI_ATCOMMAND_READ_LENGTH)
               {
-                UARTAPI_readParameter(txAPIFrame.data);
+                UARTAPI_readParameter(rxAPIFrame.data);
               }
               else {
                 UARTAPI_setParameter(rxAPIFrame.data);
               }
+              break;
+            case UARTAPI_ATCOMMAND_QUEUE:
               break;
             case UARTAPI_REMOTE_AT_COMMAND_REQUEST:
               USART_writeline("Option 01 selected");
@@ -124,7 +123,13 @@ void main( void )
               /* reset values back to "normal" which might have been changed above */
               CC2530Bee_Config.IEEE802154_TxDataFrame.destinationPANID = tempPanID;
               CC2530Bee_Config.IEEE802154_TxDataFrame.fcf.ackRequired = 1;
-            break;
+              break;
+            case UARTAPI_ECHOTEST:
+              /* Service only implemented for USART testing 
+               * Will sent every valid frame back exactly as it was received */
+              memcpy(&txAPIFrame, &rxAPIFrame, rxAPIFrame.header.length +  sizeof(APIFrameHeader_t) + sizeof(uint8_t));
+              USART_write((char const*)&txAPIFrame, rxAPIFrame.header.length + sizeof(APIFrameHeader_t) + sizeof(uint8_t));
+              break;
             /* no default as the frame will be silently discarded */
           }
       }
@@ -219,7 +224,12 @@ uint8_t UARTAPI_receiveFrame(APIFrame_t *frame)
   }
 }
 
-/* Sends */
+/**
+ * Adds correct header and CRC to global variable txAPIFrame. Precondition is 
+ * that data in txAPIFrame.data was already filled.
+ * @param data Pointer to data to be send out via USART
+ * @param length number of bytes of data 
+ */
 void UARTAPI_sentFrame(APIFramePayload_t *data, uint16_t length)
 {
   uint16_t i;
@@ -230,7 +240,6 @@ void UARTAPI_sentFrame(APIFramePayload_t *data, uint16_t length)
   txAPIFrame.header.length = length;
   for (i=0; i<length; i++)
   {
-    txAPIFrame.data[i] = data[i];
     crc += data[i];
   }
   crc = 0xff-crc;
@@ -247,8 +256,7 @@ void UARTAPI_readParameter(APIFramePayload_t *data)
 {
   uint16_t atCommand;
   /* get AT command and convert to little-endian */
-  atCommand = (uint16_t) data[UARTAPI_ATCOMMAND_COMMAND];
-  SWAP_UINT16(atCommand);
+  atCommand = data[UARTAPI_ATCOMMAND_COMMAND] << 8 | data[UARTAPI_ATCOMMAND_COMMAND + 1];
   /* Prepare general tx frame data. Copy frame ID an AT command to sent frame */  
   txAPIFrame.data[0] = UARTAPI_ATCOMMAND_RESPONSE;
   txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_FRAMEID] = data[UARTAPI_ATCOMMAND_FRAMEID];
@@ -270,10 +278,12 @@ void UARTAPI_readParameter(APIFramePayload_t *data)
   case UARTAPI_ATCOMMAND_CHANNEL:
     txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_STATUS] = UARTAPI_ATCOMMAND_RESPONSE_STATUS_OK;
     txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_DATA] = CC2530Bee_Config.IEEE802154_config.Channel;
+    UARTAPI_sentFrame(txAPIFrame.data, 6);
     break;
   case UARTAPI_ATCOMMAND_PANID:
     txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_STATUS] = UARTAPI_ATCOMMAND_RESPONSE_STATUS_OK;
     txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_DATA] = CC2530Bee_Config.IEEE802154_config.PanID;
+    UARTAPI_sentFrame(txAPIFrame.data, 7);
     break;
   case UARTAPI_ATCOMMAND_DESTINATIONADDRESSHIGH:
     break;
