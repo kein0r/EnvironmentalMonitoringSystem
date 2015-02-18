@@ -193,6 +193,7 @@ typedef struct {
 void CC2530Bee_loadConfig(CC2530Bee_Config_t *config);
 
 uint8_t UARTAPI_receiveFrame(APIFrame_t *frame);
+void UARTAPI_sentFrame(APIFramePayload_t *data, uint16_t length);
 
 void UARTAPI_readParameter(APIFramePayload_t *data);
 void UARTAPI_setParameter(APIFramePayload_t *data);

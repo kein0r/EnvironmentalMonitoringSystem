@@ -127,8 +127,7 @@ void main( void )
             case UARTAPI_ECHOTEST:
               /* Service only implemented for USART testing 
                * Will sent every valid frame back exactly as it was received */
-              memcpy(&txAPIFrame, &rxAPIFrame, rxAPIFrame.header.length +  sizeof(APIFrameHeader_t) + sizeof(uint8_t));
-              USART_write((char const*)&txAPIFrame, rxAPIFrame.header.length + sizeof(APIFrameHeader_t) + sizeof(uint8_t));
+              UARTAPI_sentFrame(uartRxPayload, rxAPIFrame.header.length);
               break;
             /* no default as the frame will be silently discarded */
           }
@@ -238,13 +237,15 @@ void UARTAPI_sentFrame(APIFramePayload_t *data, uint16_t length)
   /* convert from little-endian to big-endian */
   SWAP_UINT16(length);
   txAPIFrame.header.length = length;
+  USART_write((char const*)&txAPIFrame, sizeof(APIFrameHeader_t));
   for (i=0; i<length; i++)
   {
     crc += data[i];
   }
   crc = 0xff-crc;
   txAPIFrame.crc = crc;
-  USART_write((char const*)&txAPIFrame, length + sizeof(APIFrameHeader_t) + sizeof(uint8_t));
+  USART_write((char const*)data, length);
+  USART_write((char const*)&txAPIFrame.crc, sizeof(uint8_t));
 }
 
 /**
