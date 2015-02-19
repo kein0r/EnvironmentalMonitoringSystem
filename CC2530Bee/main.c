@@ -202,7 +202,7 @@ uint8_t UARTAPI_receiveFrame(APIFrame_t *frame)
   {
     USART_getc((char *) dataPtr);
     /* if needed un-escape the data */
-    if ( (*dataPtr == UARTFrame_Delimiter) || (*dataPtr == UARTFrame_Escape_Character) || (*dataPtr == UARTFrame_XON) || (*dataPtr == UARTFrame_XOFF) )
+    if ( *dataPtr == UARTFrame_Escape_Character )
     {
       USART_getc((char *) dataPtr);
       *dataPtr ^= UARTFrame_Escape_Mask;
@@ -240,12 +240,18 @@ void UARTAPI_sentFrame(APIFramePayload_t *data, uint16_t length)
   USART_write((char const*)&txAPIFrame, sizeof(APIFrameHeader_t));
   for (i=0; i<length; i++)
   {
+    if ( (data[i] == UARTFrame_Delimiter) || (data[i] == UARTFrame_Escape_Character) || (data[i] == UARTFrame_XON) || (data[i] == UARTFrame_XOFF) ) {
+      USART_putc(UARTFrame_Escape_Character);
+      USART_putc(data[i]^0x20);
+    }
+    else {
+      USART_putc(data[i]);
+    }
     crc += data[i];
   }
   crc = 0xff-crc;
   txAPIFrame.crc = crc;
-  USART_write((char const*)data, length);
-  USART_write((char const*)&txAPIFrame.crc, sizeof(uint8_t));
+  USART_putc(crc);
 }
 
 /**
