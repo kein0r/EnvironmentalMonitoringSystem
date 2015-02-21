@@ -83,9 +83,9 @@ if (ser.isOpen()):
     frameId += 1
     simpleUARTEchoTest([0x44, frameId, 0xff, 0xff, 0x13, 0xaf, 0xfe])
     frameId += 1
-    # send simple broadcast message 16 bit (16bit addressing)
+    # send simple broadcast message 16 bit (16bit addressing). No ACK expected
     sendFrame([0x01, frameId, 0xff, 0xff, 0x00, 0xaf, 0xfe])
     frameId+=1
-    # send simple message to one recipient (16bit addressing)
-    sendFrame([0x01, frameId, 0xff, 0xff, 0x00, 0xaf, 0xfe])
+    # send simple broadcast message 16 bit (64bit addressing). No ACK expected
+    sendFrame([0x00, frameId, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0x00, 0xaf, 0xfe])
     frameId+=1
