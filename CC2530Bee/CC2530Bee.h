@@ -135,6 +135,10 @@
 #define UARTAPI_16BITTRANSMIT_OPTIONS                   (uint8_t)0x04
 #define UARTAPI_16BITTRANSMIT_DATA                      (uint8_t)0x05
 
+#define UARTAPI_16BITRECEIVE_ADDRESS                    (uint8_t)0x01
+#define UARTAPI_16BITRECEIVE_RSSI                       (uint8_t)0x03
+#define UARTAPI_16BITRECEIVE_OPTIONS                    (uint8_t)0x04
+
 #define UARTAPI_64BITTRANSMIT_FRAMEID                   (uint8_t)0x01
 #define UARTAPI_64BITTRANSMIT_ADDRESS                   (uint8_t)0x02
 #define UARTAPI_64BITTRANSMIT_OPTIONS                   (uint8_t)0x0a
@@ -151,8 +155,7 @@ typedef struct {
   USART_Baudrate_t USART_Baudrate;
   USART_Parity_t USART_Parity;
   IEEE802154_Config_t IEEE802154_config;
-  IEEE802154_DataFrameHeader_t  IEEE802154_TxDataFrame;
-  IEEE802154_DataFrameHeader_t  IEEE802154_RxDataFrame;
+  IEEE802154_DataFrameHeader_t IEEE802154_TxDataFrame;  /*!< IEEE 802.15.4 struct to store tx configuration information */
   uint8_t RO_PacketizationTimeout;  /*!< Timout in milliseconds after which data received via UART will be packed and sent via radio. */
   uint8_t crc;                 /*!< crc to be saved in EEPROM to check if data is valid */
 } CC2530Bee_Config_t;
