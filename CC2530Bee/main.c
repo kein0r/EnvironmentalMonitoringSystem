@@ -27,7 +27,6 @@ APIFramePayload_t uartRxPayload[100];
 APIFrame_t txAPIFrame;
 APIFramePayload_t uartTxPayload[100];
 
-
 void main( void )
 {
   uint16_t atCommand;
@@ -308,22 +307,49 @@ void UARTAPI_readParameter(APIFramePayload_t *data)
   case UARTAPI_ATCOMMAND_CHANNEL:
     txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_STATUS] = UARTAPI_ATCOMMAND_RESPONSE_STATUS_OK;
     txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_DATA] = CC2530Bee_Config.IEEE802154_config.Channel;
-    UARTAPI_sentFrame(txAPIFrame.data, 6);
+    UARTAPI_sentFrame(txAPIFrame.data, UARTAPI_ATCOMMAND_RESPONSE_DATA + sizeof(uint8_t));
     break;
   case UARTAPI_ATCOMMAND_PANID:
     txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_STATUS] = UARTAPI_ATCOMMAND_RESPONSE_STATUS_OK;
-    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_DATA] = CC2530Bee_Config.IEEE802154_config.PanID;
-    UARTAPI_sentFrame(txAPIFrame.data, 7);
+    *((IEEE802154_PANIdentifier_t*)&(txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_DATA])) = CC2530Bee_Config.IEEE802154_config.PanID;
+    UARTAPI_sentFrame(txAPIFrame.data, UARTAPI_ATCOMMAND_RESPONSE_DATA + sizeof(IEEE802154_PANIdentifier_t));
     break;
   case UARTAPI_ATCOMMAND_DESTINATIONADDRESSHIGH:
+    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_STATUS] = UARTAPI_ATCOMMAND_RESPONSE_STATUS_OK;
+    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_DATA + 0] = IEEE802154_TxDataFrame.destinationAddress.extendedAdress[4];
+    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_DATA + 1] = IEEE802154_TxDataFrame.destinationAddress.extendedAdress[5];
+    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_DATA + 2] = IEEE802154_TxDataFrame.destinationAddress.extendedAdress[6];
+    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_DATA + 3] = IEEE802154_TxDataFrame.destinationAddress.extendedAdress[7];
+    UARTAPI_sentFrame(txAPIFrame.data, UARTAPI_ATCOMMAND_RESPONSE_DATA + sizeof(IEEE802154_ExtendedAddress_t)/2);
     break;
   case UARTAPI_ATCOMMAND_DESTINATIONADDRESSLOW:
+    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_STATUS] = UARTAPI_ATCOMMAND_RESPONSE_STATUS_OK;
+    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_DATA + 0] = IEEE802154_TxDataFrame.destinationAddress.extendedAdress[0];
+    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_DATA + 1] = IEEE802154_TxDataFrame.destinationAddress.extendedAdress[1];
+    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_DATA + 2] = IEEE802154_TxDataFrame.destinationAddress.extendedAdress[2];
+    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_DATA + 3] = IEEE802154_TxDataFrame.destinationAddress.extendedAdress[3];
+    UARTAPI_sentFrame(txAPIFrame.data, UARTAPI_ATCOMMAND_RESPONSE_DATA + sizeof(IEEE802154_ExtendedAddress_t)/2);
     break;
   case UARTAPI_ATCOMMAND_SOURCEADDRESS16BIT:
+    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_STATUS] = UARTAPI_ATCOMMAND_RESPONSE_STATUS_OK;
+    *((IEEE802154_ShortAddress_t*)&(txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_DATA])) = IEEE802154_TxDataFrame.sourceAddress.shortAddress;
+    UARTAPI_sentFrame(txAPIFrame.data, UARTAPI_ATCOMMAND_RESPONSE_DATA + sizeof(IEEE802154_ShortAddress_t));
     break;
   case UARTAPI_ATCOMMAND_SERIALNUMBERHIGH:
+    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_STATUS] = UARTAPI_ATCOMMAND_RESPONSE_STATUS_OK;
+    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_DATA + 0] = IEEE802154_TxDataFrame.sourceAddress.extendedAdress[4];
+    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_DATA + 1] = IEEE802154_TxDataFrame.sourceAddress.extendedAdress[5];
+    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_DATA + 2] = IEEE802154_TxDataFrame.sourceAddress.extendedAdress[6];
+    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_DATA + 3] = IEEE802154_TxDataFrame.sourceAddress.extendedAdress[7];
+    UARTAPI_sentFrame(txAPIFrame.data, UARTAPI_ATCOMMAND_RESPONSE_DATA + sizeof(IEEE802154_ExtendedAddress_t)/2);
     break;
   case UARTAPI_ATCOMMAND_SERIALNUMBERLOW:
+    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_STATUS] = UARTAPI_ATCOMMAND_RESPONSE_STATUS_OK;
+    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_DATA + 0] = IEEE802154_TxDataFrame.sourceAddress.extendedAdress[0];
+    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_DATA + 1] = IEEE802154_TxDataFrame.sourceAddress.extendedAdress[1];
+    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_DATA + 2] = IEEE802154_TxDataFrame.sourceAddress.extendedAdress[2];
+    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_DATA + 3] = IEEE802154_TxDataFrame.sourceAddress.extendedAdress[3];
+    UARTAPI_sentFrame(txAPIFrame.data, UARTAPI_ATCOMMAND_RESPONSE_DATA + sizeof(IEEE802154_ExtendedAddress_t)/2);
     break;
   default:
     break;

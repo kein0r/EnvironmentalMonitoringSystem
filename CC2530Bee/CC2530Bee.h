@@ -18,17 +18,17 @@
 #define CC2530BEE_Default_Channel                       0x19
 
 /**
- * Default Short address of this note
+ * Default Short address of this note (big-endian)
 */
-#define CC2530BEE_Default_ShortAddress                  (IEEE802154_ShortAddress_t)0xaffe
+#define CC2530BEE_Default_ShortAddress                  (IEEE802154_ShortAddress_t)0xfeaf
 
 /**
- * Value for short address  (0xfffe) to note that 64bit addressing is to be used.
+ * Value for short address  (0xfffe) to note that 64bit addressing is to be used (big-endian).
 */
 #define CC2530BEE_USE_64BIT_ADDRESSING                  (IEEE802154_ShortAddress_t)0xfeff
 
 /**
- * Default PanID of this note
+ * Default PanID of this note (big-endian).
 */
 #define CC2530BEE_Default_PanID                         (IEEE802154_PANIdentifier_t)0x3332
 

@@ -62,6 +62,19 @@ def simpleUARTEchoTest(testFrame):
         print(rxFrame)
     return
 
+def checkFrame(testFrame, expectedResult):
+    sendFrame(testFrame)
+    rxFrame = receiveFrame()
+    print("Frame:    ", end=" ")
+    print(expectedResult, end=" ")
+    if (expectedResult == rxFrame):
+        print(": OK")
+    else:
+        print(": NOK")
+        print("Received: ", end=" ")
+        print(rxFrame)
+    return
+
 def checkRxFrame(testFrame, rxFrame):
     print("Frame:    ", end=" ")
     print(testFrame, end=" ")
@@ -98,6 +111,24 @@ if (ser.isOpen()):
     frameId += 1
     simpleUARTEchoTest([0x44, frameId, 0xff, 0xff, 0x13, 0xaf, 0xfe])
     frameId += 1
+    
+    # Read parameter tests
+    # Check channel (CN = 0x4348) equal to 0x19
+    checkFrame([0x08, frameId, 0x43, 0x48],[0x88, frameId, 0x43, 0x48, 0, 0x19])
+    # Test PAN ID (ID = 0x4944) equal to 0x3233
+    checkFrame([0x08, frameId, 0x49, 0x44],[0x88, frameId, 0x49, 0x44, 0, 0x32, 0x33])
+    # Test Destination Address High (DH = 0x4448) equal to 0x0
+    checkFrame([0x08, frameId, 0x44, 0x48],[0x88, frameId, 0x44, 0x48, 0x0, 0x0, 0x0, 0x0, 0x0])
+    # Test Destination Address Low (DL = 0x444c) equal to 0x0
+    checkFrame([0x08, frameId, 0x44, 0x4c],[0x88, frameId, 0x44, 0x4c, 0x0, 0x0, 0x0, 0x0, 0x0])
+    # Check ShortAddress (MY = 0x4d59) equal to 0xaffe
+    checkFrame([0x08, frameId, 0x4d, 0x59],[0x88, frameId, 0x4d, 0x59, 0, 0xaf, 0xfe])
+    # Check ExtendedAddress (SH = 0x5348) equal to serialno.
+    checkFrame([0x08, frameId, 0x53, 0x48],[0x88, frameId, 0x53, 0x48, 0, 0x0, 0x0, 0x0, 0x0])
+    # Check ExtendedAddress (SH = 0x534c) equal to serialno.
+    checkFrame([0x08, frameId, 0x53, 0x4c],[0x88, frameId, 0x53, 0x4c, 0, 0x0, 0x0, 0x0, 0x0])
+
+    # Tx tests
     # send simple broadcast message 16 bit (16bit addressing). No ACK expected
     sendFrame([0x01, frameId, 0xff, 0xff, 0x00, 0xaf, 0xfe])
     frameId+=1
@@ -111,7 +142,11 @@ if (ser.isOpen()):
     checkRxFrame([0xee, 0xee,0x0, 0x02, 0xaa, 0xbb, 0xcc, 0xdd], receiveFrame())
     # Rx test 16bit default address 0xaffe: Send: 61 88 41 33 32 af fe ee ee aa bb cc dd
     checkRxFrame([0xee, 0xee,0x0, 0x00, 0xaa, 0xbb, 0xcc, 0xdd], receiveFrame())
+    # Rx test 16bit broadcasr PAN ID: Send: 61 88 41 ff ff af fe ee ee aa bb cc dd
+    checkRxFrame([0xee, 0xee,0x0, 0x04, 0xaa, 0xbb, 0xcc, 0xdd], receiveFrame())
 
     # Rx test 64bit broadcast: Send: 61 8c 77 33 32 00 00 00 00 00 00 ff ff af fe aa bb cc dd
-    ser.read(100)
+    # There is no 64bit broadcast
+    # Rx test 64bit broadcast: Send: 61 8c 77 33 32 00 00 00 00 00 00 ff ff af fe aa bb cc dd
+    
     # Change source address to 0xfffe check if source address is 64bit now
