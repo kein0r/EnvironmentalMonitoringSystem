@@ -52,8 +52,21 @@ def simpleUARTEchoTest(testFrame):
     # sends different frames with id 0x44
     sendFrame(testFrame)
     rxFrame = receiveFrame()
-    print("Frame: ", end=" ")
+    print("Frame:    ", end=" ")
     print(testFrame, end=" ")
+    if (testFrame == rxFrame):
+        print(": OK")
+    else:
+        print(": NOK")
+        print("Received: ", end=" ")
+        print(rxFrame)
+    return
+
+def checkRxFrame(testFrame, rxFrame):
+    print("Frame:    ", end=" ")
+    print(testFrame, end=" ")
+    # ignore RSSI value
+    testFrame[2] = rxFrame[2]
     if (testFrame == rxFrame):
         print(": OK")
     else:
@@ -73,6 +86,8 @@ if (ser.isOpen()):
     simpleUARTEchoTest([0x44, frameId, 0xff, 0xff, 0x00])
     simpleUARTEchoTest([0x44, frameId, 0xff, 0xff, 0x00, 0xaf])
     simpleUARTEchoTest([0x44, frameId, 0xff, 0xff, 0x00, 0xaf, 0xfe])
+    # Test message size bigger than USART buffer
+    simpleUARTEchoTest([0x44, frameId, 0xff, 0xff, 0x00, 0xaf, 0xfe, 0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0xf9, 0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0xf0, 0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0xf9, 0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0xf0])
     frameId += 1
     # Character escape test
     simpleUARTEchoTest([0x44, frameId, 0xff, 0xff, 0x7e, 0xaf, 0xfe])
@@ -89,3 +104,14 @@ if (ser.isOpen()):
     # send simple broadcast message 16 bit (64bit addressing). No ACK expected
     sendFrame([0x00, frameId, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0x00, 0xaf, 0xfe])
     frameId+=1
+    # Make sure that "Add seq. number is disabled"
+    # All tests use source address 0xeeee and sequnce no. starting from 0x41
+    ser.timeout = 8
+    # Rx test 16bit broadcast: Send: 61 88 41 33 32 ff ff ee ee aa bb cc dd
+    checkRxFrame([0xee, 0xee,0x0, 0x02, 0xaa, 0xbb, 0xcc, 0xdd], receiveFrame())
+    # Rx test 16bit default address 0xaffe: Send: 61 88 41 33 32 af fe ee ee aa bb cc dd
+    checkRxFrame([0xee, 0xee,0x0, 0x00, 0xaa, 0xbb, 0xcc, 0xdd], receiveFrame())
+
+    # Rx test 64bit broadcast: Send: 61 8c 77 33 32 00 00 00 00 00 00 ff ff af fe aa bb cc dd
+    ser.read(100)
+    # Change source address to 0xfffe check if source address is 64bit now

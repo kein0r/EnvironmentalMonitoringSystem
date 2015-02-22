@@ -20,12 +20,12 @@ CC2530Bee_Config_t CC2530Bee_Config;
   */
 IEEE802154_DataFrameHeader_t  IEEE802154_TxDataFrame;
 IEEE802154_DataFrameHeader_t  IEEE802154_RxDataFrame;
-IEEE802154_Payload radioRxPayload[30];
+IEEE802154_Payload radioRxPayload[100];
 
 APIFrame_t rxAPIFrame;
-APIFramePayload_t uartRxPayload[20];
+APIFramePayload_t uartRxPayload[100];
 APIFrame_t txAPIFrame;
-APIFramePayload_t uartTxPayload[20];
+APIFramePayload_t uartTxPayload[100];
 
 
 void main( void )
@@ -56,6 +56,14 @@ void main( void )
   /* Prepare rx buffer for IEEE 802.15.4 */
   IEEE802154_RxDataFrame.payload = radioRxPayload;
   IEEE802154_radioInit(&(CC2530Bee_Config.IEEE802154_config));
+  /* Tx source address is preloaded with chip's own 64bit address. Check if it should be used. */
+  if (IEEE802154_TxDataFrame.sourceAddress.shortAddress == CC2530BEE_USE_64BIT_ADDRESSING)
+  {
+    IEEE802154_TxDataFrame.fcf.sourceAddressMode = IEEE802154_FCF_ADDRESS_MODE_64BIT;
+  }
+  else {
+    IEEE802154_TxDataFrame.fcf.sourceAddressMode = IEEE802154_FCF_ADDRESS_MODE_16BIT;
+  }
   enableAllInterrupt();
   
   sleepTime.value = 0xffff;
@@ -187,6 +195,14 @@ void CC2530Bee_loadConfig(CC2530Bee_Config_t *config)
   IEEE802154_TxDataFrame.destinationPANID = CC2530BEE_Default_PanID;
   IEEE802154_TxDataFrame.destinationAddress.shortAddress = 0xffff;   /* broadcast */
   IEEE802154_TxDataFrame.sourceAddress.shortAddress = CC2530BEE_Default_ShortAddress;
+  IEEE802154_TxDataFrame.sourceAddress.extendedAdress[0] = IEEE_EXTENDED_ADDRESS0;
+  IEEE802154_TxDataFrame.sourceAddress.extendedAdress[1] = IEEE_EXTENDED_ADDRESS1;
+  IEEE802154_TxDataFrame.sourceAddress.extendedAdress[2] = IEEE_EXTENDED_ADDRESS2;
+  IEEE802154_TxDataFrame.sourceAddress.extendedAdress[3] = IEEE_EXTENDED_ADDRESS3;
+  IEEE802154_TxDataFrame.sourceAddress.extendedAdress[4] = IEEE_EXTENDED_ADDRESS4;
+  IEEE802154_TxDataFrame.sourceAddress.extendedAdress[5] = IEEE_EXTENDED_ADDRESS5;
+  IEEE802154_TxDataFrame.sourceAddress.extendedAdress[6] = IEEE_EXTENDED_ADDRESS6;
+  IEEE802154_TxDataFrame.sourceAddress.extendedAdress[7] = IEEE_EXTENDED_ADDRESS7;
   
   config->RO_PacketizationTimeout = CC2530BEE_Default_RO_PacketizationTimeout * 10;
   
@@ -320,44 +336,87 @@ void UARTAPI_setParameter(APIFramePayload_t *dta)
 
 /**
  * Callback whenever Beacon frame was received
- * @payloadLength Length of data in CC2530Bee_Config.IEEE802154_RxDataFrame.payload
+ * @payloadLength Length of data in IEEE802154_RxDataFrame.payload
+ * @param RSSI value measured over the firs eight symbols following SFD
+ * @note: This function runs in interrupt context
 */
-void IEEE802154_UserCbk_BeaconFrameReceived(uint8_t payloadLength)
+void IEEE802154_UserCbk_BeaconFrameReceived(uint8_t payloadLength, sint8_t rssi)
 {
   
 }
 
 /**
  * Callback whenever Data frame was received
- * @payloadLength Length of data in CC2530Bee_Config.IEEE802154_RxDataFrame.payload
+ * @payloadLength Length of data in IEEE802154_RxDataFrame.payload
+ * @param RSSI value measured over the firs eight symbols following SFD
+ * @note: This function runs in interrupt context
 */
-void IEEE802154_UserCbk_DataFrameReceived(uint8_t payloadLength)
+void IEEE802154_UserCbk_DataFrameReceived(uint8_t payloadLength, sint8_t rssi)
 {
-  if (IEEE802154_RxDataFrame.fcf.sourceAddressMode == IEEE802154_FCF_ADDRESS_MODE_16BIT)
+  uint8_t *payloadDataPtr = txAPIFrame.data;
+  if (IEEE802154_RxDataFrame.fcf.sourceAddressMode == IEEE802154_FCF_ADDRESS_MODE_64BIT)
+  {
+    txAPIFrame.header.delimiter = UARTAPI_RECEIVE_PACKAGE_64BIT;
+    txAPIFrame.header.length = payloadLength + UARTAPI_64BITRECEIVE_HEADER_SIZE;
+    memcpy(payloadDataPtr, &(IEEE802154_RxDataFrame.sourceAddress.extendedAdress), sizeof(IEEE802154_ExtendedAddress_t) );
+    payloadDataPtr += sizeof(IEEE802154_ExtendedAddress_t);
+  }
+  else if (IEEE802154_RxDataFrame.fcf.sourceAddressMode == IEEE802154_FCF_ADDRESS_MODE_16BIT)
   {
     txAPIFrame.header.delimiter = UARTAPI_RECEIVE_PACKAGE_16BIT;
-    txAPIFrame.header.length = payloadLength + 4;
-   // UARTAPI_sentFrame(
+    txAPIFrame.header.length = payloadLength + UARTAPI_16BITRECEIVE_HEADER_SIZE;
+    *(payloadDataPtr++) = HI_UINT16(IEEE802154_RxDataFrame.sourceAddress.shortAddress);
+    *(payloadDataPtr++) = LO_UINT16(IEEE802154_RxDataFrame.sourceAddress.shortAddress);
   }
-  if (IEEE802154_RxDataFrame.fcf.sourceAddressMode == IEEE802154_FCF_ADDRESS_MODE_16BIT)
+  else /* IEEE802154_FCF_ADDRESS_MODE_NONE */
   {
+    txAPIFrame.header.delimiter = UARTAPI_RECEIVE_PACKAGE_NONE;
+    txAPIFrame.header.length = payloadLength + UARTAPI_NONERECEIVE_HEADER_SIZE;
   }
+  *(payloadDataPtr++) = rssi;
+  uint8_t optionByte = 0x00;
+  if (IEEE802154_RxDataFrame.destinationAddress.shortAddress == IEEE802154_BROADCAST_ADDRESS_16BIT)
+  {
+    optionByte |= UARTAPI_RECEVICE_OPTIONS_ADDRESS_BROADCAST;
+  }
+  if (IEEE802154_RxDataFrame.destinationPANID == IEEE802154_BROADCAST_PAN_ID)
+  {
+    optionByte |= UARTAPI_RECEVICE_OPTIONS_PAN_BROADCAST;
+  }
+  *(payloadDataPtr++) = optionByte;
+  memcpy(payloadDataPtr, IEEE802154_RxDataFrame.payload, payloadLength );
+  UARTAPI_sentFrame(txAPIFrame.data, txAPIFrame.header.length);
 }
 
 /**
  * Callback whenever Ack frame was received
- * @payloadLength Length of data in CC2530Bee_Config.IEEE802154_RxDataFrame.payload
+ * @payloadLength Length of data in IEEE802154_RxDataFrame.payload
+ * @param RSSI value measured over the firs eight symbols following SFD
+ * @note: This function runs in interrupt context
 */
-void IEEE802154_UserCbk_AckFrameReceived(uint8_t payloadLength)
+void IEEE802154_UserCbk_AckFrameReceived(uint8_t payloadLength, sint8_t rssi)
 {
   
 }
 
 /**
  * Callback whenever MAC Command frame was received
- * @payloadLength Length of data in CC2530Bee_Config.IEEE802154_RxDataFrame.payload
+ * @payloadLength Length of data in IEEE802154_RxDataFrame.payload
+ * @param RSSI value measured over the firs eight symbols following SFD
+ * @note: This function runs in interrupt context
 */
-void IEEE802154_UserCbk_MACCommandFrameReceived(uint8_t payloadLength)
+void IEEE802154_UserCbk_MACCommandFrameReceived(uint8_t payloadLength, sint8_t rssi)
+{
+  
+}
+
+/**
+ * Callback whenever frame with incorrect CRC was received
+ * @payloadLength Length of data in IEEE802154_RxDataFrame.payload
+ * @param RSSI value measured over the firs eight symbols following SFD
+ * @note: This function runs in interrupt context
+*/
+void IEEE802154_UserCbk_CRCError(uint8_t payloadLength, sint8_t rssi)
 {
   
 }

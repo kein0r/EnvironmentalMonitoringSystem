@@ -37,7 +37,7 @@
 /**
  * Size for USART Rx and Tx buffer. Thus, twice the size will be allocated in RAM.
 */
-#define USART_RING_BUFFER_SIZE   16
+#define USART_RING_BUFFER_SIZE   32
 
 /**
  * #define to let other modules know that timer2 is used
