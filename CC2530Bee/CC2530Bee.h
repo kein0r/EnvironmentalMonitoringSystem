@@ -23,9 +23,9 @@
 #define CC2530BEE_Default_ShortAddress                  (IEEE802154_ShortAddress_t)0xaffe
 
 /**
- * Value for short address to note that 64bit addressing is to be used.
+ * Value for short address  (0xfffe) to note that 64bit addressing is to be used.
 */
-#define CC2530BEE_USE_64BIT_ADDRESSING                  (IEEE802154_ShortAddress_t)0xfffe
+#define CC2530BEE_USE_64BIT_ADDRESSING                  (IEEE802154_ShortAddress_t)0xfeff
 
 /**
  * Default PanID of this note
@@ -90,7 +90,8 @@
 #define UARTAPI_TRANSMIT_STATUS                         (unit8_t)0x89
 #define UARTAPI_RECEIVE_PACKAGE_64BIT                   (uint8_t)0x80
 #define UARTAPI_RECEIVE_PACKAGE_16BIT                   (uint8_t)0x81
-#define UARTAPI_ECHOTEST                                (uint8_t)0x44
+#define UARTAPI_RECEIVE_PACKAGE_NONE                    (uint8_t)0x82   /* Not defined in original chip */
+#define UARTAPI_ECHOTEST                                (uint8_t)0x44   /* Not defined in original chip, only for testing UART communication */
 
 
 #define UARTAPI_MODEMSTATUS_HARDWARE_RESET              (uint8_t)0x00
@@ -130,20 +131,24 @@
 #define UARTAPI_TRANSMIT_OPTIONS_DISABLEACK             (uint8_t)0x01
 #define UARTAPI_TRANSMIT_OPTIONS_BROADCASTPANID         (uint8_t)0x04
 
-#define UARTAPI_16BITTRANSMIT_FRAMEID                   (uint8_t)0x01
-#define UARTAPI_16BITTRANSMIT_ADDRESS                   (uint8_t)0x02
-#define UARTAPI_16BITTRANSMIT_OPTIONS                   (uint8_t)0x04
-#define UARTAPI_16BITTRANSMIT_DATA                      (uint8_t)0x05
-
-#define UARTAPI_16BITRECEIVE_ADDRESS                    (uint8_t)0x01
-#define UARTAPI_16BITRECEIVE_RSSI                       (uint8_t)0x03
-#define UARTAPI_16BITRECEIVE_OPTIONS                    (uint8_t)0x04
-
 #define UARTAPI_64BITTRANSMIT_FRAMEID                   (uint8_t)0x01
 #define UARTAPI_64BITTRANSMIT_ADDRESS                   (uint8_t)0x02
 #define UARTAPI_64BITTRANSMIT_OPTIONS                   (uint8_t)0x0a
 #define UARTAPI_64BITTRANSMIT_DATA                      (uint8_t)0x0b
 
+#define UARTAPI_64BITRECEIVE_HEADER_SIZE                (uint8_t)0x04
+
+#define UARTAPI_16BITTRANSMIT_FRAMEID                   (uint8_t)0x01
+#define UARTAPI_16BITTRANSMIT_ADDRESS                   (uint8_t)0x02
+#define UARTAPI_16BITTRANSMIT_OPTIONS                   (uint8_t)0x04
+#define UARTAPI_16BITTRANSMIT_DATA                      (uint8_t)0x05
+
+#define UARTAPI_16BITRECEIVE_HEADER_SIZE                (uint8_t)0x04
+
+#define UARTAPI_NONERECEIVE_HEADER_SIZE                 (uint8_t)0x02
+
+#define UARTAPI_RECEVICE_OPTIONS_ADDRESS_BROADCAST      (uint8_t)0x02
+#define UARTAPI_RECEVICE_OPTIONS_PAN_BROADCAST          (uint8_t)0x04
 
 /*******************| Type definitions |*******************************/
 
