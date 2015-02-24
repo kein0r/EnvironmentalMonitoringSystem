@@ -8,6 +8,43 @@
 #include "CC2530Bee.h"
 
 /**
+ * @brief CC2530 based implementation of famous XBee devices from Digi International Inc (see http://www.digi.com)
+ *
+ * The firmware for CC2530 was implemented to be able to use this chip as a drop-in replacement for the famous XBee devices together
+ * with Arduino XBee library (see https://code.google.com/p/xbee-arduino/).
+ * This implementation only supports "API Operation" using escape characters called "AP = 2: API Operation (with escaped characters)" in
+ * XBee documentation. The reason is that this is the only mode supported by the Arduino library.
+ * A simple python script is provided to test the functionality. Rx tests will only works with SmartRF Studio.
+ * 
+ * Implemented API Commands
+ * ========================
+ * - AT Command: API Identifier Value: 0x08. Partial, test for implemented parts exists. Not all AT commands are supported (see list below which)
+ * - AT Command Response: API Identifier Value: 0x88. Fully implemented, test exists
+ * - TX (Transmit) Request: 64-bit address: API Identifier Value: 0x00. Fully implemented, test exists
+ * - TX (Transmit) Request: 16-bit address: API Identifier Value: 0x01. Fully implemented, test exists
+ * - TX (Transmit) Status: API Identifier Value: 0x89. Fully implemented, test exists (not all return values can be tested)
+ * - RX (Receive) Packet: 64-bit Address: API Identifier Value: 0x80. Fully implemented, test exists
+ * - RX (Receive) Packet: 16-bit Address: API Identifier Value: 0x81. Fully implemented, test exists
+
+ * Functionality missing:
+ * ========================
+ * - AT Command - Queue Parameter Value: API Identifier Value: 0x09
+ * - Remote AT Command Request: API Identifier Value: 0x17
+ * - Remote Command Response: API Identifier Value: 0x97
+ * - All kind of nonvolatile storage of parametes 
+
+ * Supported AT commands:
+ * ========================
+ * - Channel CH: 0x4848
+ * - PanID ID: 0x4944
+ * - Destination Address High DH: 0x4448
+ * - Destination Address Low DL: 0x444c
+ * - Source Address 16Bit MY: 0x 4d59
+ * - Serialnumber High SH: 0x5348
+ * - Serialnumber Low SL: 0x534c
+*/
+
+/**
   * General configuration struct
 */
 CC2530Bee_Config_t CC2530Bee_Config;
