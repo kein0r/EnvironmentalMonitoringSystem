@@ -210,7 +210,7 @@ void CC2530Bee_loadConfig(CC2530Bee_Config_t *config)
   /* General radio configuration */
   config->IEEE802154_config.Channel = CC2530BEE_Default_Channel;
   config->IEEE802154_config.PanID = CC2530BEE_Default_PanID;
-  config->IEEE802154_config.address.shortAddress = CC2530BEE_Default_ShortAddress;
+  config->IEEE802154_config.shortAddress = CC2530BEE_Default_ShortAddress;
   
   /* prepare header for IEEE 802.15.4 Tx message. Values are stored in config but must be copied 
    * to #IEEE802154_TxDataFrame in order to be effective. */
