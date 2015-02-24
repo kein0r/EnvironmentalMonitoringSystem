@@ -79,7 +79,7 @@ def checkRxFrame(testFrame, rxFrame):
     print("Frame:    ", end=" ")
     print(testFrame, end=" ")
     # ignore RSSI value
-    testFrame[2] = rxFrame[2]
+    testFrame[3] = rxFrame[3]
     if (testFrame == rxFrame):
         print(": OK")
     else:
@@ -132,18 +132,22 @@ if (ser.isOpen()):
     # send simple broadcast message 16 bit (16bit addressing). No ACK expected
     sendFrame([0x01, frameId, 0xff, 0xff, 0x00, 0xaf, 0xfe])
     frameId+=1
-    # send simple broadcast message 16 bit (64bit addressing). No ACK expected
+    # send simple message 16 bit (64bit addressing). No ACK expected
     sendFrame([0x00, frameId, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0x00, 0xaf, 0xfe])
     frameId+=1
+    # Check auto ACK. Set SRCSHORTEN0:SRCSHORTEN1 0xeeee, FRMCTRL0.AUTOACK = 1
+    sendFrame([0x01, frameId, 0xee, 0xee, 0x00, 0xaf, 0xfe])
+
+    # Rx tests
     # Make sure that "Add seq. number is disabled"
     # All tests use source address 0xeeee and sequnce no. starting from 0x41
     ser.timeout = 8
     # Rx test 16bit broadcast: Send: 61 88 41 33 32 ff ff ee ee aa bb cc dd
-    checkRxFrame([0xee, 0xee,0x0, 0x02, 0xaa, 0xbb, 0xcc, 0xdd], receiveFrame())
+    checkRxFrame([0x81, 0xee, 0xee,0x0, 0x02, 0xaa, 0xbb, 0xcc, 0xdd], receiveFrame())
     # Rx test 16bit default address 0xaffe: Send: 61 88 41 33 32 af fe ee ee aa bb cc dd
-    checkRxFrame([0xee, 0xee,0x0, 0x00, 0xaa, 0xbb, 0xcc, 0xdd], receiveFrame())
+    checkRxFrame([0x81, 0xee, 0xee,0x0, 0x00, 0xaa, 0xbb, 0xcc, 0xdd], receiveFrame())
     # Rx test 16bit broadcasr PAN ID: Send: 61 88 41 ff ff af fe ee ee aa bb cc dd
-    checkRxFrame([0xee, 0xee,0x0, 0x04, 0xaa, 0xbb, 0xcc, 0xdd], receiveFrame())
+    checkRxFrame([0x81, 0xee, 0xee,0x0, 0x04, 0xaa, 0xbb, 0xcc, 0xdd], receiveFrame())
 
     # Rx test 64bit broadcast: Send: 61 8c 77 33 32 00 00 00 00 00 00 ff ff af fe aa bb cc dd
     # There is no 64bit broadcast

@@ -87,7 +87,7 @@
 #define UARTAPI_REMOTE_AT_COMMAND_RESPONSE              (uint8_t)0x97
 #define UARTAPI_TRAMSMIT_REQUEST_64BIT                  (uint8_t)0x00
 #define UARTAPI_TRAMSMIT_REQUEST_16BIT                  (uint8_t)0x01
-#define UARTAPI_TRANSMIT_STATUS                         (unit8_t)0x89
+#define UARTAPI_TRANSMIT_STATUS                         (uint8_t)0x89
 #define UARTAPI_RECEIVE_PACKAGE_64BIT                   (uint8_t)0x80
 #define UARTAPI_RECEIVE_PACKAGE_16BIT                   (uint8_t)0x81
 #define UARTAPI_RECEIVE_PACKAGE_NONE                    (uint8_t)0x82   /* Not defined in original chip */
@@ -136,16 +136,25 @@
 #define UARTAPI_64BITTRANSMIT_OPTIONS                   (uint8_t)0x0a
 #define UARTAPI_64BITTRANSMIT_DATA                      (uint8_t)0x0b
 
-#define UARTAPI_64BITRECEIVE_HEADER_SIZE                (uint8_t)0x04
-
 #define UARTAPI_16BITTRANSMIT_FRAMEID                   (uint8_t)0x01
 #define UARTAPI_16BITTRANSMIT_ADDRESS                   (uint8_t)0x02
 #define UARTAPI_16BITTRANSMIT_OPTIONS                   (uint8_t)0x04
 #define UARTAPI_16BITTRANSMIT_DATA                      (uint8_t)0x05
 
-#define UARTAPI_16BITRECEIVE_HEADER_SIZE                (uint8_t)0x04
+#define UARTAPI_TX_STATUS_HEADER_SIZE                   (uint8_t)0x04
+#define UARTAPI_TX_STATUS_PAYLOAD_SIZE                  (uint8_t)0x02
+#define UARTAPI_TX_STATUS_FRAME_ID                      (uint8_t)0x01
+#define UARTAPI_TX_STATUS_STATUS_BYTE                   (uint8_t)0x02
+#define UARTAPI_TX_STATUS_SUCCESS                       (uint8_t)0x00
+#define UARTAPI_TX_STATUS_NOACK                         (uint8_t)0x00
+#define UARTAPI_TX_STATUS_CCAFAILURE                    (uint8_t)0x00
+#define UARTAPI_TX_STATUS_PURGED                        (uint8_t)0x00
+   
+#define UARTAPI_64BITRECEIVE_HEADER_SIZE                (uint8_t)0x05
+   
+#define UARTAPI_16BITRECEIVE_HEADER_SIZE                (uint8_t)0x05
 
-#define UARTAPI_NONERECEIVE_HEADER_SIZE                 (uint8_t)0x02
+#define UARTAPI_NONERECEIVE_HEADER_SIZE                 (uint8_t)0x03
 
 #define UARTAPI_RECEVICE_OPTIONS_ADDRESS_BROADCAST      (uint8_t)0x02
 #define UARTAPI_RECEVICE_OPTIONS_PAN_BROADCAST          (uint8_t)0x04

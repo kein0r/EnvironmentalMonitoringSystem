@@ -9,7 +9,7 @@ TriggerName=main
 LimitSize=0
 ByteLimit=50
 [DebugChecksum]
-Checksum=794486647
+Checksum=1264335062
 [CallStack]
 ShowArgs=0
 [Disassembly]
@@ -60,10 +60,10 @@ Fmt0=APIFrameHeader_t-length	4	0
 Fmt1=IEEE802154_Adress_t-shortAddress	4	0
 Fmt2=struct __Unnamed_2_158-destinationPANID	4	0
 [Breakpoints]
-Count=0
+Bp0=_ "STD_CODE" "{$PROJ_DIR$\main.c}.462.3" 1 0 0 0 "" 0 ""
+Count=1
 [ChipconEmu]
 Stop timers on halt=0
-Leave target running=1
 [Log file]
 LoggingEnabled=_ 0
 LogFile=_ ""

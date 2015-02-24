@@ -419,21 +419,21 @@ void IEEE802154_UserCbk_DataFrameReceived(uint8_t payloadLength, sint8_t rssi)
   uint8_t *payloadDataPtr = txAPIFrame.data;
   if (IEEE802154_RxDataFrame.fcf.sourceAddressMode == IEEE802154_FCF_ADDRESS_MODE_64BIT)
   {
-    txAPIFrame.header.delimiter = UARTAPI_RECEIVE_PACKAGE_64BIT;
+    *(payloadDataPtr++) = UARTAPI_RECEIVE_PACKAGE_64BIT;
     txAPIFrame.header.length = payloadLength + UARTAPI_64BITRECEIVE_HEADER_SIZE;
     memcpy(payloadDataPtr, &(IEEE802154_RxDataFrame.sourceAddress.extendedAdress), sizeof(IEEE802154_ExtendedAddress_t) );
     payloadDataPtr += sizeof(IEEE802154_ExtendedAddress_t);
   }
   else if (IEEE802154_RxDataFrame.fcf.sourceAddressMode == IEEE802154_FCF_ADDRESS_MODE_16BIT)
   {
-    txAPIFrame.header.delimiter = UARTAPI_RECEIVE_PACKAGE_16BIT;
+    *(payloadDataPtr++) = UARTAPI_RECEIVE_PACKAGE_16BIT;
     txAPIFrame.header.length = payloadLength + UARTAPI_16BITRECEIVE_HEADER_SIZE;
     *(payloadDataPtr++) = HI_UINT16(IEEE802154_RxDataFrame.sourceAddress.shortAddress);
     *(payloadDataPtr++) = LO_UINT16(IEEE802154_RxDataFrame.sourceAddress.shortAddress);
   }
   else /* IEEE802154_FCF_ADDRESS_MODE_NONE */
   {
-    txAPIFrame.header.delimiter = UARTAPI_RECEIVE_PACKAGE_NONE;
+    *(payloadDataPtr++) = UARTAPI_RECEIVE_PACKAGE_NONE;
     txAPIFrame.header.length = payloadLength + UARTAPI_NONERECEIVE_HEADER_SIZE;
   }
   *(payloadDataPtr++) = rssi;
@@ -459,7 +459,10 @@ void IEEE802154_UserCbk_DataFrameReceived(uint8_t payloadLength, sint8_t rssi)
 */
 void IEEE802154_UserCbk_AckFrameReceived(uint8_t payloadLength, sint8_t rssi)
 {
-  
+  txAPIFrame.header.length = UARTAPI_TX_STATUS_HEADER_SIZE + UARTAPI_TX_STATUS_PAYLOAD_SIZE;
+  txAPIFrame.data[0] = UARTAPI_TRANSMIT_STATUS;
+  txAPIFrame.data[UARTAPI_TX_STATUS_FRAME_ID] = IEEE802154_RxDataFrame.sequenceNumber;
+  txAPIFrame.data[UARTAPI_TX_STATUS_STATUS_BYTE] = UARTAPI_TX_STATUS_SUCCESS;
 }
 
 /**
