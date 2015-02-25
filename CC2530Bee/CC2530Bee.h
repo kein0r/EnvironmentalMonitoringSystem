@@ -187,16 +187,24 @@ typedef struct {
 } CC2530Bee_Cmd_t;
 
 /**
+ * \brief UART API frame header.
  * Struct to send/receive API frame header.
- * @note: Only works on 8-bit systems or if #pragma pack is used
+ * @note Only works on 8-bit systems or if #pragma pack is used
 */
 typedef struct {
   uint8_t delimiter; 
   uint16_t length;
 } APIFrameHeader_t;
 
+/**
+ * Datatype used for USAR API payload and pointer to payload
+*/
 typedef uint8_t APIFramePayload_t;
 
+/**
+* \brief UART API frame.
+* Complete frame used for UART API communication. #data pointer to payload must be provided separately.
+*/
 typedef struct {
   APIFrameHeader_t header;
   APIFramePayload_t *data;

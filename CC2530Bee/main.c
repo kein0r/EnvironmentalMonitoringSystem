@@ -1,3 +1,6 @@
+/** @ingroup CC2530Bee
+ * @{
+ */
 #include <ioCC2530.h>
 #include <PlatformTypes.h>
 #include <board.h>
@@ -8,6 +11,7 @@
 #include "CC2530Bee.h"
 
 /**
+ * \mainpage CC2530Bee
  * @brief CC2530 based implementation of famous XBee devices from Digi International Inc (see http://www.digi.com)
  *
  * The firmware for CC2530 was implemented to be able to use this chip as a drop-in replacement for the famous XBee devices together
@@ -113,7 +117,7 @@ void main( void )
     SWAP_UINT16(rxAPIFrame.header.length);
     if ( (UART_rxLength == sizeof(APIFrameHeader_t)) && (rxAPIFrame.header.delimiter == UARTFrame_Delimiter) )
     {
-      /* TODO: Check for frame length to be maximum of buffer */
+      /* @todo Check for frame length to be maximum of buffer */
       /* only proceed if CRC was ok */
       if (UARTAPI_receiveFrame(&rxAPIFrame) == UARTFrame_CRC_OK)
       {
@@ -189,18 +193,20 @@ void main( void )
       led_status = ~led_status;
     }
     else {
-      USART_writeline("ERROR (Header)");
+      /* noting */
     }
     /* ledOn();
     IEEE802154_radioSentDataFrame(&sentFrameOne, sizeof(sensorInformation_t));
     ledOff();
     CC253x_IncrementSleepTimer(sleepTime);
     CC253x_ActivatePowerMode(SLEEPCMD_MODE_PM2);*/
-  }
+  }  // while(1)
 }
 
 /**
  * Load config from EEPROM. If invalid CRC found default config is loaded
+ * @param config Pointer to configuration struct in which to store the configuration read from EEPROM
+ * @todo Implement EEPROM stuff
  */
 void CC2530Bee_loadConfig(CC2530Bee_Config_t *config)
 {
@@ -250,7 +256,7 @@ void CC2530Bee_loadConfig(CC2530Bee_Config_t *config)
  * This function used blocking USART_getc function to read data from UART. Also 
  * make sure that enough space is be provided in frame->data pointer to receive
  * frame.
- * @param frame: UART API frame with pre-filled header
+ * @param frame UART API frame with pre-filled header
  * @return UARTFrame_CRC_OK if crc matched, UARTFrame_CRC_Not_OK else
  */
 uint8_t UARTAPI_receiveFrame(APIFrame_t *frame)
@@ -316,7 +322,7 @@ void UARTAPI_sentFrame(APIFramePayload_t *data, uint16_t length)
 /**
  * Reads different system parametes via AT commands
  * Prepares and sents tx frame according to the atCommand requested.
- * @param data pointer to data received within UART API frame
+ * @param data Pointer to data received within UART API frame
 */
 void UARTAPI_readParameter(APIFramePayload_t *data)
 {
@@ -333,13 +339,18 @@ void UARTAPI_readParameter(APIFramePayload_t *data)
   switch (atCommand)
   {
   case UARTAPI_ATCOMMAND_WRITE:
-    /* not implemented for read */
+    /* not really a read but as it has no parameter it will be handled here */
+    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_STATUS] = UARTAPI_ATCOMMAND_RESPONSE_STATUS_OK;
     break;
   case UARTAPI_ATCOMMAND_RESTOREDEFAULTS:
-    /* not implemented for read */
+    /* not really a read but as it has no parameter it will be handled here */
+    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_STATUS] = UARTAPI_ATCOMMAND_RESPONSE_STATUS_OK;
     break;
   case UARTAPI_ATCOMMAND_SOFTWARERESET:
-    /* not implemented for read */
+    /* not really a read but as it has no parameter it will be handled here */
+    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_STATUS] = UARTAPI_ATCOMMAND_RESPONSE_STATUS_OK;
+    /* Need to wait until UART Tx buffer is empty, therefore reset will be done in main loop */
+    //SRCRC.FORCE_RESET
     break;
   case UARTAPI_ATCOMMAND_CHANNEL:
     txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_STATUS] = UARTAPI_ATCOMMAND_RESPONSE_STATUS_OK;
@@ -399,9 +410,9 @@ void UARTAPI_setParameter(APIFramePayload_t *dta)
 
 /**
  * Callback whenever Beacon frame was received
- * @payloadLength Length of data in IEEE802154_RxDataFrame.payload
- * @param RSSI value measured over the firs eight symbols following SFD
- * @note: This function runs in interrupt context
+ * @param payloadLength Length of data in IEEE802154_RxDataFrame.payload
+ * @param rssi value measured over the firs eight symbols following SFD
+ * @note This function runs in interrupt context
 */
 void IEEE802154_UserCbk_BeaconFrameReceived(uint8_t payloadLength, sint8_t rssi)
 {
@@ -410,9 +421,9 @@ void IEEE802154_UserCbk_BeaconFrameReceived(uint8_t payloadLength, sint8_t rssi)
 
 /**
  * Callback whenever Data frame was received
- * @payloadLength Length of data in IEEE802154_RxDataFrame.payload
- * @param RSSI value measured over the firs eight symbols following SFD
- * @note: This function runs in interrupt context
+ * @param payloadLength Length of data in IEEE802154_RxDataFrame.payload
+ * @param rssi value measured over the firs eight symbols following SFD
+ * @note This function runs in interrupt context
 */
 void IEEE802154_UserCbk_DataFrameReceived(uint8_t payloadLength, sint8_t rssi)
 {
@@ -453,9 +464,9 @@ void IEEE802154_UserCbk_DataFrameReceived(uint8_t payloadLength, sint8_t rssi)
 
 /**
  * Callback whenever Ack frame was received
- * @payloadLength Length of data in IEEE802154_RxDataFrame.payload
- * @param RSSI value measured over the firs eight symbols following SFD
- * @note: This function runs in interrupt context
+ * @param payloadLength Length of data in IEEE802154_RxDataFrame.payload
+ * @param rssi value measured over the firs eight symbols following SFD
+ * @note This function runs in interrupt context
 */
 void IEEE802154_UserCbk_AckFrameReceived(uint8_t payloadLength, sint8_t rssi)
 {
@@ -463,13 +474,14 @@ void IEEE802154_UserCbk_AckFrameReceived(uint8_t payloadLength, sint8_t rssi)
   txAPIFrame.data[0] = UARTAPI_TRANSMIT_STATUS;
   txAPIFrame.data[UARTAPI_TX_STATUS_FRAME_ID] = IEEE802154_RxDataFrame.sequenceNumber;
   txAPIFrame.data[UARTAPI_TX_STATUS_STATUS_BYTE] = UARTAPI_TX_STATUS_SUCCESS;
+  UARTAPI_sentFrame(txAPIFrame.data, txAPIFrame.header.length);
 }
 
 /**
  * Callback whenever MAC Command frame was received
- * @payloadLength Length of data in IEEE802154_RxDataFrame.payload
- * @param RSSI value measured over the firs eight symbols following SFD
- * @note: This function runs in interrupt context
+ * @param payloadLength Length of data in IEEE802154_RxDataFrame.payload
+ * @param rssi value measured over the firs eight symbols following SFD
+ * @note This function runs in interrupt context
 */
 void IEEE802154_UserCbk_MACCommandFrameReceived(uint8_t payloadLength, sint8_t rssi)
 {
@@ -478,11 +490,13 @@ void IEEE802154_UserCbk_MACCommandFrameReceived(uint8_t payloadLength, sint8_t r
 
 /**
  * Callback whenever frame with incorrect CRC was received
- * @payloadLength Length of data in IEEE802154_RxDataFrame.payload
- * @param RSSI value measured over the firs eight symbols following SFD
- * @note: This function runs in interrupt context
+ * @param payloadLength Length of data in IEEE802154_RxDataFrame.payload
+ * @param rssi value measured over the firs eight symbols following SFD
+ * @note This function runs in interrupt context
 */
 void IEEE802154_UserCbk_CRCError(uint8_t payloadLength, sint8_t rssi)
 {
   
 }
+
+/** @}*/
