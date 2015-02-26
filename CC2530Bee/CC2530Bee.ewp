@@ -566,7 +566,7 @@
         </option>
         <option>
           <name>OutputFile</name>
-          <state></state>
+          <state>$FILE_BNAME$.r51</state>
         </option>
         <option>
           <name>ACaseSensitivity</name>
@@ -1122,12 +1122,12 @@
         <option>
           <name>Data Memory Model</name>
           <version>0</version>
-          <state>1</state>
+          <state>2</state>
         </option>
         <option>
           <name>Data Memory Model slave</name>
           <version>0</version>
-          <state>1</state>
+          <state>2</state>
         </option>
         <option>
           <name>Use extended stack</name>
@@ -1144,7 +1144,7 @@
         <option>
           <name>Calling convention</name>
           <version>0</version>
-          <state>2</state>
+          <state>4</state>
         </option>
         <option>
           <name>Workseg Size</name>
@@ -1214,15 +1214,15 @@
         </option>
         <option>
           <name>RTDescription</name>
-          <state></state>
+          <state>Use the legacy C runtime library.</state>
         </option>
         <option>
           <name>RTConfigPath</name>
-          <state>xxx.h</state>
+          <state></state>
         </option>
         <option>
           <name>RTLibraryPath</name>
-          <state>xxx.r51</state>
+          <state>$TOOLKIT_DIR$\LIB\CLIB\cl-pli-nsid-1e16x01.r51</state>
         </option>
         <option>
           <name>Input variant</name>
@@ -1231,7 +1231,7 @@
         </option>
         <option>
           <name>Input description</name>
-          <state></state>
+          <state>Automatic choice of formatter.</state>
         </option>
         <option>
           <name>Output variant</name>
@@ -1240,7 +1240,7 @@
         </option>
         <option>
           <name>Output description</name>
-          <state></state>
+          <state>Automatic choice of formatter.</state>
         </option>
         <option>
           <name>GeneralEnableMisra</name>
@@ -1320,7 +1320,7 @@
         <option>
           <name>GRuntimeLibSelectSlave2</name>
           <version>0</version>
-          <state>1</state>
+          <state>3</state>
         </option>
         <option>
           <name>Extended stack address</name>
@@ -1369,7 +1369,7 @@
         <debug>0</debug>
         <option>
           <name>OutputFile</name>
-          <state></state>
+          <state>$FILE_BNAME$.r51</state>
         </option>
         <option>
           <name>CCDefines</name>
@@ -1547,7 +1547,10 @@
         </option>
         <option>
           <name>CCIncludePath2</name>
-          <state></state>
+          <state>$PROJ_DIR$</state>
+          <state>$PROJ_DIR$/CC2530Generic</state>
+          <state>$PROJ_DIR$/CC253x</state>
+          <state>$PROJ_DIR$/IEEE_802.15.4</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -1581,7 +1584,7 @@
         </option>
         <option>
           <name>CCOptLevelSlave</name>
-          <state>1</state>
+          <state>3</state>
         </option>
         <option>
           <name>CompilerMisraRules04</name>
@@ -1810,11 +1813,11 @@
         <debug>0</debug>
         <option>
           <name>XOutOverride</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>OutputFile</name>
-          <state></state>
+          <state>CC2530Bee.hex</state>
         </option>
         <option>
           <name>OutputFormat</name>
@@ -1828,7 +1831,7 @@
         </option>
         <option>
           <name>SecondaryOutputFile</name>
-          <state></state>
+          <state>(None for the selected format)</state>
         </option>
         <option>
           <name>XDefines</name>
@@ -1868,7 +1871,7 @@
         </option>
         <option>
           <name>XIncludes</name>
-          <state>###Uninitialized###</state>
+          <state>$TOOLKIT_DIR$\LIB\</state>
         </option>
         <option>
           <name>ModuleStatus</name>
@@ -1880,7 +1883,7 @@
         </option>
         <option>
           <name>XclFile</name>
-          <state>lnk0t.xcl</state>
+          <state>$TOOLKIT_DIR$\config\devices\_generic\lnk51ew_8052.xcl</state>
         </option>
         <option>
           <name>XclFileSlave</name>
@@ -1988,7 +1991,7 @@
         </option>
         <option>
           <name>xcProgramEntryLabel</name>
-          <state></state>
+          <state>__program_start</state>
         </option>
         <option>
           <name>DebugInformation</name>
@@ -2016,7 +2019,7 @@
         </option>
         <option>
           <name>ExtraOutputFile</name>
-          <state></state>
+          <state>CC2530Bee.sim</state>
         </option>
         <option>
           <name>ExtraOutputFormat</name>
@@ -2106,7 +2109,7 @@
         </option>
         <option>
           <name>Linker Extra Options Edit</name>
-          <state></state>
+          <state> --ks_version</state>
         </option>
         <option>
           <name>CrcAlign</name>
