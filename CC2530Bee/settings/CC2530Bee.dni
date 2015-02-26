@@ -9,7 +9,7 @@ TriggerName=main
 LimitSize=0
 ByteLimit=50
 [DebugChecksum]
-Checksum=1911642353
+Checksum=1124683352
 [CallStack]
 ShowArgs=0
 [Disassembly]
@@ -24,17 +24,6 @@ Mode=1
 Graph=0
 Symbiont=0
 Exclusions=
-[struct_types]
-Fmt0=APIFrameHeader_t-length	4	0
-Fmt1=IEEE802154_Adress_t-shortAddress	4	0
-Fmt2=struct __Unnamed_2_158-destinationPANID	4	0
-[Log file]
-LoggingEnabled=_ 0
-LogFile=_ ""
-Category=_ 0
-[TermIOLog]
-LoggingEnabled=_ 0
-LogFile=_ ""
 [InterruptLog]
 LogEnabled=0
 SumEnabled=0
@@ -66,11 +55,21 @@ Enabled=0
 ShowSource=1
 [Simulator]
 Freq=50000000
+[struct_types]
+Fmt0=APIFrameHeader_t-length	4	0
+Fmt1=IEEE802154_Adress_t-shortAddress	4	0
 [Breakpoints]
 Count=0
 [ChipconEmu]
 Stop timers on halt=0
 Leave target running=1
+[Log file]
+LoggingEnabled=_ 0
+LogFile=_ ""
+Category=_ 0
+[TermIOLog]
+LoggingEnabled=_ 0
+LogFile=_ ""
 [Aliases]
 Count=0
 SuppressDialog=0

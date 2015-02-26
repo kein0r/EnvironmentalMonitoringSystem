@@ -111,15 +111,16 @@ void main( void )
   /* now everyhting is set-up, start main loop now */
   while(1)
   {
-    /* receive header via UART and convert length to little-endian */
-    UART_rxLength = USART_read((char *)&(rxAPIFrame.header), sizeof(APIFrameHeader_t));
-    /* received data is big-endian, mcu is little endian */
-    SWAP_UINT16(rxAPIFrame.header.length);
-    if ( (UART_rxLength == sizeof(APIFrameHeader_t)) && (rxAPIFrame.header.delimiter == UARTFrame_Delimiter) )
+    /* if enough bytes in Rx buffer parse it */
+    if (USART_numBytesInRxBuffer() >= sizeof(APIFrameHeader_t))
     {
+      /* receive header via UART and convert length to little-endian */
+      USART_read((char *)&(rxAPIFrame.header), sizeof(APIFrameHeader_t));
+      /* received data is big-endian, mcu is little endian */
+      SWAP_UINT16(rxAPIFrame.header.length);
       /* @todo Check for frame length to be maximum of buffer */
       /* only proceed if CRC was ok */
-      if (UARTAPI_receiveFrame(&rxAPIFrame) == UARTFrame_CRC_OK)
+      if ((rxAPIFrame.header.delimiter == UARTFrame_Delimiter) && UARTAPI_receiveFrame(&rxAPIFrame) == UARTFrame_CRC_OK)
       {
         switch (rxAPIFrame.data[0])
           {

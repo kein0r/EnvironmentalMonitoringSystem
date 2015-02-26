@@ -39,11 +39,6 @@
 */
 #define USART_RING_BUFFER_SIZE   32
 
-/**
- * #define to let other modules know that timer2 is used
- */
-//#define TIMER2_TIMER2_IN_USE
-
 /*******************| Type definitions |*******************************/
 
 /*******************| Type definitions |*******************************/
