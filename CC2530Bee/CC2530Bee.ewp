@@ -2202,6 +2202,12 @@
     <file>
       <name>$PROJ_DIR$\CC253x\USART.h</name>
     </file>
+    <file>
+      <name>$PROJ_DIR$\CC253x\WatchdogTimer.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\CC253x\WatchdogTimer.h</name>
+    </file>
   </group>
   <group>
     <name>IEEE_802.15.4</name>

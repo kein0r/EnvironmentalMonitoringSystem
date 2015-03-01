@@ -5,6 +5,7 @@
 #include <PlatformTypes.h>
 #include <board.h>
 #include <USART.h>
+#include <WatchdogTimer.h>
 #include <IEEE_802.15.4.h>
 #include <CC253x.h>
 #include <string.h>
@@ -68,6 +69,11 @@ APIFramePayload_t uartRxPayload[100];
 APIFrame_t txAPIFrame;
 APIFramePayload_t uartTxPayload[100];
 
+/**
+ * State of main state machine
+*/
+CC2530BeeState_t CC2530BeeState = CC2530BeeState_Normal;
+
 void main( void )
 {
   uint16_t atCommand;
@@ -108,9 +114,19 @@ void main( void )
   
   sleepTime.value = 0xffff;
   
+  // SLEEPSTA.RST
+  
+  /* Enable watchdog to 250ms */
+  WDT_init(WDT_INT_CLOCKTIMES8192);
+  
   /* now everyhting is set-up, start main loop now */
   while(1)
   {
+    /* Analyze current state, if in state CC2530BeeState_Normal read from UART */
+    if (CC2530BeeState == CC2530BeeState_Reset)
+    {
+    //SRCRC.FORCE_RESET
+    }
     /* if enough bytes in Rx buffer parse it */
     if (USART_numBytesInRxBuffer() >= sizeof(APIFrameHeader_t))
     {
@@ -350,8 +366,8 @@ void UARTAPI_readParameter(APIFramePayload_t *data)
   case UARTAPI_ATCOMMAND_SOFTWARERESET:
     /* not really a read but as it has no parameter it will be handled here */
     txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_STATUS] = UARTAPI_ATCOMMAND_RESPONSE_STATUS_OK;
-    /* Need to wait until UART Tx buffer is empty, therefore reset will be done in main loop */
-    //SRCRC.FORCE_RESET
+    /* Need to wait until UART Tx buffer is empty, therefore reset will be done in main loop and only switch to reset state here */
+    CC2530BeeState = CC2530BeeState_Reset;
     break;
   case UARTAPI_ATCOMMAND_CHANNEL:
     txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_STATUS] = UARTAPI_ATCOMMAND_RESPONSE_STATUS_OK;

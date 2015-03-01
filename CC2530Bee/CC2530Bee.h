@@ -211,6 +211,15 @@ typedef struct {
   uint8_t crc;
 } APIFrame_t;
 
+/**
+ * \brief States for CC2530 
+ * States for CC2530 main state machine
+*/
+typedef enum {
+  CC2530BeeState_Normal,
+  CC2530BeeState_Reset,
+} CC2530BeeState_t;
+
 /*******************| Global variables |*******************************/
 
 /*******************| Function prototypes |****************************/
