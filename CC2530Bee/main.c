@@ -40,6 +40,7 @@
 
  * Supported AT commands:
  * ========================
+ * - Software Rese FR: 0x4652
  * - Channel CH: 0x4848
  * - PanID ID: 0x4944
  * - Destination Address High DH: 0x4448
