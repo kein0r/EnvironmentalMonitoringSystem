@@ -122,6 +122,7 @@ void main( void )
   /* now everyhting is set-up, start main loop now */
   while(1)
   {
+    WDT_trigger();
     /* Analyze current state, if in state CC2530BeeState_Normal read from UART */
     if (CC2530BeeState == CC2530BeeState_Reset)
     {
@@ -367,7 +368,13 @@ void UARTAPI_readParameter(APIFramePayload_t *data)
     /* not really a read but as it has no parameter it will be handled here */
     txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_STATUS] = UARTAPI_ATCOMMAND_RESPONSE_STATUS_OK;
     /* Need to wait until UART Tx buffer is empty, therefore reset will be done in main loop and only switch to reset state here */
-    CC2530BeeState = CC2530BeeState_Reset;
+    /* Trigger watchdog one more time to make sure that UART tx buffer is empty and then for the watchdog to reset */
+    UARTAPI_sentFrame(txAPIFrame.data, UARTAPI_ATCOMMAND_RESPONSE_DATA);
+    WDT_trigger();
+    while (1)
+    {
+      nop();
+    }
     break;
   case UARTAPI_ATCOMMAND_CHANNEL:
     txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_STATUS] = UARTAPI_ATCOMMAND_RESPONSE_STATUS_OK;
