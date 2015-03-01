@@ -12,6 +12,7 @@ ser = serial.Serial(
 
 
 def sendFrame(message):
+    if (len(message) == 0): return
     ser.write( struct.pack('B',0x7e) )
     # must be set to >H later to use big-endian
     ser.write( struct.pack('H',len(message)) )
@@ -137,6 +138,7 @@ if (ser.isOpen()):
 
     # Reset test (FR = 4652)
     checkFrame([0x08, frameId, 0x46, 0x52],[0x88, frameId, 0x46, 0x52, 0])
+    checkFrame([], [0x8a, 0x01])
     frameId += 1
     
     # Tx tests

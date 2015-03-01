@@ -113,9 +113,20 @@ void main( void )
   }
   enableAllInterrupt();
   
-  sleepTime.value = 0xffff;
+  //sleepTime.value = 0xffff;
   
-  // SLEEPSTA.RST
+  /* Check for reset reason and report via USART */
+  txAPIFrame.data[0] = UARTAPI_MODEMSTATUS;
+  if ((SLEEPSTA & SLEEPSTA_RST_MASK) == SLEEPSTA_RST_EXTERNALRESET)
+  {
+    txAPIFrame.data[UARTAPI_MODEMSTATUS_DATA] = UARTAPI_MODEMSTATUS_HARDWARE_RESET;
+   UARTAPI_sentFrame(txAPIFrame.data, UARTAPI_MODEMSTATUS_LENGTH); 
+  }
+  if ((SLEEPSTA & SLEEPSTA_RST_MASK) == SLEEPSTA_RST_WATCHDOGRESET)
+  {
+    txAPIFrame.data[UARTAPI_MODEMSTATUS_DATA] = UARTAPI_MODEMSTATUS_WATCHDOG_RESET;
+    UARTAPI_sentFrame(txAPIFrame.data, UARTAPI_MODEMSTATUS_LENGTH);
+  }
   
   /* Enable watchdog to 250ms */
   WDT_init(WDT_INT_CLOCKTIMES8192);
@@ -368,7 +379,6 @@ void UARTAPI_readParameter(APIFramePayload_t *data)
   case UARTAPI_ATCOMMAND_SOFTWARERESET:
     /* not really a read but as it has no parameter it will be handled here */
     txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_STATUS] = UARTAPI_ATCOMMAND_RESPONSE_STATUS_OK;
-    /* Need to wait until UART Tx buffer is empty, therefore reset will be done in main loop and only switch to reset state here */
     /* Trigger watchdog one more time to make sure that UART tx buffer is empty and then for the watchdog to reset */
     UARTAPI_sentFrame(txAPIFrame.data, UARTAPI_ATCOMMAND_RESPONSE_DATA);
     WDT_trigger();

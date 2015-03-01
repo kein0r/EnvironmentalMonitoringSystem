@@ -93,14 +93,15 @@
 #define UARTAPI_RECEIVE_PACKAGE_NONE                    (uint8_t)0x82   /* Not defined in original chip */
 #define UARTAPI_ECHOTEST                                (uint8_t)0x44   /* Not defined in original chip, only for testing UART communication */
 
-
+#define UARTAPI_MODEMSTATUS_DATA                        (uint8_t)0x01
+#define UARTAPI_MODEMSTATUS_LENGTH                      (uint16_t)0x02
 #define UARTAPI_MODEMSTATUS_HARDWARE_RESET              (uint8_t)0x00
-#define UARTAPI_MODEMSTATUS_WATCHDOG_RESET              (uint8_t)0x00
-#define UARTAPI_MODEMSTATUS_ASSOCIATED                  (uint8_t)0x00
-#define UARTAPI_MODEMSTATUS_DISASSOCIATED               (uint8_t)0x00
-#define UARTAPI_MODEMSTATUS_SYNC_LOST                   (uint8_t)0x00
-#define UARTAPI_MODEMSTATUS_COORDINATOR_REALIGNMENT     (uint8_t)0x00
-#define UARTAPI_MODEMSTATUS_COORDINATOR_STARTED         (uint8_t)0x00
+#define UARTAPI_MODEMSTATUS_WATCHDOG_RESET              (uint8_t)0x01
+#define UARTAPI_MODEMSTATUS_ASSOCIATED                  (uint8_t)0x02
+#define UARTAPI_MODEMSTATUS_DISASSOCIATED               (uint8_t)0x03
+#define UARTAPI_MODEMSTATUS_SYNC_LOST                   (uint8_t)0x04
+#define UARTAPI_MODEMSTATUS_COORDINATOR_REALIGNMENT     (uint8_t)0x05
+#define UARTAPI_MODEMSTATUS_COORDINATOR_STARTED         (uint8_t)0x06
 
 #define UARTAPI_ATCOMMAND_FRAMEID                       (uint8_t)0x01
 #define UARTAPI_ATCOMMAND_COMMAND                       (uint8_t)0x02
