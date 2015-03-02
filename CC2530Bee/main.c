@@ -40,14 +40,14 @@
 
  * Supported AT commands:
  * ========================
- * - Software Rese FR: 0x4652
- * - Channel CH: 0x4848
- * - PanID ID: 0x4944
- * - Destination Address High DH: 0x4448
- * - Destination Address Low DL: 0x444c
- * - Source Address 16Bit MY: 0x 4d59
- * - Serialnumber High SH: 0x5348
- * - Serialnumber Low SL: 0x534c
+ * - Software Rese FR (R): 0x4652
+ * - Channel CH (R/W): 0x4848
+ * - PanID ID (R/W): 0x4944
+ * - Destination Address High DH (R/W): 0x4448
+ * - Destination Address Low DL (R/W): 0x444c
+ * - Source Address 16Bit MY (R/W): 0x 4d59
+ * - Serialnumber High SH (R): 0x5348
+ * - Serialnumber Low SL (R): 0x534c
 */
 
 /**
@@ -136,9 +136,10 @@ void main( void )
   {
     WDT_trigger();
     /* Analyze current state, if in state CC2530BeeState_Normal read from UART */
-    if (CC2530BeeState == CC2530BeeState_Reset)
+    if (CC2530BeeState == CC2530BeeState_ReInitIEEE802154)
     {
-    //SRCRC.FORCE_RESET
+      IEEE802154_radioInit(&(CC2530Bee_Config.IEEE802154_config));
+      CC2530BeeState = CC2530BeeState_Normal;
     }
     /* if enough bytes in Rx buffer parse it */
     if (USART_numBytesInRxBuffer() >= sizeof(APIFrameHeader_t))
@@ -379,7 +380,7 @@ void UARTAPI_readParameter(APIFramePayload_t *data)
   case UARTAPI_ATCOMMAND_SOFTWARERESET:
     /* not really a read but as it has no parameter it will be handled here */
     txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_STATUS] = UARTAPI_ATCOMMAND_RESPONSE_STATUS_OK;
-    /* Trigger watchdog one more time to make sure that UART tx buffer is empty and then for the watchdog to reset */
+    /* Trigger watchdog one more time to make sure that UART tx buffer can be emptied before watchdog reset */
     UARTAPI_sentFrame(txAPIFrame.data, UARTAPI_ATCOMMAND_RESPONSE_DATA);
     WDT_trigger();
     while (1)
@@ -439,8 +440,64 @@ void UARTAPI_readParameter(APIFramePayload_t *data)
   }
 }
 
-void UARTAPI_setParameter(APIFramePayload_t *dta)
+/**
+ * Sets different system parametes via AT commands
+ * If parameter is handled OK will be sent back if no invalid command is sent via UART
+ * @param data Pointer to data received within UART API frame
+*/
+void UARTAPI_setParameter(APIFramePayload_t *data)
 {
+  uint16_t atCommand;
+  /* get AT command and convert to little-endian */
+  atCommand = data[UARTAPI_ATCOMMAND_COMMAND] << 8 | data[UARTAPI_ATCOMMAND_COMMAND + 1];
+  /* Prepare general tx frame data. Copy frame ID an AT command to sent frame */  
+  txAPIFrame.data[0] = UARTAPI_ATCOMMAND_RESPONSE;
+  txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_FRAMEID] = data[UARTAPI_ATCOMMAND_FRAMEID];
+  txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_COMMAND] = data[UARTAPI_ATCOMMAND_COMMAND];
+  txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_COMMAND + 1] = data[UARTAPI_ATCOMMAND_COMMAND + 1];
+  /* As we will handle response status for each command, preset command status to "invalid command" */
+  txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_STATUS] = UARTAPI_ATCOMMAND_RESPONSE_STATUS_INVALID_CMD;
+  switch (atCommand)
+  {
+  case UARTAPI_ATCOMMAND_CHANNEL:
+    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_STATUS] = UARTAPI_ATCOMMAND_RESPONSE_STATUS_OK;
+    /* Only set new configuration here, changes will be done later in main loop */
+    CC2530Bee_Config.IEEE802154_config.Channel = data[UARTAPI_ATCOMMAND_DATA];
+    CC2530BeeState = CC2530BeeState_ReInitIEEE802154;
+    /* fall through */
+  case UARTAPI_ATCOMMAND_PANID:
+    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_STATUS] = UARTAPI_ATCOMMAND_RESPONSE_STATUS_OK;
+    CC2530Bee_Config.IEEE802154_config.PanID = (IEEE802154_PANIdentifier_t)data[UARTAPI_ATCOMMAND_DATA];
+    /* fall through */
+  case UARTAPI_ATCOMMAND_DESTINATIONADDRESSHIGH:
+    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_STATUS] = UARTAPI_ATCOMMAND_RESPONSE_STATUS_OK;
+    IEEE802154_TxDataFrame.destinationAddress.extendedAdress[4] = data[UARTAPI_ATCOMMAND_DATA];
+    IEEE802154_TxDataFrame.destinationAddress.extendedAdress[5] = data[UARTAPI_ATCOMMAND_DATA + 1];
+    IEEE802154_TxDataFrame.destinationAddress.extendedAdress[6] = data[UARTAPI_ATCOMMAND_DATA + 2];
+    IEEE802154_TxDataFrame.destinationAddress.extendedAdress[7] = data[UARTAPI_ATCOMMAND_DATA + 3];
+    /* fall through */
+  case UARTAPI_ATCOMMAND_DESTINATIONADDRESSLOW:
+    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_STATUS] = UARTAPI_ATCOMMAND_RESPONSE_STATUS_OK;
+    IEEE802154_TxDataFrame.destinationAddress.extendedAdress[0] = data[UARTAPI_ATCOMMAND_DATA];
+    IEEE802154_TxDataFrame.destinationAddress.extendedAdress[1] = data[UARTAPI_ATCOMMAND_DATA + 1];
+    IEEE802154_TxDataFrame.destinationAddress.extendedAdress[2] = data[UARTAPI_ATCOMMAND_DATA + 2];
+    IEEE802154_TxDataFrame.destinationAddress.extendedAdress[3] = data[UARTAPI_ATCOMMAND_DATA + 3];
+    /* fall through */
+  case UARTAPI_ATCOMMAND_SOURCEADDRESS16BIT:
+    txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_STATUS] = UARTAPI_ATCOMMAND_RESPONSE_STATUS_OK;
+    IEEE802154_TxDataFrame.sourceAddress.shortAddress = (IEEE802154_ShortAddress_t) data[UARTAPI_ATCOMMAND_DATA];
+    /* fall through */
+  case UARTAPI_ATCOMMAND_SERIALNUMBERHIGH:
+    /* 64bit address can't be changed */
+    /* fall through */
+  case UARTAPI_ATCOMMAND_SERIALNUMBERLOW:
+    /* 64bit address can't be changed */
+    /* fall through */
+  default:
+    /* all above cases are missing break-statement but just set response status. Sent UART frame now */
+    UARTAPI_sentFrame(txAPIFrame.data, UARTAPI_ATCOMMAND_RESPONSE_DATA);
+    break;
+  }
 }
 
 /**
