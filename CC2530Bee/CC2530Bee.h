@@ -105,7 +105,7 @@
 
 #define UARTAPI_ATCOMMAND_FRAMEID                       (uint8_t)0x01
 #define UARTAPI_ATCOMMAND_COMMAND                       (uint8_t)0x02
-#define UARTAPI_ATCOMMAND_DATA                          (uint8_t)0x04
+#define UARTAPI_ATCOMMAND_DATA                          (uint8_t)0x04           /* Start of data in AT command request */
 #define UARTAPI_ATCOMMAND_READ_LENGTH                   (uint16_t)0x04
 
 #define UARTAPI_ATCOMMAND_WRITE                         (uint16_t)0x5752        /* WR */
@@ -218,7 +218,7 @@ typedef struct {
 */
 typedef enum {
   CC2530BeeState_Normal,
-  CC2530BeeState_Reset,
+  CC2530BeeState_ReInitIEEE802154,
 } CC2530BeeState_t;
 
 /*******************| Global variables |*******************************/
