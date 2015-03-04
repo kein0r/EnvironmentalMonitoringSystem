@@ -467,7 +467,7 @@ void UARTAPI_setParameter(APIFramePayload_t *data)
     /* fall through */
   case UARTAPI_ATCOMMAND_PANID:
     txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_STATUS] = UARTAPI_ATCOMMAND_RESPONSE_STATUS_OK;
-    CC2530Bee_Config.IEEE802154_config.PanID = (IEEE802154_PANIdentifier_t)data[UARTAPI_ATCOMMAND_DATA];
+    CC2530Bee_Config.IEEE802154_config.PanID = *((IEEE802154_PANIdentifier_t*)&data[UARTAPI_ATCOMMAND_DATA]);
     /* fall through */
   case UARTAPI_ATCOMMAND_DESTINATIONADDRESSHIGH:
     txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_STATUS] = UARTAPI_ATCOMMAND_RESPONSE_STATUS_OK;
@@ -485,7 +485,7 @@ void UARTAPI_setParameter(APIFramePayload_t *data)
     /* fall through */
   case UARTAPI_ATCOMMAND_SOURCEADDRESS16BIT:
     txAPIFrame.data[UARTAPI_ATCOMMAND_RESPONSE_STATUS] = UARTAPI_ATCOMMAND_RESPONSE_STATUS_OK;
-    IEEE802154_TxDataFrame.sourceAddress.shortAddress = (IEEE802154_ShortAddress_t) data[UARTAPI_ATCOMMAND_DATA];
+    IEEE802154_TxDataFrame.sourceAddress.shortAddress = *((IEEE802154_ShortAddress_t*)&data[UARTAPI_ATCOMMAND_DATA]);
     /* fall through */
   case UARTAPI_ATCOMMAND_SERIALNUMBERHIGH:
     /* 64bit address can't be changed */
