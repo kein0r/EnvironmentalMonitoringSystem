@@ -36,7 +36,7 @@
  * - AT Command - Queue Parameter Value: API Identifier Value: 0x09
  * - Remote AT Command Request: API Identifier Value: 0x17
  * - Remote Command Response: API Identifier Value: 0x97
- * - All kind of nonvolatile storage of parametes 
+ * - All kind of nonvolatile storage of parameters 
 
  * Supported AT commands:
  * ========================
