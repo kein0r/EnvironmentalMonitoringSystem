@@ -3,12 +3,20 @@
 #include <PubSubClient.h>
 #include <Adafruit_Sensor.h>
 #include <DHT_U.h>
+#include <OneWire.h>
+#include <DallasTemperature.h>
 #include "Esp8266TemperaturHumiditySensor_cfg.h"
 
 WiFiClient espClient;
 PubSubClient client(espClient);
 
 DHT_Unified dht(DHT_PIN, DHT_TYPE);
+
+// Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
+OneWire oneWire(4);
+
+// Pass our oneWire reference to Dallas Temperature.
+DallasTemperature sensors(&oneWire);
 
 /**
  * Connect or re-connect to mqtt broker.
@@ -65,6 +73,7 @@ void setup() {
 
   /* Init Sensors */
   dht.begin();
+  sensors.begin();
 }
 
 void loop() {
@@ -91,5 +100,8 @@ void loop() {
       sprintf(sensorString, "%2.2f", event.relative_humidity);
       client.publish(SENSOR_HUMIDITYTOPIC, sensorString);
     }
+    sensors.requestTemperatures();
+    sprintf(sensorString, "%2.2f", sensors.getTempCByIndex(0));
+    client.publish(SENSOR_TEMPERATURETOPIC, sensorString);
     delay(SENSOR_MEASUREMENTTIMER);
 }
