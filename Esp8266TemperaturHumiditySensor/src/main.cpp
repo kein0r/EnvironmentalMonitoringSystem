@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
+#include <ESP8266mDNS.h>
 #include <PubSubClient.h>
 #include <Adafruit_Sensor.h>
 #include <DHT_U.h>
@@ -57,6 +58,7 @@ void setup() {
   Serial.begin(115200);
 
   /* Connect to WiFi, wait until connection was established */
+  WiFi.hostname(MQTT_CLIENTID);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   Serial.print("Connecting to WiFi ");
   while (WiFi.status() != WL_CONNECTED) {
@@ -66,6 +68,12 @@ void setup() {
   Serial.println(" connected");
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
+
+  /* Announce this device via mDNS */
+  if (!MDNS.begin(MQTT_CLIENTID)) {
+    Serial.println("Error setting up MDNS responder!");
+  }
+  //MDNS.addService("esp", "tcp", 8080); // Announce esp tcp service on port 8080
 
   /* Connect to mqtt broker */
   client.setServer(MQTT_BROKERADDRESS, MQTT_BROKERPORT);
