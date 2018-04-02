@@ -1,23 +1,30 @@
 #include <Arduino.h>
+#include "Esp8266TemperaturHumiditySensor_cfg.h"
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
 #include <PubSubClient.h>
+#ifdef DHT_TYPE
 #include <Adafruit_Sensor.h>
 #include <DHT_U.h>
+#endif
+#ifdef DS18B20_PIN
 #include <OneWire.h>
 #include <DallasTemperature.h>
-#include "Esp8266TemperaturHumiditySensor_cfg.h"
+#endif
 
 WiFiClient espClient;
 PubSubClient client(espClient);
 
+#ifdef DHT_TYPE
 DHT_Unified dht(DHT_PIN, DHT_TYPE);
+#endif
 
+#ifdef DS18B20_PIN
 // Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
-OneWire oneWire(4);
-
+OneWire oneWire(DS18B20_PIN);
 // Pass our oneWire reference to Dallas Temperature.
 DallasTemperature sensors(&oneWire);
+#endif
 
 /**
  * Connect or re-connect to mqtt broker.
@@ -80,23 +87,44 @@ void setup() {
   client.setCallback(mqttCallback);
 
   /* Init Sensors */
+#ifdef DHT_TYPE
   dht.begin();
+#endif
+#ifdef DS18B20_PIN
   sensors.begin();
+#endif
 }
 
 void loop() {
     reconnectMQTTBroker();
 
-    sensors_event_t event;
     char sensorString[20];
+    int numTemperatureSensorReadings = 0;
+    float temperatureSensorReadings = 0;
+#ifdef DS18B20_PIN
+    sensors.requestTemperatures();
+    numTemperatureSensorReadings++;
+    temperatureSensorReadings += sensors.getTempCByIndex(DS18B20_INDEX);
+#endif
+#ifdef DHT_TYPE
+    sensors_event_t event;
     dht.temperature().getEvent(&event);
     if (isnan(event.temperature)) {
       Serial.println("Error reading temperature!");
     }
     else {
-      sprintf(sensorString, "%2.2f", event.temperature);
+      numTemperatureSensorReadings++;
+      temperatureSensorReadings += event.temperature;
+    }
+#endif
+    if (numTemperatureSensorReadings > 0)
+    {
+      /* Calculate averate of all temperature sensor readings */
+      temperatureSensorReadings = temperatureSensorReadings/numTemperatureSensorReadings;
+      sprintf(sensorString, "%2.2f", temperatureSensorReadings);
       client.publish(SENSOR_TEMPERATURETOPIC, sensorString);
     }
+#ifdef DHT_TYPE
     /* Note: As long as we stay below minimum sample rate the sensor will not be
      * read again but just the values from the temperature reading above will
      * will be used. */
@@ -108,8 +136,6 @@ void loop() {
       sprintf(sensorString, "%2.2f", event.relative_humidity);
       client.publish(SENSOR_HUMIDITYTOPIC, sensorString);
     }
-    sensors.requestTemperatures();
-    sprintf(sensorString, "%2.2f", sensors.getTempCByIndex(0));
-    client.publish(SENSOR_TEMPERATURETOPIC, sensorString);
+#endif
     delay(SENSOR_MEASUREMENTTIMER);
 }

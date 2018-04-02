@@ -42,6 +42,13 @@
 #define DHT_PIN         2
 
 /**
+ * DS18B20 sensor configuration
+ * I/O pin which is connected to the DHT sensor
+ */
+#define DS18B20_PIN     4
+#define DS18B20_INDEX   0
+
+/**
  * Topics used by this sensor (all lower case)
  * SENSOR_HUMIDITYTOPIC and SENSOR_TEMPERATURETOPIC humidity and temperature to
  * be send to the MQTT broker
