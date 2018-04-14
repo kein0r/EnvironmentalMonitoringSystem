@@ -11,6 +11,7 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #endif
+#include "sensorOTA.h"
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -66,6 +67,7 @@ void setup() {
 
   /* Connect to WiFi, wait until connection was established */
   WiFi.hostname(MQTT_CLIENTID);
+  WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   Serial.print("Connecting to WiFi ");
   while (WiFi.status() != WL_CONNECTED) {
@@ -80,7 +82,8 @@ void setup() {
   if (!MDNS.begin(MQTT_CLIENTID)) {
     Serial.println("Error setting up MDNS responder!");
   }
-  //MDNS.addService("esp", "tcp", 8080); // Announce esp tcp service on port 8080
+
+  otaSetup();
 
   /* Connect to mqtt broker */
   client.setServer(MQTT_BROKERADDRESS, MQTT_BROKERPORT);
@@ -96,17 +99,21 @@ void setup() {
 }
 
 void loop() {
+  static unsigned long nextSensorRun = 0;
+  if (millis() > nextSensorRun)
+  {
+    nextSensorRun = millis() + SENSOR_MEASUREMENTTIMER;
     reconnectMQTTBroker();
 
     char sensorString[20];
     int numTemperatureSensorReadings = 0;
     float temperatureSensorReadings = 0;
-#ifdef DS18B20_PIN
+    #ifdef DS18B20_PIN
     sensors.requestTemperatures();
     numTemperatureSensorReadings++;
     temperatureSensorReadings += sensors.getTempCByIndex(DS18B20_INDEX);
-#endif
-#ifdef DHT_TYPE
+    #endif
+    #ifdef DHT_TYPE
     sensors_event_t event;
     dht.temperature().getEvent(&event);
     if (isnan(event.temperature)) {
@@ -116,7 +123,7 @@ void loop() {
       numTemperatureSensorReadings++;
       temperatureSensorReadings += event.temperature;
     }
-#endif
+    #endif
     if (numTemperatureSensorReadings > 0)
     {
       /* Calculate averate of all temperature sensor readings */
@@ -124,10 +131,10 @@ void loop() {
       sprintf(sensorString, "%2.2f", temperatureSensorReadings);
       client.publish(SENSOR_TEMPERATURETOPIC, sensorString);
     }
-#ifdef DHT_TYPE
+    #ifdef DHT_TYPE
     /* Note: As long as we stay below minimum sample rate the sensor will not be
-     * read again but just the values from the temperature reading above will
-     * will be used. */
+    * read again but just the values from the temperature reading above will
+    * will be used. */
     dht.humidity().getEvent(&event);
     if (isnan(event.relative_humidity)) {
       Serial.println("Error reading humidity!");
@@ -136,6 +143,7 @@ void loop() {
       sprintf(sensorString, "%2.2f", event.relative_humidity);
       client.publish(SENSOR_HUMIDITYTOPIC, sensorString);
     }
-#endif
-    delay(SENSOR_MEASUREMENTTIMER);
+    #endif
+  }
+  ArduinoOTA.handle();
 }
