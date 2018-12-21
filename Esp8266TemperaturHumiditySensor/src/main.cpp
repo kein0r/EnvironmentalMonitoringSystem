@@ -11,6 +11,9 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #endif
+#ifdef HTU21DF
+#include "Adafruit_HTU21DF.h"
+#endif
 #include "sensorOTA.h"
 
 WiFiClient espClient;
@@ -25,6 +28,10 @@ DHT_Unified dht(DHT_PIN, DHT_TYPE);
 OneWire oneWire(DS18B20_PIN);
 // Pass our oneWire reference to Dallas Temperature.
 DallasTemperature sensors(&oneWire);
+#endif
+
+#ifdef HTU21DF
+Adafruit_HTU21DF htu21df = Adafruit_HTU21DF();
 #endif
 
 /**
@@ -56,7 +63,7 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
   Serial.print("Message arrived [");
   Serial.print(topic);
   Serial.print("] ");
-  for (int i=0;i<length;i++) {
+  for (unsigned int i=0;i<length;i++) {
     Serial.print((char)payload[i]);
   }
   Serial.println();

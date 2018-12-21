@@ -49,6 +49,11 @@
 #define DS18B20_INDEX   0
 
 /**
+ * Adafruit HTU21D-F Temperature & Humidity Sensor
+*/
+#define HTU21DF
+
+/**
  * Topics used by this sensor (all lower case)
  * SENSOR_HUMIDITYTOPIC and SENSOR_TEMPERATURETOPIC humidity and temperature to
  * be send to the MQTT broker
