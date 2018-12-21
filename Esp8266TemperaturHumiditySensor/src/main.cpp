@@ -103,6 +103,9 @@ void setup() {
 #ifdef DS18B20_PIN
   sensors.begin();
 #endif
+#ifdef HTU21DF
+  htu21df.begin();
+#endif
 }
 
 void loop() {
@@ -115,6 +118,8 @@ void loop() {
     char sensorString[20];
     int numTemperatureSensorReadings = 0;
     float temperatureSensorReadings = 0;
+    int numHumiditySensorReadings = 0;
+    float humiditySensorReadings = 0;
     #ifdef DS18B20_PIN
     sensors.requestTemperatures();
     numTemperatureSensorReadings++;
@@ -130,6 +135,9 @@ void loop() {
       numTemperatureSensorReadings++;
       temperatureSensorReadings += event.temperature;
     }
+    #endif
+    #ifdef HTU21DF
+    temperatureSensorReadings += htu21df.readTemperature();
     #endif
     if (numTemperatureSensorReadings > 0)
     {
@@ -147,10 +155,19 @@ void loop() {
       Serial.println("Error reading humidity!");
     }
     else {
-      sprintf(sensorString, "%2.2f", event.relative_humidity);
-      client.publish(SENSOR_HUMIDITYTOPIC, sensorString);
+      numHumiditySensorReadings++;
+      humiditySensorReadings += event.relative_humidity;
     }
     #endif
+    #ifdef HTU21DF
+    humiditySensorReadings += htu21df.readHumidity();
+    numHumiditySensorReadings++;
+    #endif
+    if (numHumiditySensorReadings > 0) {
+      humiditySensorReadings = humiditySensorReadings/numHumiditySensorReadings;
+      sprintf(sensorString, "%2.2f", humiditySensorReadings);
+      client.publish(SENSOR_HUMIDITYTOPIC, sensorString);
+    }
   }
   ArduinoOTA.handle();
 }
