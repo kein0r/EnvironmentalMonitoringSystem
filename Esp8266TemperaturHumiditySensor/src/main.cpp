@@ -83,7 +83,10 @@ void setup() {
   }
   Serial.println(" connected");
   Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
+  Serial.print(WiFi.localIP());
+  Serial.print(" hostname: ");
+  Serial.println(MQTT_CLIENTID);
+
 
   /* Announce this device via mDNS */
   if (!MDNS.begin(MQTT_CLIENTID)) {
@@ -138,6 +141,7 @@ void loop() {
     #endif
     #ifdef HTU21DF
     temperatureSensorReadings += htu21df.readTemperature();
+    numTemperatureSensorReadings++;
     #endif
     if (numTemperatureSensorReadings > 0)
     {
@@ -145,6 +149,8 @@ void loop() {
       temperatureSensorReadings = temperatureSensorReadings/numTemperatureSensorReadings;
       sprintf(sensorString, "%2.2f", temperatureSensorReadings);
       client.publish(SENSOR_TEMPERATURETOPIC, sensorString);
+      Serial.print ("Temperature: ");
+      Serial.println (sensorString);
     }
     #ifdef DHT_TYPE
     /* Note: As long as we stay below minimum sample rate the sensor will not be
@@ -167,6 +173,8 @@ void loop() {
       humiditySensorReadings = humiditySensorReadings/numHumiditySensorReadings;
       sprintf(sensorString, "%2.2f", humiditySensorReadings);
       client.publish(SENSOR_HUMIDITYTOPIC, sensorString);
+      Serial.print ("Humidity: ");
+      Serial.println (sensorString);
     }
   }
   ArduinoOTA.handle();
