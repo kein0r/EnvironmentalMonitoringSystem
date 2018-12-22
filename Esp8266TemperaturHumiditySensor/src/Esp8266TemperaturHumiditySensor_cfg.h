@@ -15,7 +15,7 @@
  * Note: Can be overwritten using build_flags
  */
 #ifndef MQTT_CLIENTID
-#define MQTT_CLIENTID   "ESP8266Client"
+#define MQTT_CLIENTID   "LivingRoomSensor"
 #endif
 
 /**
@@ -38,14 +38,14 @@
  * - DHT 22 (AM2302)
  * DHT_PIN: I/O pin which is connected to the DHT sensor
 */
-#define DHT_TYPE        DHT22
+/* #define DHT_TYPE        DHT22 */
 #define DHT_PIN         2
 
 /**
  * DS18B20 sensor configuration
  * I/O pin which is connected to the DHT sensor
  */
-#define DS18B20_PIN     4
+/* #define DS18B20_PIN     4 */
 #define DS18B20_INDEX   0
 
 /**
@@ -59,9 +59,9 @@
  * be send to the MQTT broker
  * SENSOR_LEDTOPIC to subscribe to, to toggle the LED
  */
-#define SENSOR_TEMPERATURETOPIC "home/groundfloor/diningroom/temperature"
-#define SENSOR_HUMIDITYTOPIC    "home/groundfloor/diningroom/humidity"
-#define SENSOR_LEDTOPIC         "home/groundfloor/diningroom/led"
+#define SENSOR_TEMPERATURETOPIC "home/groundfloor/livingroom/temperature"
+#define SENSOR_HUMIDITYTOPIC    "home/groundfloor/livingroom/humidity"
+#define SENSOR_LEDTOPIC         "home/groundfloor/livingroom/led"
 #define SENSOR_MEASUREMENTTIMER (unsigned long)(2*60*1000)
 
 /**
