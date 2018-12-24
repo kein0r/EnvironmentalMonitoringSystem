@@ -1,8 +1,7 @@
 #include <Arduino.h>
 #include "Esp8266TemperaturHumiditySensor_cfg.h"
-#include <ESP8266WiFi.h>
+#include <Homie.h>
 #include <ESP8266mDNS.h>
-#include <PubSubClient.h>
 #ifdef DHT_TYPE
 #include <Adafruit_Sensor.h>
 #include <DHT_U.h>
@@ -14,10 +13,10 @@
 #ifdef HTU21DF
 #include "Adafruit_HTU21DF.h"
 #endif
-#include "sensorOTA.h"
 
-WiFiClient espClient;
-PubSubClient client(espClient);
+HomieNode temperatureNode("temperature", "temperature");
+HomieNode humidityNode("humidity", "humidity");
+bool htu21dfAvailable = false;
 
 #ifdef DHT_TYPE
 DHT_Unified dht(DHT_PIN, DHT_TYPE);
@@ -34,68 +33,7 @@ DallasTemperature sensors(&oneWire);
 Adafruit_HTU21DF htu21df = Adafruit_HTU21DF();
 #endif
 
-/**
- * Connect or re-connect to mqtt broker.
- * Note: This function is blocking! It will wait until a connection to the
- * mqtt broker can be established.
- */
-void reconnectMQTTBroker()
-{
-  while (!client.connected())
-  {
-    Serial.print("Connecting to MQTT broker ... ");
-    if (client.connect(MQTT_CLIENTID))
-    {
-      /* Publish some information about the module */
-      client.publish(ANNOUNCE_ADDRESSTOPIC, WiFi.localIP().toString().c_str());
-      Serial.println("connected!");
-    }
-    else
-    {
-      Serial.print("failed! State: ");
-      Serial.print(client.state());
-      delay(MQTT_RECONNECTTIMER);
-    }
-  }
-}
-
-void mqttCallback(char* topic, byte* payload, unsigned int length) {
-  Serial.print("Message arrived [");
-  Serial.print(topic);
-  Serial.print("] ");
-  for (unsigned int i=0;i<length;i++) {
-    Serial.print((char)payload[i]);
-  }
-  Serial.println();
-}
-
-void setup() {
-  Serial.begin(115200);
-
-  /* Connect to WiFi, wait until connection was established */
-  WiFi.hostname(MQTT_CLIENTID);
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  Serial.print("Connecting to WiFi ");
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println(" connected");
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
-
-  /* Announce this device via mDNS */
-  if (!MDNS.begin(MQTT_CLIENTID)) {
-    Serial.println("Error setting up MDNS responder!");
-  }
-
-  otaSetup();
-
-  /* Connect to mqtt broker */
-  client.setServer(MQTT_BROKERADDRESS, MQTT_BROKERPORT);
-  client.setCallback(mqttCallback);
-
+void setupHandler() {
   /* Init Sensors */
 #ifdef DHT_TYPE
   dht.begin();
@@ -104,16 +42,17 @@ void setup() {
   sensors.begin();
 #endif
 #ifdef HTU21DF
-  htu21df.begin();
+  htu21dfAvailable = htu21df.begin();
 #endif
+ temperatureNode.setProperty("unit").send("°C");
+ humidityNode.setProperty("unit").send("%");
 }
 
-void loop() {
+void loopHandler() {
   static unsigned long nextSensorRun = 0;
   if (millis() > nextSensorRun)
   {
     nextSensorRun = millis() + SENSOR_MEASUREMENTTIMER;
-    reconnectMQTTBroker();
 
     char sensorString[20];
     int numTemperatureSensorReadings = 0;
@@ -122,8 +61,11 @@ void loop() {
     float humiditySensorReadings = 0;
     #ifdef DS18B20_PIN
     sensors.requestTemperatures();
-    numTemperatureSensorReadings++;
-    temperatureSensorReadings += sensors.getTempCByIndex(DS18B20_INDEX);
+    if (sensors.getDS18Count() > 0)
+    {
+      numTemperatureSensorReadings++;
+      temperatureSensorReadings += sensors.getTempCByIndex(DS18B20_INDEX);
+    }
     #endif
     #ifdef DHT_TYPE
     sensors_event_t event;
@@ -135,18 +77,6 @@ void loop() {
       numTemperatureSensorReadings++;
       temperatureSensorReadings += event.temperature;
     }
-    #endif
-    #ifdef HTU21DF
-    temperatureSensorReadings += htu21df.readTemperature();
-    #endif
-    if (numTemperatureSensorReadings > 0)
-    {
-      /* Calculate averate of all temperature sensor readings */
-      temperatureSensorReadings = temperatureSensorReadings/numTemperatureSensorReadings;
-      sprintf(sensorString, "%2.2f", temperatureSensorReadings);
-      client.publish(SENSOR_TEMPERATURETOPIC, sensorString);
-    }
-    #ifdef DHT_TYPE
     /* Note: As long as we stay below minimum sample rate the sensor will not be
     * read again but just the values from the temperature reading above will
     * will be used. */
@@ -160,14 +90,47 @@ void loop() {
     }
     #endif
     #ifdef HTU21DF
-    humiditySensorReadings += htu21df.readHumidity();
-    numHumiditySensorReadings++;
+    if (htu21dfAvailable == true) {
+      temperatureSensorReadings += htu21df.readTemperature();
+      numTemperatureSensorReadings++;
+      humiditySensorReadings += htu21df.readHumidity();
+      numHumiditySensorReadings++;
+
+    }
     #endif
+    /* Calculate average of temperature and humidity and send out */
+    if (numTemperatureSensorReadings > 0)
+    {
+      /* Calculate averate of all temperature sensor readings */
+      temperatureSensorReadings = temperatureSensorReadings/numTemperatureSensorReadings;
+      sprintf(sensorString, "%2.2f", temperatureSensorReadings);
+      temperatureNode.setProperty("degree").send(sensorString);
+    }
     if (numHumiditySensorReadings > 0) {
       humiditySensorReadings = humiditySensorReadings/numHumiditySensorReadings;
       sprintf(sensorString, "%2.2f", humiditySensorReadings);
-      client.publish(SENSOR_HUMIDITYTOPIC, sensorString);
+      humidityNode.setProperty("percentage").send(sensorString);
     }
   }
-  ArduinoOTA.handle();
+}
+
+
+void setup() {
+  Serial.begin(115200);
+
+  /* Connect to WiFi, wait until connection was established */
+  Homie_setFirmware("TemperatureHumiditySensor", "1.0.0");
+  Homie.setSetupFunction(setupHandler).setLoopFunction(loopHandler);
+
+  temperatureNode.advertise("unit");
+  temperatureNode.advertise("degree");
+  humidityNode.advertise("unit");
+  humidityNode.advertise("percentage");
+
+  Homie.setup();
+}
+
+void loop()
+{
+  Homie.loop();
 }
