@@ -1,3 +1,10 @@
+/**
+ * Generic sensor using homie scheeme
+ * MQTT scheeme is done by https://github.com/marvinroger/homie-esp8266
+ * Flash software via OTA or Serial. To reset configuration hold FLASH
+ * buttong for 5+ seconds. Open http://marvinroger.github.io/homie-esp8266/configurators/v2/
+ * and connect to AP provided hardware
+ */
 #include <Arduino.h>
 #include "Esp8266TemperaturHumiditySensor_cfg.h"
 #include <Homie.h>
