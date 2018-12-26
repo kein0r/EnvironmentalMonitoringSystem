@@ -1,3 +1,5 @@
+#ifndef ESP8266TEMPERATURHUMIDITYSENSOR_H
+#define ESP8266TEMPERATURHUMIDITYSENSOR_H
 /**
  * DHT sensor configuration
  * DHT_TYPE:
@@ -24,3 +26,5 @@
 /**
  */
 #define SENSOR_MEASUREMENTTIMER (unsigned long)(2*60*1000)
+
+#endif

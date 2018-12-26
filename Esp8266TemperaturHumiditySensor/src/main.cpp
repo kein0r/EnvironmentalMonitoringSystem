@@ -6,7 +6,7 @@
  * and connect to AP provided hardware
  */
 #include <Arduino.h>
-#include "Esp8266TemperaturHumiditySensor_cfg.h"
+#include "Esp8266TemperaturHumiditySensor.h"
 #include <Homie.h>
 #include <ESP8266mDNS.h>
 #ifdef DHT_TYPE
