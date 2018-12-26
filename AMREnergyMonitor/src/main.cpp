@@ -1,5 +1,6 @@
 #include <Arduino.h>
-#include "AMREneryMonitor.h"
+#include <RH_RF69.h>
+#include "AMREnergyMonitor.h"
 
 /*
  * RF hardware https://learn.adafruit.com/adafruit-rfm69hcw-and-rfm96-rfm95-rfm98-lora-packet-padio-breakouts
@@ -14,8 +15,13 @@ amplifier chain that provides a signal of approximately 100mW. The antenna is tu
 at the carrier frequency
 */
 
+typedef enum EnergyMonitorState {ENERGYMONITORSTATE_NONE,
+                                 ENERGYMONITORSTATE_INIT,
+                                 ENERGYMONITORSTATE_RUNNING
+} EnergyMonitorState_t;
+
 // Singleton instance of the radio driver
-RH_RF69 rf69(RFM69_CS, RFM69_INT);
+RH_RF69 rf69(RFM69_CS, RFM69_IRQ);
 
 void setup() {
   Serial.begin(115200);
@@ -28,6 +34,11 @@ void setup() {
   delay(10);
   digitalWrite(RFM69_RST, LOW);
   delay(10);
+
+  if (rf69.init())
+  {
+    Serial.println("RFM69 successfulyl initialized");
+  }
 }
 
 void loop() {
