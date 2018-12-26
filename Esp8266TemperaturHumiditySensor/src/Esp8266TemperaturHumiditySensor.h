@@ -27,4 +27,4 @@
  */
 #define SENSOR_MEASUREMENTTIMER (unsigned long)(2*60*1000)
 
-#endif
+#endif /* ESP8266TEMPERATURHUMIDITYSENSOR_H */
