@@ -15,10 +15,11 @@ amplifier chain that provides a signal of approximately 100mW. The antenna is tu
 at the carrier frequency
 */
 
-typedef enum EnergyMonitorState {ENERGYMONITORSTATE_NONE,
-                                 ENERGYMONITORSTATE_INIT,
-                                 ENERGYMONITORSTATE_RUNNING
+typedef enum {ENERGYMONITORSTATE_NONE,
+              ENERGYMONITORSTATE_INITIALIZED,
+              ENERGYMONITORSTATE_FREQUENCYSET
 } EnergyMonitorState_t;
+EnergyMonitorState_t EnergyMonitorState = ENERGYMONITORSTATE_NONE;
 
 // Singleton instance of the radio driver
 RH_RF69 rf69(RFM69_CS, RFM69_IRQ);
@@ -38,9 +39,44 @@ void setup() {
   if (rf69.init())
   {
     Serial.println("RFM69 successfulyl initialized");
+    EnergyMonitorState = ENERGYMONITORSTATE_INITIALIZED;
+  }
+  if (rf69.setFrequency(RF69_FREQ)) {
+    /* If you are using a high power RF69 eg RFM69HW, you *must* set a Tx power with the
+     * ishighpowermodule flag set like this: */
+    rf69.setTxPower(20, true);  // range from 14-20 for power, 2nd arg must be true for 69HCW
+    EnergyMonitorState = ENERGYMONITORSTATE_FREQUENCYSET;
+    Serial.println("RFM69 frequency set");
   }
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
+void loop()
+{
+  if (EnergyMonitorState == ENERGYMONITORSTATE_FREQUENCYSET) {
+    if (rf69.available()) {
+      // Should be a message for us now
+      uint8_t buf[RH_RF69_MAX_MESSAGE_LEN];
+      uint8_t len = sizeof(buf);
+      if (rf69.recv(buf, &len)) {
+        if (!len) return;
+        buf[len] = 0;
+        Serial.print("Received [");
+        Serial.print(len);
+        Serial.print("]: ");
+        Serial.println((char*)buf);
+        Serial.print("RSSI: ");
+        Serial.println(rf69.lastRssi(), DEC);
+
+        if (strstr((char *)buf, "Hello World")) {
+          // Send a reply!
+          uint8_t data[] = "And hello back to you";
+          rf69.send(data, sizeof(data));
+          rf69.waitPacketSent();
+          Serial.println("Sent a reply");
+        }
+      } else {
+        Serial.println("Receive failed");
+      }
+    }
+  }
 }
