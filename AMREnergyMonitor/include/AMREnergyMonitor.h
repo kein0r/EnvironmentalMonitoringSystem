@@ -16,7 +16,8 @@
  */
 #define RFM69_CS      15   // "E"
 #define RFM69_IRQ     4    // G0 on rf board
+#define RFM69_IRQN    digitalPinToInterrupt(RFM69_IRQ)
 #define RFM69_RST     2    // "D"
-#define LED           0
+#define STATUSLED     0
 
 #endif

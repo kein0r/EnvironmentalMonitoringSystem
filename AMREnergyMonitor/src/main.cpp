@@ -1,6 +1,8 @@
 #include <Arduino.h>
-#include <RH_RF69.h>
 #include "AMREnergyMonitor.h"
+#include <Homie.h>
+#include <RH_RF69.h>
+#include <ESP8266mDNS.h>
 
 /*
  * RF hardware https://learn.adafruit.com/adafruit-rfm69hcw-and-rfm96-rfm95-rfm98-lora-packet-padio-breakouts
@@ -15,18 +17,15 @@ amplifier chain that provides a signal of approximately 100mW. The antenna is tu
 at the carrier frequency
 */
 
-typedef enum {ENERGYMONITORSTATE_NONE,
-              ENERGYMONITORSTATE_INITIALIZED,
-              ENERGYMONITORSTATE_FREQUENCYSET
-} EnergyMonitorState_t;
-EnergyMonitorState_t EnergyMonitorState = ENERGYMONITORSTATE_NONE;
+unsigned long nextStatusTime = 0;
+uint8_t statusLEDState = LOW;
 
 // Singleton instance of the radio driver
-RH_RF69 rf69(RFM69_CS, RFM69_IRQ);
+RH_RF69 rf69(RFM69_CS, RFM69_IRQN);
 
-void setup() {
-  Serial.begin(115200);
+void setupHandler() {
   pinMode(RFM69_RST, OUTPUT);
+  pinMode(STATUSLED, OUTPUT);
 
   digitalWrite(RFM69_RST, LOW);
 
@@ -39,44 +38,60 @@ void setup() {
   if (rf69.init())
   {
     Serial.println("RFM69 successfulyl initialized");
-    EnergyMonitorState = ENERGYMONITORSTATE_INITIALIZED;
   }
   if (rf69.setFrequency(RF69_FREQ)) {
     /* If you are using a high power RF69 eg RFM69HW, you *must* set a Tx power with the
      * ishighpowermodule flag set like this: */
     rf69.setTxPower(20, true);  // range from 14-20 for power, 2nd arg must be true for 69HCW
-    EnergyMonitorState = ENERGYMONITORSTATE_FREQUENCYSET;
     Serial.println("RFM69 frequency set");
   }
 }
 
-void loop()
+void loopHandler()
 {
-  if (EnergyMonitorState == ENERGYMONITORSTATE_FREQUENCYSET) {
-    if (rf69.available()) {
-      // Should be a message for us now
-      uint8_t buf[RH_RF69_MAX_MESSAGE_LEN];
-      uint8_t len = sizeof(buf);
-      if (rf69.recv(buf, &len)) {
-        if (!len) return;
-        buf[len] = 0;
-        Serial.print("Received [");
-        Serial.print(len);
-        Serial.print("]: ");
-        Serial.println((char*)buf);
-        Serial.print("RSSI: ");
-        Serial.println(rf69.lastRssi(), DEC);
+  if (millis() > nextStatusTime)
+  {
+    digitalWrite(STATUSLED, statusLEDState);
+    statusLEDState = (statusLEDState == HIGH) ? LOW : HIGH;
+    nextStatusTime = millis() + 1000;
+  }
+  if (rf69.available()) {
+    // Should be a message for us now
+    uint8_t buf[RH_RF69_MAX_MESSAGE_LEN];
+    uint8_t len = sizeof(buf);
+    if (rf69.recv(buf, &len)) {
+      if (!len) return;
+      buf[len] = 0;
+      Serial.print("Received [");
+      Serial.print(len);
+      Serial.print("]: ");
+      Serial.println((char*)buf);
+      Serial.print("RSSI: ");
+      Serial.println(rf69.lastRssi(), DEC);
 
-        if (strstr((char *)buf, "Hello World")) {
-          // Send a reply!
-          uint8_t data[] = "And hello back to you";
-          rf69.send(data, sizeof(data));
-          rf69.waitPacketSent();
-          Serial.println("Sent a reply");
-        }
-      } else {
-        Serial.println("Receive failed");
+      if (strstr((char *)buf, "Hello World")) {
+        // Send a reply!
+        uint8_t data[] = "And hello back to you";
+        rf69.send(data, sizeof(data));
+        rf69.waitPacketSent();
+        Serial.println("Sent a reply");
       }
+    } else {
+      Serial.println("Receive failed");
     }
   }
+}
+
+void setup()
+{
+  Serial.begin(115200);
+  /* Connect to WiFi, wait until connection was established */
+  Homie_setFirmware("AMREnergyMonitor", "0.0.1");
+  Homie.setSetupFunction(setupHandler).setLoopFunction(loopHandler);
+  Homie.setup();
+}
+
+void loop()
+{
+  Homie.loop();
 }
