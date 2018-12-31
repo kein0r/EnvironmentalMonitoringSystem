@@ -23,7 +23,7 @@ unsigned long nextStatusTime = 0;
 uint8_t statusLEDState = LOW;
 
 // Singleton instance of the radio driver
-RH_RF69 rf69(RFM69_CS, RFM69_IRQN);
+RH_RF69 rf69(RFM69_CS, RFM69_IRQ);
 
 void setupHandler() {
   pinMode(RFM69_RST, OUTPUT);
