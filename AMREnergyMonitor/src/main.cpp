@@ -39,11 +39,8 @@ Interval Data Message (IDM Message)
  * Packet length        0x5cc6  (2 byte, fix)
  * Application version  0x04    (1 byte, fix)
  * ERT type             0x17    (1 byte, last 4 bits determine type)
- * Preample 20 bits     matches: 0b111110010101001100000 = 0x1F2A60 from https://github.com/bemasher/rtlamr
-
 */
 
-RH_RF69::ModemConfigChoice modemConfig = RH_RF69::OOK_Rb1Bw1;
 uint8_t IDMMessageSyncWord[] = { 0x16, 0xa3 };
 
 unsigned long nextStatusTime = 0;
@@ -52,6 +49,16 @@ uint8_t statusLEDState = LOW;
 
 // Singleton instance of the radio driver
 RH_RF69 rf69(RFM69_CS, RFM69_IRQ);
+
+void serialPrintBinary(uint16_t content)
+{
+  for (int i=0; i<16; i++)
+  {
+    if ((i%2) == 0) Serial.print(" ");
+    content & 0x8000 ? Serial.print('1') : Serial.print('0');
+    content = content << 1;
+  }
+}
 
 void setupHandler() {
   pinMode(RFM69_RST, OUTPUT);
@@ -64,20 +71,28 @@ void setupHandler() {
   delay(10);
   digitalWrite(RFM69_RST, LOW);
   delay(10);
-
   if (rf69.init())
   {
     Serial.println("RFM69 successfulyl initialized");
   }
-  rf69.setModemConfig(RH_RF69::OOK_Rb32Bw64);
-  rf69.setPreambleLength(IDM_PREAMBLELENGTH);
-  rf69.setSyncWords(IDMMessageSyncWord, IDM_SYNCWORDLENGTH);
   if (rf69.setFrequency(RF69_FREQ)) {
     /* If you are using a high power RF69 eg RFM69HW, you *must* set a Tx power with the
      * ishighpowermodule flag set like this: */
     rf69.setTxPower(20, true);  // range from 14-20 for power, 2nd arg must be true for 69HCW
     Serial.println("RFM69 frequency set");
   }
+  rf69.setModemConfig(RH_RF69::OOK_Rb32Bw64);
+  /* Change to Manchester encoding and disbale CRC check for now */
+  rf69.spiWrite(RH_RF69_REG_37_PACKETCONFIG1, (RH_RF69_PACKETCONFIG1_PACKETFORMAT_VARIABLE | RH_RF69_PACKETCONFIG1_DCFREE_MANCHESTER | RH_RF69_PACKETCONFIG1_ADDRESSFILTERING_NONE));
+  rf69.setPreambleLength(IDM_PREAMBLELENGTH);
+  /* rf69.setSyncWords(IDMMessageSyncWord, IDM_SYNCWORDLENGTH); */
+  rf69.setSyncWords(IDMMessageSyncWord, 0);
+#if 0
+  /* go back to continous mode for now */
+  rf69.spiWrite(RH_RF69_REG_2E_SYNCCONFIG, 0b00000000); /* SyncOn = 0 */
+  rf69.spiWrite(RH_RF69_REG_02_DATAMODUL, (0b01000000 | RH_RF69_DATAMODUL_MODULATIONTYPE_OOK | RH_RF69_DATAMODUL_MODULATIONSHAPING_OOK_NONE));
+#endif
+  Serial.println("RFM69 initialization complete!");
 
   ArduinoOTA.onStart([]() {
     Serial.println("Start");
@@ -107,21 +122,19 @@ void loopHandler()
     statusLEDState = (statusLEDState == HIGH) ? LOW : HIGH;
     nextStatusTime = millis() + 1000;
   }
-/*
-  if (millis() > nextModemConfigChange)
+  if (Serial.available())
   {
-    if (modemConfig != RH_RF69::OOK_Rb32Bw64)
+    /* Empty inc stream */
+    while (Serial.available() > 0)
     {
-      modemConfig += 1;
+      Serial.read();
     }
-    else
-    {
-      modemConfig = RH_RF69::OOK_Rb1Bw1;
-    }
-    Serial.print("Set ModemConfig to: ");
-    Serial.println(modemConfig);
-    rf69.setModemConfig(modemConfig);
-  }*/
+    Serial.print("Reg 0x01"); serialPrintBinary(rf69.spiRead(RH_RF69_REG_01_OPMODE));Serial.println();
+    Serial.print("Reg 0x02"); serialPrintBinary(rf69.spiRead(RH_RF69_REG_02_DATAMODUL));Serial.println();
+    Serial.print("Reg 0x37"); serialPrintBinary(rf69.spiRead(RH_RF69_REG_37_PACKETCONFIG1));Serial.println();
+    Serial.print("Reg 0x38"); Serial.println();(rf69.spiRead(RH_RF69_REG_38_PAYLOADLENGTH));
+    Serial.print("Reg 0x3b"); serialPrintBinary(rf69.spiRead(RH_RF69_REG_3B_AUTOMODES));Serial.println();
+  }
   if (rf69.available())
   {
     // Should be a message for us now
@@ -133,17 +146,13 @@ void loopHandler()
       Serial.print("Received [");
       Serial.print(len);
       Serial.print("]: ");
-      Serial.println((char*)buf);
+      for (int i=0; i<len; i++)
+      {
+        Serial.print(buf[i], HEX);
+      }
+      Serial.println();
       Serial.print("RSSI: ");
       Serial.println(rf69.lastRssi(), DEC);
-
-      if (strstr((char *)buf, "Hello World")) {
-        // Send a reply!
-        uint8_t data[] = "And hello back to you";
-        rf69.send(data, sizeof(data));
-        rf69.waitPacketSent();
-        Serial.println("Sent a reply");
-      }
     } else {
       Serial.println("Receive failed");
     }
