@@ -43,21 +43,51 @@ Interval Data Message (IDM Message)
 
 uint8_t IDMMessageSyncWord[] = { 0x16, 0xa3 };
 
+uint8_t rxBufferIDM[0x5c];
+bool rxBufferValid = false;
+
 unsigned long nextStatusTime = 0;
 unsigned long nextModemConfigChange = 0;
 uint8_t statusLEDState = LOW;
+
+sint8_t lastRSSI = 0;
+uint8_t lastCRCOk = 0;
 
 // Singleton instance of the radio driver
 RH_RF69 rf69(RFM69_CS, RFM69_IRQ);
 
 void serialPrintBinary(uint16_t content)
 {
-  for (int i=0; i<16; i++)
+  for (int i=0; i<8; i++)
   {
-    if ((i%2) == 0) Serial.print(" ");
-    content & 0x8000 ? Serial.print('1') : Serial.print('0');
+    if ((i%4) == 0) Serial.print(" ");
+    content & 0x80 ? Serial.print('1') : Serial.print('0');
     content = content << 1;
   }
+}
+
+void myRF69ISR()
+{
+  // Get the interrupt cause
+  ATOMIC_BLOCK_START;
+  uint8_t irqflags2 = rf69.spiRead(RH_RF69_REG_28_IRQFLAGS2);
+  if (irqflags2 & RH_RF69_IRQFLAGS2_PAYLOADREADY)
+  {
+	  // A complete message has been received with (good) CRC
+	  lastRSSI = -((int8_t)(rf69.spiRead(RH_RF69_REG_24_RSSIVALUE) >> 1));
+    lastCRCOk = rf69.spiRead((RH_RF69_REG_28_IRQFLAGS2 & RH_RF69_IRQFLAGS2_CRCOK) >> 1);
+
+	  rf69.setModeIdle();
+    rf69.spiBurstRead(RH_RF69_REG_00_FIFO, rxBufferIDM, 0x5c-2-2);
+    rxBufferValid = true;
+  }
+  ATOMIC_BLOCK_END;
+}
+
+bool myAvailable()
+{
+  rf69.setModeRx(); // Make sure we are receiving
+  return rxBufferValid;
 }
 
 void setupHandler() {
@@ -82,9 +112,14 @@ void setupHandler() {
     Serial.println("RFM69 frequency set");
   }
   rf69.setModemConfig(RH_RF69::OOK_Rb32Bw64);
-  /* Change to Manchester encoding and disbale CRC check for now */
-  rf69.spiWrite(RH_RF69_REG_37_PACKETCONFIG1, (RH_RF69_PACKETCONFIG1_PACKETFORMAT_VARIABLE | RH_RF69_PACKETCONFIG1_DCFREE_MANCHESTER | RH_RF69_PACKETCONFIG1_ADDRESSFILTERING_NONE));
+  //rf69.spiWrite(RH_RF69_REG_03_BITRATEMSB, 1);
+  //rf69.spiWrite(RH_RF69_REG_04_BITRATELSB, 0xf4);
+  /* Change to fix-length, Manchester encoding and set to trigger ISR even if CRC does not match. */
+  rf69.spiWrite(RH_RF69_REG_37_PACKETCONFIG1, (RH_RF69_PACKETCONFIG1_PACKETFORMAT_VARIABLE | RH_RF69_PACKETCONFIG1_DCFREE_MANCHESTER  | RH_RF69_PACKETCONFIG1_CRCAUTOCLEAROFF | RH_RF69_PACKETCONFIG1_ADDRESSFILTERING_NONE));
+  rf69.spiWrite(RH_RF69_REG_38_PAYLOADLENGTH, 0x5c-2-2);  /* 0x5c minus preamble and CRC (each two bytes) */
   rf69.setPreambleLength(IDM_PREAMBLELENGTH);
+  /* map interrupt to own function */
+  attachInterrupt(digitalPinToInterrupt(RFM69_IRQ), myRF69ISR, RISING);
   /* rf69.setSyncWords(IDMMessageSyncWord, IDM_SYNCWORDLENGTH); */
   rf69.setSyncWords(IDMMessageSyncWord, 0);
 #if 0
@@ -132,30 +167,24 @@ void loopHandler()
     Serial.print("Reg 0x01"); serialPrintBinary(rf69.spiRead(RH_RF69_REG_01_OPMODE));Serial.println();
     Serial.print("Reg 0x02"); serialPrintBinary(rf69.spiRead(RH_RF69_REG_02_DATAMODUL));Serial.println();
     Serial.print("Reg 0x37"); serialPrintBinary(rf69.spiRead(RH_RF69_REG_37_PACKETCONFIG1));Serial.println();
-    Serial.print("Reg 0x38"); Serial.println();(rf69.spiRead(RH_RF69_REG_38_PAYLOADLENGTH));
+    Serial.print("Reg 0x38 "); Serial.println(rf69.spiRead(RH_RF69_REG_38_PAYLOADLENGTH));
     Serial.print("Reg 0x3b"); serialPrintBinary(rf69.spiRead(RH_RF69_REG_3B_AUTOMODES));Serial.println();
   }
-  if (rf69.available())
+  if (myAvailable())
   {
     // Should be a message for us now
-    uint8_t buf[RH_RF69_MAX_MESSAGE_LEN];
-    uint8_t len = sizeof(buf);
-    if (rf69.recv(buf, &len)) {
-      if (!len) return;
-      buf[len] = 0;
-      Serial.print("Received [");
-      Serial.print(len);
-      Serial.print("]: ");
-      for (int i=0; i<len; i++)
-      {
-        Serial.print(buf[i], HEX);
-      }
-      Serial.println();
-      Serial.print("RSSI: ");
-      Serial.println(rf69.lastRssi(), DEC);
-    } else {
-      Serial.println("Receive failed");
+    Serial.print(millis());
+    Serial.print(": Rcvd: ");
+    ATOMIC_BLOCK_START;
+    for (int i=0; i<sizeof(rxBufferIDM); i++)
+    {
+      Serial.print(rxBufferIDM[i], HEX);
+      Serial.print(" ");
     }
+    Serial.print(" RSSI: ");
+    Serial.println(lastRSSI, DEC);
+    rxBufferValid = false;
+    ATOMIC_BLOCK_END;
   }
   ArduinoOTA.handle();
 }
