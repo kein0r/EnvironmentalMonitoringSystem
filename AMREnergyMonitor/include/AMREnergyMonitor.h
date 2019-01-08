@@ -8,7 +8,7 @@
  * According to https://github.com/bemasher/rtlamr/blob/master/scm/scm.go 912MHz
  * According to https://www.mathworks.com/help/supportpkg/plutoradio/examples/automatic-meter-reading-1.html 915MHz
  */
-#define RF69_FREQ         (float)915.0
+#define RF69_FREQ         (float)912.0
 
 /**
  * Define TX power. Range from 14-20
@@ -48,7 +48,6 @@ typedef struct {
   uint8_t differentialConsumptionIntervals[53]; /* 47 9-bit integer (metered consumption), leftmost interval is most recent */
   uint16_t transmitTimeOffset;      /* Time elapsed since last interval ended */
   uint16_t serialNumberCRC;         /* CRC-16-CCITT of ERT serial no */
-  uint16_t messageCRT;              /* CRC-16-CCITT of complete messae */
 } IntervalDataMessage_t;
 
 #endif
