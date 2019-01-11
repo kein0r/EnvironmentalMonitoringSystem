@@ -8,7 +8,7 @@
  * According to https://github.com/bemasher/rtlamr/blob/master/scm/scm.go 912MHz
  * According to https://www.mathworks.com/help/supportpkg/plutoradio/examples/automatic-meter-reading-1.html 915MHz
  */
-#define RF69_FREQ         (float)912.0
+#define RF69_FREQ         (float)915.0
 
 /**
  * Define TX power. Range from 14-20
