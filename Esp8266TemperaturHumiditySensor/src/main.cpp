@@ -6,8 +6,10 @@
  * and connect to AP provided hardware
  */
 #include <Arduino.h>
+#include <Thing.h>
+#include <WebThingAdapter.h>
+#include <ESP8266WiFi.h>
 #include "Esp8266TemperaturHumiditySensor.h"
-#include <Homie.h>
 #include <ESP8266mDNS.h>
 #ifdef DHT_TYPE
 #include <Adafruit_Sensor.h>
@@ -21,8 +23,6 @@
 #include "Adafruit_HTU21DF.h"
 #endif
 
-HomieNode temperatureNode("temperature", "temperature");
-HomieNode humidityNode("humidity", "humidity");
 bool htu21dfAvailable = false;
 
 #ifdef DHT_TYPE
@@ -40,7 +40,34 @@ DallasTemperature sensors(&oneWire);
 Adafruit_HTU21DF htu21df = Adafruit_HTU21DF();
 #endif
 
-void setupHandler() {
+WebThingAdapter* adapter;
+
+const char* lampTypes[] = {"OnOffSwitch", "Light", nullptr};
+ThingDevice lamp("lamp", "My Lamp", lampTypes);
+
+ThingProperty lampOn("on", "Whether the lamp is turned on", BOOLEAN, "OnOffProperty");
+ThingProperty lampLevel("level", "The level of light from 0-100", NUMBER, "BrightnessProperty");
+
+
+void setup() {
+  Serial.begin(115200);
+  /* Connect to WiFi, wait until connection was established */
+  WiFi.hostname(MQTT_CLIENTID);
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  Serial.print("Connecting to WiFi ");
+  bool blink = true;
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    digitalWrite(LED_BUILTIN, blink ? LOW : HIGH); // active low led
+    Serial.print(".");
+  }
+  //Start mDNS with name esp8266
+  MDNS.begin(MQTT_CLIENTID);
+  Serial.println(" connected");
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+
   /* Init Sensors */
 #ifdef DHT_TYPE
   dht.begin();
@@ -51,11 +78,20 @@ void setupHandler() {
 #ifdef HTU21DF
   htu21dfAvailable = htu21df.begin();
 #endif
- temperatureNode.setProperty("unit").send("°C");
- humidityNode.setProperty("unit").send("%");
+
+  adapter = new WebThingAdapter("led-lamp", WiFi.localIP());
+  lamp.addProperty(&lampOn);
+  lamp.addProperty(&lampLevel);
+  adapter->addDevice(&lamp);
+  adapter->begin();
+  Serial.println("HTTP server started");
+  Serial.print("http://");
+  Serial.print(WiFi.localIP());
+  Serial.print("/things/");
+  Serial.println(lamp.id);
 }
 
-void loopHandler() {
+void loop2() {
   static unsigned long nextSensorRun = 0;
   if (millis() > nextSensorRun)
   {
@@ -111,33 +147,16 @@ void loopHandler() {
       /* Calculate averate of all temperature sensor readings */
       temperatureSensorReadings = temperatureSensorReadings/numTemperatureSensorReadings;
       sprintf(sensorString, "%2.2f", temperatureSensorReadings);
-      temperatureNode.setProperty("degree").send(sensorString);
+      //temperatureNode.setProperty("degree").send(sensorString);
     }
     if (numHumiditySensorReadings > 0) {
       humiditySensorReadings = humiditySensorReadings/numHumiditySensorReadings;
       sprintf(sensorString, "%2.2f", humiditySensorReadings);
-      humidityNode.setProperty("percentage").send(sensorString);
+      //humidityNode.setProperty("percentage").send(sensorString);
     }
   }
 }
 
-
-void setup() {
-  Serial.begin(115200);
-
-  /* Connect to WiFi, wait until connection was established */
-  Homie_setFirmware("TemperatureHumiditySensor", "1.0.0");
-  Homie.setSetupFunction(setupHandler).setLoopFunction(loopHandler);
-
-  temperatureNode.advertise("unit");
-  temperatureNode.advertise("degree");
-  humidityNode.advertise("unit");
-  humidityNode.advertise("percentage");
-
-  Homie.setup();
-}
-
-void loop()
-{
-  Homie.loop();
+void loop(){
+  adapter->update();
 }
