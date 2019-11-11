@@ -1,5 +1,26 @@
 #ifndef ESP8266TEMPERATURHUMIDITYSENSOR_H
 #define ESP8266TEMPERATURHUMIDITYSENSOR_H
+
+/**
+ * Wifi related configuration
+ * Only set if they're not already set in platformio.ini using
+ * build_flags = -DWIFI_SSID=\"AnotherTestWifi\" -DWIFI_PASSWORD=\"NewPassword\"
+*/
+#ifndef WIFI_SSID
+#define WIFI_SSID       "TestWifi"
+#endif
+#ifndef WIFI_PASSWORD
+#define WIFI_PASSWORD   "TestWifiPassword"
+#endif
+
+/**
+ * MQTT_CLIENTID. Id to be sent to the broker to identify the client.
+ * Note: Can be overwritten using build_flags
+ */
+#ifndef MQTT_CLIENTID
+#define MQTT_CLIENTID   "MozillaTestClient"
+#endif
+
 /**
  * DHT sensor configuration
  * DHT_TYPE:
