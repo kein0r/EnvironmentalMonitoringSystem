@@ -1,17 +1,16 @@
 /**
- * Generic sensor using homie scheeme
- * MQTT scheeme is done by https://github.com/marvinroger/homie-esp8266
- * Flash software via OTA or Serial. To reset configuration hold FLASH
- * buttong for 5+ seconds. Open http://marvinroger.github.io/homie-esp8266/configurators/v2/
- * and connect to AP provided hardware
+ *
  */
 #include <Arduino.h>
+#include <ArduinoOTA.h>
+#include <ESP8266WiFi.h>
+#include <ESPAsyncWebServer.h>             //Local WebServer used to serve the configuration portal
+#include <ESPAsyncWiFiManager.h>           //https://github.com/tzapu/WiFiManager WiFi Configuration Magic
+#include <ESP8266mDNS.h>
 #include <Thing.h>
 #include <WebThingAdapter.h>
-#include <ESP8266WiFi.h>
+
 #include "Esp8266TemperaturHumiditySensor.h"
-#include <ESP8266mDNS.h>
-#include <ArduinoOTA.h>
 #ifdef DHT_TYPE
 #include <Adafruit_Sensor.h>
 #include <DHT_U.h>
@@ -23,6 +22,14 @@
 #ifdef HTU21DF
 #include "Adafruit_HTU21DF.h"
 #endif
+#ifdef SI7021
+#include "Adafruit_Si7021.h"
+#endif
+
+AsyncWebServer server(80);
+DNSServer dns;
+
+AsyncWiFiManager wifiManager(&server, &dns);
 
 bool htu21dfAvailable = false;
 
@@ -41,6 +48,10 @@ DallasTemperature sensors(&oneWire);
 Adafruit_HTU21DF htu21df = Adafruit_HTU21DF();
 #endif
 
+#ifdef SI7021
+Adafruit_Si7021 si7021 = Adafruit_Si7021();
+#endif
+
 WebThingAdapter* adapter;
 
 const char* sensorTypes[] = {"TemperatureSensor", nullptr};
@@ -56,12 +67,8 @@ void setup() {
   WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   Serial.print("Connecting to WiFi ");
-  bool blink = true;
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    digitalWrite(LED_BUILTIN, blink ? LOW : HIGH); // active low led
-    Serial.print(".");
-  }
+  wifiManager.autoConnect(MQTT_CLIENTID);
+
   //Start mDNS with name esp8266
   MDNS.begin(MQTT_CLIENTID);
 
