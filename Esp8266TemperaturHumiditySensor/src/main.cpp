@@ -43,11 +43,10 @@ Adafruit_HTU21DF htu21df = Adafruit_HTU21DF();
 
 WebThingAdapter* adapter;
 
-const char* lampTypes[] = {"OnOffSwitch", "Light", nullptr};
-ThingDevice lamp("lamp", "My Lamp", lampTypes);
-
-ThingProperty lampOn("on", "Whether the lamp is turned on", BOOLEAN, "OnOffProperty");
-ThingProperty lampLevel("level", "The level of light from 0-100", NUMBER, "BrightnessProperty");
+const char* sensorTypes[] = {"TemperatureSensor", nullptr};
+ThingDevice environmentalSensor("EnvSensor", "Temperature & Humidity Sensor", sensorTypes);
+ThingProperty temperature("temperature", "Temperature", NUMBER, "TemperatureProperty");
+ThingProperty humidity("humidity", "Humidity", NUMBER, nullptr);
 
 
 void setup() {
@@ -102,19 +101,24 @@ void setup() {
 #endif
 
   adapter = new WebThingAdapter("led-lamp", WiFi.localIP());
-  lamp.addProperty(&lampOn);
-  lamp.addProperty(&lampLevel);
-  adapter->addDevice(&lamp);
+
+  temperature.unit = "°C";
+  humidity.unit = "%";
+  environmentalSensor.addProperty(&temperature);
+  environmentalSensor.addProperty(&humidity);
+  adapter->addDevice(&environmentalSensor);
   adapter->begin();
   Serial.println("HTTP server started");
   Serial.print("http://");
   Serial.print(WiFi.localIP());
   Serial.print("/things/");
-  Serial.println(lamp.id);
+  Serial.println(environmentalSensor.id);
+
 }
 
 void loop() {
   static unsigned long nextSensorRun = 0;
+  ThingPropertyValue value;
 
   ArduinoOTA.handle();
   adapter->update();
@@ -172,13 +176,13 @@ void loop() {
     {
       /* Calculate averate of all temperature sensor readings */
       temperatureSensorReadings = temperatureSensorReadings/numTemperatureSensorReadings;
-      sprintf(sensorString, "%2.2f", temperatureSensorReadings);
-      //temperatureNode.setProperty("degree").send(sensorString);
+      value.number = temperatureSensorReadings;
+      temperature.setValue(value);
     }
     if (numHumiditySensorReadings > 0) {
       humiditySensorReadings = humiditySensorReadings/numHumiditySensorReadings;
-      sprintf(sensorString, "%2.2f", humiditySensorReadings);
-      //humidityNode.setProperty("percentage").send(sensorString);
+      value.number = humiditySensorReadings;
+      humidity.setValue(value);
     }
   }
 }
