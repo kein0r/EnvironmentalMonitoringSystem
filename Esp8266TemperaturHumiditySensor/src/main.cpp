@@ -75,9 +75,11 @@ void setup() {
   // Start OTA
   ArduinoOTA.onStart([]() {
     Serial.println("Start");
+    otaActive = true;
   });
   ArduinoOTA.onEnd([]() {
     Serial.println("\nEnd");
+    otaActive = false;
   });
   ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
     Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
@@ -109,7 +111,7 @@ void setup() {
 
   adapter = new WebThingAdapter("led-lamp", WiFi.localIP());
 
-  temperature.unit = "Â°C";
+  temperature.unit = "°C";
   humidity.unit = "%";
   environmentalSensor.addProperty(&temperature);
   environmentalSensor.addProperty(&humidity);
@@ -130,7 +132,7 @@ void loop() {
   ArduinoOTA.handle();
   adapter->update();
 
-  if (millis() > nextSensorRun)
+  if ((millis() > nextSensorRun) && (otaActive == false))
   {
     nextSensorRun = millis() + SENSOR_MEASUREMENTTIMER;
 
