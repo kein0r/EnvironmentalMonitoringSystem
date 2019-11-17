@@ -2,19 +2,7 @@
 #define ESP8266TEMPERATURHUMIDITYSENSOR_H
 
 /**
- * Wifi related configuration
- * Only set if they're not already set in platformio.ini using
- * build_flags = -DWIFI_SSID=\"AnotherTestWifi\" -DWIFI_PASSWORD=\"NewPassword\"
-*/
-#ifndef WIFI_SSID
-#define WIFI_SSID       "TestWifi"
-#endif
-#ifndef WIFI_PASSWORD
-#define WIFI_PASSWORD   "TestWifiPassword"
-#endif
-
-/**
- * MQTT_CLIENTID. Id to be sent to the broker to identify the client.
+ * Id to be sent to the broker to identify the client.
  * Note: Can be overwritten using build_flags
  */
 #ifndef MQTT_CLIENTID
@@ -43,6 +31,11 @@
  * Adafruit HTU21D-F Temperature & Humidity Sensor
 */
 #define HTU21DF
+
+/**
+ * Adafruit SI7021 Temperature & Humidity Sensor
+*/
+#define SI7021
 
 /**
  */
