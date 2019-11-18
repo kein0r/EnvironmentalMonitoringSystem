@@ -26,12 +26,15 @@
 #include "Adafruit_Si7021.h"
 #endif
 
+bool otaActive = false;
+
 AsyncWebServer server(80);
 DNSServer dns;
 
 AsyncWiFiManager wifiManager(&server, &dns);
 
-bool htu21dfAvailable = false;
+//define your default values here, if there are different values in config.json, they are overwritten.
+char thingLocationName[MAX_SENSOR_LOCATION_LENGTH];
 
 #ifdef DHT_TYPE
 DHT_Unified dht(DHT_PIN, DHT_TYPE);
@@ -45,6 +48,7 @@ DallasTemperature sensors(&oneWire);
 #endif
 
 #ifdef HTU21DF
+bool htu21dfAvailable = false;
 Adafruit_HTU21DF htu21df = Adafruit_HTU21DF();
 #endif
 
@@ -62,14 +66,28 @@ ThingProperty humidity("humidity", "Humidity", NUMBER, nullptr);
 
 void setup() {
   Serial.begin(115200);
-  /* Connect to WiFi, wait until connection was established */
-  WiFi.hostname(MQTT_CLIENTID);
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  AsyncWiFiManagerParameter thingParameter("<p>Thing Parameter</p>");
+  wifiManager.addParameter(&thingParameter);
+  AsyncWiFiManagerParameter thingLocation("thingLocation", "Test Description", thingLocationName, MAX_SENSOR_LOCATION_LENGTH);
+  wifiManager.addParameter(&thingLocation);
+
+
+  wifiManager.setAPStaticIPConfig(WIFI_MANAGER_AP_IP, WIFI_MANAGER_AP_GATEWAY, WIFI_MANAGER_AP_NETMASK);
+  //wifiManager.resetSettings();
+
+  /* Connect to WiFi, wait until connection was established or configuration done */
   Serial.print("Connecting to WiFi ");
+  if (!wifiManager.autoConnect("AutoConnectAP")) {
+    delay(3000);
+    //reset and try again, or maybe put it to deep sleep
+    ESP.reset();
+  }
+
+
   wifiManager.autoConnect(MQTT_CLIENTID);
 
   //Start mDNS with name esp8266
+  // TODO: check if Wifi.hostname is needed
   MDNS.begin(MQTT_CLIENTID);
 
   // Start OTA
@@ -109,9 +127,9 @@ void setup() {
   htu21dfAvailable = htu21df.begin();
 #endif
 
-  adapter = new WebThingAdapter("led-lamp", WiFi.localIP());
+  adapter = new WebThingAdapter("Temperature Humidity Sensor", WiFi.localIP());
 
-  temperature.unit = "°C";
+  temperature.unit = "Â°C";
   humidity.unit = "%";
   environmentalSensor.addProperty(&temperature);
   environmentalSensor.addProperty(&humidity);
@@ -136,7 +154,6 @@ void loop() {
   {
     nextSensorRun = millis() + SENSOR_MEASUREMENTTIMER;
 
-    char sensorString[20];
     int numTemperatureSensorReadings = 0;
     float temperatureSensorReadings = 0;
     int numHumiditySensorReadings = 0;
