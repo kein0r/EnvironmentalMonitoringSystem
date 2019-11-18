@@ -2,12 +2,24 @@
 #define ESP8266TEMPERATURHUMIDITYSENSOR_H
 
 /**
+ * IP, Gateway and netmask for configuration mode
+ */
+#define WIFI_MANAGER_AP_IP            IPAddress(192,168,1,1)
+#define WIFI_MANAGER_AP_GATEWAY       IPAddress(192,168,1,99)
+#define WIFI_MANAGER_AP_NETMASK       IPAddress(255,255,255,0)
+
+/**
  * Id to be sent to the broker to identify the client.
  * Note: Can be overwritten using build_flags
  */
 #ifndef MQTT_CLIENTID
 #define MQTT_CLIENTID   "MozillaTestClient"
 #endif
+
+/**
+ * Max characters for sensor sensorLocation
+ */
+#define MAX_SENSOR_LOCATION_LENGTH    (int)40
 
 /**
  * DHT sensor configuration
