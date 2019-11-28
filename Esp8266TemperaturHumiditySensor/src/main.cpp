@@ -11,6 +11,8 @@
 #include <WebThingAdapter.h>
 
 #include "Esp8266TemperaturHumiditySensor.h"
+#include "config.h"
+
 #ifdef DHT_TYPE
 #include <Adafruit_Sensor.h>
 #include <DHT_U.h>
@@ -20,10 +22,10 @@
 #include <DallasTemperature.h>
 #endif
 #ifdef HTU21DF
-#include "Adafruit_HTU21DF.h"
+#include <Adafruit_HTU21DF.h>
 #endif
 #ifdef SI7021
-#include "Adafruit_Si7021.h"
+#include <Adafruit_Si7021.h>
 #endif
 
 bool otaActive = false;
@@ -32,9 +34,6 @@ AsyncWebServer server(80);
 DNSServer dns;
 
 AsyncWiFiManager wifiManager(&server, &dns);
-
-//define your default values here, if there are different values in config.json, they are overwritten.
-char thingLocationName[MAX_SENSOR_LOCATION_LENGTH];
 
 #ifdef DHT_TYPE
 DHT_Unified dht(DHT_PIN, DHT_TYPE);
@@ -66,11 +65,15 @@ ThingProperty humidity("humidity", "Humidity", NUMBER, nullptr);
 
 void setup() {
   Serial.begin(115200);
+
+  /* *************** AsyncWifiManager *********************** */
   AsyncWiFiManagerParameter thingParameter("<p>Thing Parameter</p>");
   wifiManager.addParameter(&thingParameter);
-  AsyncWiFiManagerParameter thingLocation("thingLocation", "Test Description", thingLocationName, MAX_SENSOR_LOCATION_LENGTH);
+  AsyncWiFiManagerParameter thingLocation("thingLocation", "Thing Location/Description", thingLocationName, MAX_SENSOR_LOCATION_LENGTH);
   wifiManager.addParameter(&thingLocation);
 
+  //set config save notify callback
+  wifiManager.setSaveConfigCallback(saveConfigCallback);
 
   wifiManager.setAPStaticIPConfig(WIFI_MANAGER_AP_IP, WIFI_MANAGER_AP_GATEWAY, WIFI_MANAGER_AP_NETMASK);
   //wifiManager.resetSettings();
@@ -82,22 +85,21 @@ void setup() {
     //reset and try again, or maybe put it to deep sleep
     ESP.reset();
   }
-
-
-  wifiManager.autoConnect(MQTT_CLIENTID);
+  wifiManager.autoConnect(IOT_CLIENTID);
 
   //Start mDNS with name esp8266
   // TODO: check if Wifi.hostname is needed
-  MDNS.begin(MQTT_CLIENTID);
+  MDNS.begin(IOT_CLIENTID);
 
+  /* *************** OTA ************************************ */
   // Start OTA
   ArduinoOTA.onStart([]() {
-    Serial.println("Start");
     otaActive = true;
+    Serial.println("Start");
   });
   ArduinoOTA.onEnd([]() {
-    Serial.println("\nEnd");
     otaActive = false;
+    Serial.println("\nEnd");
   });
   ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
     Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
@@ -116,6 +118,8 @@ void setup() {
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
 
+  /* *************** Sensors ******************************** */
+
   /* Init Sensors */
 #ifdef DHT_TYPE
   dht.begin();
@@ -127,6 +131,8 @@ void setup() {
   htu21dfAvailable = htu21df.begin();
 #endif
 
+
+  /* *************** IOT ************************************ */
   adapter = new WebThingAdapter("Temperature Humidity Sensor", WiFi.localIP());
 
   temperature.unit = "°C";
@@ -140,7 +146,6 @@ void setup() {
   Serial.print(WiFi.localIP());
   Serial.print("/things/");
   Serial.println(environmentalSensor.id);
-
 }
 
 void loop() {

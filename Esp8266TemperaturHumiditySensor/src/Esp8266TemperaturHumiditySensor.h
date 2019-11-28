@@ -12,14 +12,9 @@
  * Id to be sent to the broker to identify the client.
  * Note: Can be overwritten using build_flags
  */
-#ifndef MQTT_CLIENTID
-#define MQTT_CLIENTID   "MozillaTestClient"
+#ifndef IOT_CLIENTID
+#define IOT_CLIENTID   "MozillaTestClient"
 #endif
-
-/**
- * Max characters for sensor sensorLocation
- */
-#define MAX_SENSOR_LOCATION_LENGTH    (int)40
 
 /**
  * DHT sensor configuration
