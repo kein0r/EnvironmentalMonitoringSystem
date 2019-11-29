@@ -30,6 +30,8 @@
 
 bool otaActive = false;
 
+int errorBlink = 0;
+
 AsyncWebServer server(80);
 DNSServer dns;
 
@@ -65,10 +67,22 @@ ThingProperty humidity("humidity", "Humidity", NUMBER, nullptr);
 
 void setup() {
   Serial.begin(115200);
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, LOW);
+
+  /* *************** Read Stored Config Values ************** */
+  if (!readConfigValues())
+  {
+    /* Reset values if config values could not be read */
+    errorBlink += ERROR_BLINK_READ_FAILED;
+    Serial.printf("Reading configuration values failed. Resetting config values\n");
+    wifiManager.resetSettings();
+  }
 
   /* *************** AsyncWifiManager *********************** */
   AsyncWiFiManagerParameter thingParameter("<p>Thing Parameter</p>");
   wifiManager.addParameter(&thingParameter);
+  wifiManager.addParameter(new AsyncWiFiManagerParameter("Location and Description</p>"));
   AsyncWiFiManagerParameter thingLocation("thingLocation", "Thing Location/Description", thingLocationName, MAX_SENSOR_LOCATION_LENGTH);
   wifiManager.addParameter(&thingLocation);
 
@@ -76,7 +90,7 @@ void setup() {
   wifiManager.setSaveConfigCallback(saveConfigCallback);
 
   wifiManager.setAPStaticIPConfig(WIFI_MANAGER_AP_IP, WIFI_MANAGER_AP_GATEWAY, WIFI_MANAGER_AP_NETMASK);
-  //wifiManager.resetSettings();
+  //
 
   /* Connect to WiFi, wait until connection was established or configuration done */
   Serial.print("Connecting to WiFi ");
@@ -86,6 +100,16 @@ void setup() {
     ESP.reset();
   }
   wifiManager.autoConnect(IOT_CLIENTID);
+
+  /* read updated parameters */
+  strcpy(thingLocationName, thingLocation.getValue());
+
+  if (!writeConfigValues())
+  {
+    errorBlink += ERROR_BLINK_WRITE_FAILED;
+    Serial.printf("Writing configuration values failed. Resetting config values\n");
+    wifiManager.resetSettings();
+  }
 
   //Start mDNS with name esp8266
   // TODO: check if Wifi.hostname is needed
@@ -137,6 +161,7 @@ void setup() {
 
   temperature.unit = "°C";
   humidity.unit = "%";
+  environmentalSensor.id = thingLocationName;
   environmentalSensor.addProperty(&temperature);
   environmentalSensor.addProperty(&humidity);
   adapter->addDevice(&environmentalSensor);
@@ -150,6 +175,9 @@ void setup() {
 
 void loop() {
   static unsigned long nextSensorRun = 0;
+  static unsigned long nextErrorBlink = 0;
+  static int errorBlinkState = LOW;
+
   ThingPropertyValue value;
 
   ArduinoOTA.handle();
@@ -215,5 +243,26 @@ void loop() {
       value.number = humiditySensorReadings;
       humidity.setValue(value);
     }
-  }
+  } /* if ((millis() > nextSensorRun) && (otaActive == false)) */
+
+  if (millis() > nextErrorBlink)
+  {
+    nextErrorBlink = millis() + ERROR_BLINK_FREQ/2;
+    if (errorBlinkState == LOW)
+    {
+      /* LED is off, turn on if needed */
+      if (errorBlink > 0)
+      {
+        errorBlinkState = HIGH;
+        digitalWrite(LED_BUILTIN, errorBlinkState);
+        errorBlink--;
+      }
+    }
+    if (errorBlinkState == HIGH)
+    {
+      /* LED was on, turn it off and decrement counter */
+      errorBlinkState = LOW;
+      digitalWrite(LED_BUILTIN, errorBlinkState);
+    }
+  } /* if ((millis() > nextSensorRun) */
 }

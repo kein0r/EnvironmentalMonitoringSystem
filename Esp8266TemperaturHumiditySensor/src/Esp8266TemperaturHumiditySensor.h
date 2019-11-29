@@ -48,4 +48,11 @@
  */
 #define SENSOR_MEASUREMENTTIMER (unsigned long)(1*30*1000)
 
+/*
+ * Number of LED error blink and frequency
+ */
+#define ERROR_BLINK_READ_FAILED     (int)2
+#define ERROR_BLINK_WRITE_FAILED    (int)3
+#define ERROR_BLINK_FREQ            (unsigned long)1000
+
 #endif /* ESP8266TEMPERATURHUMIDITYSENSOR_H */
