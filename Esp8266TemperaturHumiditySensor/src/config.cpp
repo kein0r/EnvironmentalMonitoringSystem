@@ -20,7 +20,7 @@ void saveConfigCallback() {
 /*
  * Read configuration values from config.json file stored in SPIFFS.
  * Make sure that name of the variable and json element matches
- * @return true if SPIFS can be mounted, file config.json exists and values
+ * @return true if SPIFFS can be mounted, file config.json exists and values
  * could be parsed successfully, else false
  */
 
@@ -31,13 +31,13 @@ bool readConfigValues() {
   if (SPIFFS.begin()) {
     Serial.println("mounted file system");
     if (SPIFFS.exists("/config.json")) {
-      //file exists, reading and loading
+      /* file exists, reading and loading */
       Serial.println("reading config file");
       File configFile = SPIFFS.open("/config.json", "r");
       if (configFile) {
         Serial.println("opened config file");
         size_t size = configFile.size();
-        // Allocate a buffer to store contents of the file.
+        /* Allocate a buffer to store contents of the file. */
         std::unique_ptr<char[]> buf(new char[size]);
 
         configFile.readBytes(buf.get(), size);
@@ -63,6 +63,25 @@ bool readConfigValues() {
 }
 
 bool writeConfigValues(){
-  bool retVal = false;
+  bool retVal = true;
+  /* save the custom parameters to FS */
+  if (shouldSaveConfig) {
+    Serial.println("saving config");
+    DynamicJsonBuffer jsonBuffer;
+    JsonObject& json = jsonBuffer.createObject();
+    json["thingLocationName"] = thingLocationName;
+
+    File configFile = SPIFFS.open("/config.json", "w");
+    if (!configFile) {
+      Serial.println("failed to open config file for writing");
+      retVal = false;
+    }
+
+    json.printTo(Serial);
+    json.printTo(configFile);
+    configFile.close();
+
+    retVal = true;
+  }
   return retVal;
 }
