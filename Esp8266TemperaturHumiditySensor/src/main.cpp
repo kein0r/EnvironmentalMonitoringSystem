@@ -59,16 +59,16 @@ Adafruit_Si7021 si7021 = Adafruit_Si7021();
 
 WebThingAdapter* adapter;
 
-const char* sensorTypes[] = {"TemperatureSensor", nullptr};
-ThingDevice environmentalSensor("EnvSensor", "Temperature & Humidity Sensor", sensorTypes);
+const char* sensorTypes[] = {"MultiLevelSensor", nullptr};
+ThingDevice environmentalSensor("TemperaturHumiditySensor", "Temperature & Humidity Sensor", sensorTypes);
 ThingProperty temperature("temperature", "Temperature", NUMBER, "TemperatureProperty");
-ThingProperty humidity("humidity", "Humidity", NUMBER, nullptr);
+ThingProperty humidity("humidity", "Humidity", NUMBER, "LevelProperty");
 
 
 void setup() {
   Serial.begin(115200);
   pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, LOW);
+  digitalWrite(LED_BUILTIN, LED_OFF);
 
   /* *************** Read Stored Config Values ************** */
   if (!readConfigValues())
@@ -154,14 +154,19 @@ void setup() {
 #ifdef HTU21DF
   htu21dfAvailable = htu21df.begin();
 #endif
+#ifdef SI7021
+  si7021.begin();
+#endif
 
 
   /* *************** IOT ************************************ */
   adapter = new WebThingAdapter("Temperature Humidity Sensor", WiFi.localIP());
 
   temperature.unit = "°C";
+  temperature.readOnly = true;
   humidity.unit = "%";
-  environmentalSensor.id = thingLocationName;
+  humidity.readOnly = true;
+  environmentalSensor.title = thingLocationName;
   environmentalSensor.addProperty(&temperature);
   environmentalSensor.addProperty(&humidity);
   adapter->addDevice(&environmentalSensor);
@@ -176,7 +181,7 @@ void setup() {
 void loop() {
   static unsigned long nextSensorRun = 0;
   static unsigned long nextErrorBlink = 0;
-  static int errorBlinkState = LOW;
+  static int errorBlinkState = LED_OFF;
 
   ThingPropertyValue value;
 
@@ -191,19 +196,21 @@ void loop() {
     float temperatureSensorReadings = 0;
     int numHumiditySensorReadings = 0;
     float humiditySensorReadings = 0;
-    #ifdef DS18B20_PIN
+#ifdef DS18B20_PIN
     sensors.requestTemperatures();
     if (sensors.getDS18Count() > 0)
     {
       numTemperatureSensorReadings++;
       temperatureSensorReadings += sensors.getTempCByIndex(DS18B20_INDEX);
     }
-    #endif
-    #ifdef DHT_TYPE
+#endif
+#ifdef DHT_TYPE
     sensors_event_t event;
     dht.temperature().getEvent(&event);
     if (isnan(event.temperature)) {
-      Serial.println("Error reading temperature!");
+#ifdef DEBUG
+      Serial.println("DHT Error reading temperature!");
+#endif
     }
     else {
       numTemperatureSensorReadings++;
@@ -214,14 +221,16 @@ void loop() {
     * will be used. */
     dht.humidity().getEvent(&event);
     if (isnan(event.relative_humidity)) {
-      Serial.println("Error reading humidity!");
+#ifdef DEBUG
+      Serial.println("DHT Error reading humidity!");
+#endif
     }
     else {
       numHumiditySensorReadings++;
       humiditySensorReadings += event.relative_humidity;
     }
-    #endif
-    #ifdef HTU21DF
+#endif
+#ifdef HTU21DF
     if (htu21dfAvailable == true) {
       temperatureSensorReadings += htu21df.readTemperature();
       numTemperatureSensorReadings++;
@@ -229,7 +238,25 @@ void loop() {
       numHumiditySensorReadings++;
 
     }
-    #endif
+#endif
+#ifdef SI7021
+    float Si7021TemperaturReading = si7021.readTemperature();;
+    if (isnan(Si7021TemperaturReading)) {
+      Serial.println("SI7021 Error reading temperature!");
+    }
+    else {
+      numTemperatureSensorReadings++;
+      temperatureSensorReadings += Si7021TemperaturReading;
+    }
+    float Si7021HumidityReading = si7021.readHumidity();;
+    if (isnan(Si7021TemperaturReading)) {
+      Serial.println("SI7021 Error reading temperature!");
+    }
+    else {
+      numHumiditySensorReadings++;
+      humiditySensorReadings += Si7021HumidityReading;
+    }
+#endif
     /* Calculate average of temperature and humidity and send out */
     if (numTemperatureSensorReadings > 0)
     {
@@ -237,31 +264,45 @@ void loop() {
       temperatureSensorReadings = temperatureSensorReadings/numTemperatureSensorReadings;
       value.number = temperatureSensorReadings;
       temperature.setValue(value);
+#ifdef DEBUG
+      Serial.print("Num temperature reading: ");
+      Serial.print(numTemperatureSensorReadings);
+      Serial.print(" value: ");
+      Serial.println(value.number);
+#endif
     }
     if (numHumiditySensorReadings > 0) {
       humiditySensorReadings = humiditySensorReadings/numHumiditySensorReadings;
       value.number = humiditySensorReadings;
       humidity.setValue(value);
+#ifdef DEBUG
+      Serial.print("Num humidity reading: ");
+      Serial.print(numHumiditySensorReadings);
+      Serial.print(" value: ");
+      Serial.println(humiditySensorReadings);
+#endif
     }
+  /* Update mdns data according to https://discourse.mozilla.org/t/where-to-start-debugging-when-things-dont-update/48289/6 */
+  MDNS.update();
   } /* if ((millis() > nextSensorRun) && (otaActive == false)) */
 
   if (millis() > nextErrorBlink)
   {
     nextErrorBlink = millis() + ERROR_BLINK_FREQ/2;
-    if (errorBlinkState == LOW)
+    if (errorBlinkState == LED_OFF)
     {
       /* LED is off, turn on if needed */
       if (errorBlink > 0)
       {
-        errorBlinkState = HIGH;
+        errorBlinkState = LED_ON;
         digitalWrite(LED_BUILTIN, errorBlinkState);
         errorBlink--;
       }
     }
-    if (errorBlinkState == HIGH)
+    if (errorBlinkState == LED_ON)
     {
       /* LED was on, turn it off and decrement counter */
-      errorBlinkState = LOW;
+      errorBlinkState = LED_OFF;
       digitalWrite(LED_BUILTIN, errorBlinkState);
     }
   } /* if ((millis() > nextSensorRun) */

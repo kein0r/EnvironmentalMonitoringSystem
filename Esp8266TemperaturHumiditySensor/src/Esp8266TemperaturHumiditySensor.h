@@ -1,6 +1,17 @@
 #ifndef ESP8266TEMPERATURHUMIDITYSENSOR_H
 #define ESP8266TEMPERATURHUMIDITYSENSOR_H
 
+/*
+ * Enables printf debug messages
+ */
+#define DEBUG
+
+/*
+ * #defines in order to make code more readable
+ */
+#define LED_OFF                       HIGH
+#define LED_ON                        LOW
+
 /**
  * IP, Gateway and netmask for configuration mode
  */
