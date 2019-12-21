@@ -99,7 +99,7 @@ void setup() {
     //reset and try again, or maybe put it to deep sleep
     ESP.reset();
   }
-  wifiManager.autoConnect(IOT_CLIENTID);
+  wifiManager.autoConnect(thingLocationName);
 
   /* read updated parameters */
   strcpy(thingLocationName, thingLocation.getValue());
@@ -112,8 +112,7 @@ void setup() {
   }
 
   //Start mDNS with name esp8266
-  // TODO: check if Wifi.hostname is needed
-  MDNS.begin(IOT_CLIENTID);
+  MDNS.begin(thingLocationName);
 
   /* *************** OTA ************************************ */
   // Start OTA
@@ -264,6 +263,8 @@ void loop() {
       temperatureSensorReadings = temperatureSensorReadings/numTemperatureSensorReadings;
       value.number = temperatureSensorReadings;
       temperature.setValue(value);
+      /* workaround to prevent only second thing being updated */
+      adapter->update();
 #ifdef DEBUG
       Serial.print("Num temperature reading: ");
       Serial.print(numTemperatureSensorReadings);
@@ -275,6 +276,8 @@ void loop() {
       humiditySensorReadings = humiditySensorReadings/numHumiditySensorReadings;
       value.number = humiditySensorReadings;
       humidity.setValue(value);
+      /* workaround to prevent only second thing being updated */
+      adapter->update();
 #ifdef DEBUG
       Serial.print("Num humidity reading: ");
       Serial.print(numHumiditySensorReadings);
@@ -282,7 +285,6 @@ void loop() {
       Serial.println(humiditySensorReadings);
 #endif
     }
-  /* Update mdns data according to https://discourse.mozilla.org/t/where-to-start-debugging-when-things-dont-update/48289/6 */
   MDNS.update();
   } /* if ((millis() > nextSensorRun) && (otaActive == false)) */
 

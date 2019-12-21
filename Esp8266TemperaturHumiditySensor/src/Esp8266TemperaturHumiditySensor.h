@@ -20,14 +20,6 @@
 #define WIFI_MANAGER_AP_NETMASK       IPAddress(255,255,255,0)
 
 /**
- * Id to be sent to the broker to identify the client.
- * Note: Can be overwritten using build_flags
- */
-#ifndef IOT_CLIENTID
-#define IOT_CLIENTID   "MozillaTestClient"
-#endif
-
-/**
  * DHT sensor configuration
  * DHT_TYPE:
  * - DHT11
