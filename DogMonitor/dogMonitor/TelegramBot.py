@@ -8,13 +8,10 @@ class TelegramBot:
         self.updater = Updater(token=token, use_context=True)
         self.dispatcher = self.updater.dispatcher
         # Add handlers for commands and messages received
-        start_handler = CommandHandler('start', self.start)
-        self.dispatcher.add_handler(start_handler)
-        echo_handler = MessageHandler(Filters.text, self.echo)
-        self.dispatcher.add_handler(echo_handler)
+        self.dispatcher.add_handler(CommandHandler('start', self.start))
+        self.dispatcher.add_handler(MessageHandler(Filters.text, self.echo))
         # handler for unknown commands must be always added last
-        unknown_handler = MessageHandler(Filters.command, self.unknown)
-        self.dispatcher.add_handler(unknown_handler)
+        self.dispatcher.add_handler(MessageHandler(Filters.command, self.unknown))
         self.updater.start_polling()
 
     def __del__(self):
