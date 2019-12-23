@@ -9,6 +9,7 @@ class TelegramBot:
         self.dispatcher = self.updater.dispatcher
         # Add handlers for commands and messages received
         self.dispatcher.add_handler(CommandHandler('start', self.start))
+        self.dispatcher.add_handler(CommandHandler('picture', self.sendSurveillancePhoto))
         self.dispatcher.add_handler(MessageHandler(Filters.text, self.echo))
         # handler for unknown commands must be always added last
         self.dispatcher.add_handler(MessageHandler(Filters.command, self.unknown))
@@ -22,6 +23,11 @@ class TelegramBot:
 
     def echo(self, update, context):
         context.bot.send_message(chat_id=update.effective_chat.id, text=update.message.text)
+
+    def sendSurveillancePhoto(self, update, context):
+        with open("/home/XXX/test.jpg", 'rb') as file:
+            context.bot.send_photo(chat_id = update.message.chat_id, photo = file)
+
 
     def unknown(self, update, context):
         context.bot.send_message(chat_id=update.effective_chat.id, text="Sorry, I didn't understand that command.")
