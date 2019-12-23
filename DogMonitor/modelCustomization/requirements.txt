@@ -1,0 +1,4 @@
+# Use pip install -r requirements.txt to install all required modules
+tensorflow
+tf-hub-nightly==0.8.0.dev201911110007
+git+https://github.com/tensorflow/examples
