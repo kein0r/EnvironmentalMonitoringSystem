@@ -12,7 +12,7 @@ import config
 
 def main():
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-    telegramBot = TelegramBot(telegramBotToken)
+    telegramBot = TelegramBot(config.telegramBotToken)
 
 
 if __name__ == '__main__':
