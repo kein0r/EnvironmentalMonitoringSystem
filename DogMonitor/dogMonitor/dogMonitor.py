@@ -9,8 +9,10 @@ from __future__ import print_function
 import argparse
 import io
 import time
-import numpy as np
 import picamera
+
+from PIL import Image
+import tensorflow as tf
 
 import logging
 
@@ -19,6 +21,11 @@ from TelegramBot import TelegramBot
 
 # Import token from config file
 import config
+
+
+def load_labels(path):
+    with open(path, 'r') as f:
+        return {i: line.strip() for i, line in enumerate(f.readlines())}
 
 def detectObejects(interpreter, image, threshold):
     set_input_tensor(interpreter, image)
@@ -46,7 +53,7 @@ def main():
 
     # Load models
     labels = load_labels("/home/pi/labels_mobilenet_quant_v1_224.txt")
-    interpreter = Interpreter("/home/pi/mobilenet_v1_1.0_224_quant_edgetpu.tflite")
+    interpreter = tf.lite.Interpreter(model_path="/home/pi/mobilenet_v1_1.0_224_quant_edgetpu.tflite")
     interpreter.allocate_tensors()
     _, input_height, input_width, _ = interpreter.get_input_details()[0]['shape']
     with picamera.PiCamera(resolution=(CAMERA_WIDTH, CAMERA_HEIGHT), framerate=30) as camera:
@@ -61,13 +68,15 @@ def main():
                 start_time = time.monotonic()
                 detectedObjects = detectObejects(interpreter, image, 0.3)
                 elapsed_ms = (time.monotonic() - start_time) * 1000
-                print ("'%.1fms' % (elapsed_ms))
+                print ('%.1fms' % (elapsed_ms))
                 print (detectedObjects)
                 stream.seek(0)
                 stream.truncate()
         finally:
+            print("Done")
             # No screen connected to pi
             # camera.stop_preview()
 
 if __name__ == '__main__':
+    print ("Let's go")
     main()
