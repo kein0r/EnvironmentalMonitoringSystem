@@ -144,7 +144,7 @@ void loop() {
     int numMoistureSensorReadings = 0;
     float moistureSensorReadings = 0;
 
-    soilMoistureValue = map(analogRead(A0), , WaterValue, 0, 100);
+    soilMoistureValue = map(analogRead(MOISTURESENSORE_PIN), 0, 200, 0, 100);
     numMoistureSensorReadings++;
     /* Calculate average of temperature and humidity and send out */
     if (numMoistureSensorReadings > 0)

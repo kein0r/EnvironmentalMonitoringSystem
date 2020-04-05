@@ -20,6 +20,12 @@
 #define WIFI_MANAGER_AP_NETMASK       IPAddress(255,255,255,0)
 
 /**
+ * Capacitive moisture sensore port
+*/
+#define MOISTURESENSORE_PIN           A0
+
+
+/**
  */
 #define SENSOR_MEASUREMENTTIMER (unsigned long)(1*30*1000)
 
