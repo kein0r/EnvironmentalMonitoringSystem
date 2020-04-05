@@ -10,23 +10,8 @@
 #include <Thing.h>
 #include <WebThingAdapter.h>
 
-#include "Esp8266TemperaturHumiditySensor.h"
+#include "Esp8266SoilMoistureSensor.h"
 #include "config.h"
-
-#ifdef DHT_TYPE
-#include <Adafruit_Sensor.h>
-#include <DHT_U.h>
-#endif
-#ifdef DS18B20_PIN
-#include <OneWire.h>
-#include <DallasTemperature.h>
-#endif
-#ifdef HTU21DF
-#include <Adafruit_HTU21DF.h>
-#endif
-#ifdef SI7021
-#include <Adafruit_Si7021.h>
-#endif
 
 bool otaActive = false;
 
@@ -36,26 +21,6 @@ AsyncWebServer server(80);
 DNSServer dns;
 
 AsyncWiFiManager wifiManager(&server, &dns);
-
-#ifdef DHT_TYPE
-DHT_Unified dht(DHT_PIN, DHT_TYPE);
-#endif
-
-#ifdef DS18B20_PIN
-// Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
-OneWire oneWire(DS18B20_PIN);
-// Pass our oneWire reference to Dallas Temperature.
-DallasTemperature sensors(&oneWire);
-#endif
-
-#ifdef HTU21DF
-bool htu21dfAvailable = false;
-Adafruit_HTU21DF htu21df = Adafruit_HTU21DF();
-#endif
-
-#ifdef SI7021
-Adafruit_Si7021 si7021 = Adafruit_Si7021();
-#endif
 
 WebThingAdapter* adapter;
 
@@ -143,20 +108,6 @@ void setup() {
 
   /* *************** Sensors ******************************** */
 
-  /* Init Sensors */
-#ifdef DHT_TYPE
-  dht.begin();
-#endif
-#ifdef DS18B20_PIN
-  sensors.begin();
-#endif
-#ifdef HTU21DF
-  htu21dfAvailable = htu21df.begin();
-#endif
-#ifdef SI7021
-  si7021.begin();
-#endif
-
 
   /* *************** IOT ************************************ */
   adapter = new WebThingAdapter("Temperature Humidity Sensor", WiFi.localIP());
@@ -190,74 +141,13 @@ void loop() {
   if ((millis() > nextSensorRun) && (otaActive == false))
   {
     nextSensorRun = millis() + SENSOR_MEASUREMENTTIMER;
+    int numMoistureSensorReadings = 0;
+    float moistureSensorReadings = 0;
 
-    int numTemperatureSensorReadings = 0;
-    float temperatureSensorReadings = 0;
-    int numHumiditySensorReadings = 0;
-    float humiditySensorReadings = 0;
-#ifdef DS18B20_PIN
-    sensors.requestTemperatures();
-    if (sensors.getDS18Count() > 0)
-    {
-      numTemperatureSensorReadings++;
-      temperatureSensorReadings += sensors.getTempCByIndex(DS18B20_INDEX);
-    }
-#endif
-#ifdef DHT_TYPE
-    sensors_event_t event;
-    dht.temperature().getEvent(&event);
-    if (isnan(event.temperature)) {
-#ifdef DEBUG
-      Serial.println("DHT Error reading temperature!");
-#endif
-    }
-    else {
-      numTemperatureSensorReadings++;
-      temperatureSensorReadings += event.temperature;
-    }
-    /* Note: As long as we stay below minimum sample rate the sensor will not be
-    * read again but just the values from the temperature reading above will
-    * will be used. */
-    dht.humidity().getEvent(&event);
-    if (isnan(event.relative_humidity)) {
-#ifdef DEBUG
-      Serial.println("DHT Error reading humidity!");
-#endif
-    }
-    else {
-      numHumiditySensorReadings++;
-      humiditySensorReadings += event.relative_humidity;
-    }
-#endif
-#ifdef HTU21DF
-    if (htu21dfAvailable == true) {
-      temperatureSensorReadings += htu21df.readTemperature();
-      numTemperatureSensorReadings++;
-      humiditySensorReadings += htu21df.readHumidity();
-      numHumiditySensorReadings++;
-
-    }
-#endif
-#ifdef SI7021
-    float Si7021TemperaturReading = si7021.readTemperature();;
-    if (isnan(Si7021TemperaturReading)) {
-      Serial.println("SI7021 Error reading temperature!");
-    }
-    else {
-      numTemperatureSensorReadings++;
-      temperatureSensorReadings += Si7021TemperaturReading;
-    }
-    float Si7021HumidityReading = si7021.readHumidity();;
-    if (isnan(Si7021TemperaturReading)) {
-      Serial.println("SI7021 Error reading temperature!");
-    }
-    else {
-      numHumiditySensorReadings++;
-      humiditySensorReadings += Si7021HumidityReading;
-    }
-#endif
+    soilMoistureValue = map(analogRead(A0), , WaterValue, 0, 100);
+    numMoistureSensorReadings++;
     /* Calculate average of temperature and humidity and send out */
-    if (numTemperatureSensorReadings > 0)
+    if (numMoistureSensorReadings > 0)
     {
       /* Calculate averate of all temperature sensor readings */
       temperatureSensorReadings = temperatureSensorReadings/numTemperatureSensorReadings;

@@ -1,5 +1,5 @@
-#ifndef ESP8266TEMPERATURHUMIDITYSENSOR_H
-#define ESP8266TEMPERATURHUMIDITYSENSOR_H
+#ifndef ESP8266SOILMOISTURESENSOR_H
+#define ESP8266SOILMOISTURESENSOR_H
 
 /*
  * Enables printf debug messages
@@ -20,34 +20,6 @@
 #define WIFI_MANAGER_AP_NETMASK       IPAddress(255,255,255,0)
 
 /**
- * DHT sensor configuration
- * DHT_TYPE:
- * - DHT11
- * - DHT 21 (AM2301)
- * - DHT 22 (AM2302)
- * DHT_PIN: I/O pin which is connected to the DHT sensor
-*/
-#define DHT_TYPE        DHT22
-#define DHT_PIN         2
-
-/**
- * DS18B20 sensor configuration
- * I/O pin which is connected to the DHT sensor
- */
-#define DS18B20_PIN     4
-#define DS18B20_INDEX   0
-
-/**
- * Adafruit HTU21D-F Temperature & Humidity Sensor
-*/
-#define HTU21DF
-
-/**
- * Adafruit SI7021 Temperature & Humidity Sensor
-*/
-#define SI7021
-
-/**
  */
 #define SENSOR_MEASUREMENTTIMER (unsigned long)(1*30*1000)
 
@@ -58,4 +30,4 @@
 #define ERROR_BLINK_WRITE_FAILED    (int)3
 #define ERROR_BLINK_FREQ            (unsigned long)1000
 
-#endif /* ESP8266TEMPERATURHUMIDITYSENSOR_H */
+#endif /* ESP8266SOILMOISTURESENSOR_H */
