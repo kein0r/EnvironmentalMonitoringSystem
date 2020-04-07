@@ -10,11 +10,13 @@
 #include <ESP8266mDNS.h>
 #include <Thing.h>
 #include <WebThingAdapter.h>
+#include <Ticker.h>
 #include "config.h"
 
 bool otaActive = false;
 
-int errorBlink = 0;
+uint statusBlinkerCount = 0;
+Ticker statusBlinkTrigger;
 
 AsyncWebServer server(80);
 DNSServer dns;
@@ -27,17 +29,40 @@ const char* sensorTypes[] = {"MultiLevelSensor", nullptr};
 ThingDevice environmentalSensor("SoilMoistureSensor", "Soil Moisture Sensor", sensorTypes);
 ThingProperty moisture("moisture", "Moisture", NUMBER, "LevelProperty");
 
+void statusBlink() {
+  if (statusBlinkerCount) {
+    if (statusBlinkerCount % 2) {
+      digitalWrite(RED_LED_BUILTIN, LED_ON);
+    }
+    else {
+      digitalWrite(RED_LED_BUILTIN, LED_OFF);
+    }
+    statusBlinkerCount--;
+  }
+  if (statusBlinkerCount == 0) {
+    digitalWrite(RED_LED_BUILTIN, LED_OFF);
+    statusBlinkTrigger.detach();
+  }
+}
+
+void setStatusBlink(float frequency, uint count) {
+  statusBlinkerCount = count;
+  statusBlinkTrigger.attach(frequency, statusBlink);
+}
 
 void setup() {
   Serial.begin(115200);
-  pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, LED_OFF);
+  // Initialize LED and set it LED_OFF
+  pinMode(RED_LED_BUILTIN, OUTPUT);
+  digitalWrite(RED_LED_BUILTIN, LED_OFF);
+  // Initialize the pushbutton pin as an input:
+  //pinMode(buttonPin, INPUT_PULLUP);
 
   /* *************** Read Stored Config Values ************** */
   if (!readConfigValues())
   {
     /* Reset values if config values could not be read */
-    errorBlink += ERROR_BLINK_READ_FAILED;
+    setStatusBlink(ERROR_BLINK_FREQ, ERROR_BLINK_READ_FAILED);
     Serial.printf("Reading configuration values failed. Resetting config values\n");
     wifiManager.resetSettings();
   }
@@ -69,7 +94,7 @@ void setup() {
 
   if (!writeConfigValues())
   {
-    errorBlink += ERROR_BLINK_WRITE_FAILED;
+    setStatusBlink(ERROR_BLINK_FREQ, ERROR_BLINK_WRITE_FAILED);
     Serial.printf("Writing configuration values failed. Resetting config values\n");
     wifiManager.resetSettings();
   }
