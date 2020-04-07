@@ -48,7 +48,9 @@ bool readConfigValues() {
           Serial.println(error.c_str());
         } else {
           Serial.println("\nparsed json");
+#ifdef DEBUG
           serializeJsonPretty(jsonDocument, Serial);
+#endif
           strcpy(thingLocationName, jsonDocument["thingLocationName"]);
 
           retVal = true;
@@ -75,8 +77,9 @@ bool writeConfigValues(){
       Serial.println("failed to open config file for writing");
       retVal = false;
     }
-
+#ifdef DEBUG
     serializeJsonPretty(jsonDocument, Serial);
+#endif
     serializeJson(jsonDocument, configFile);
     configFile.close();
 
