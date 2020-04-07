@@ -2,6 +2,7 @@
  *
  */
 #include <Arduino.h>
+#include "Esp8266TemperaturHumiditySensor.h"
 #include <ArduinoOTA.h>
 #include <ESP8266WiFi.h>
 #include <ESPAsyncWebServer.h>             //Local WebServer used to serve the configuration portal
@@ -10,7 +11,6 @@
 #include <Thing.h>
 #include <WebThingAdapter.h>
 
-#include "Esp8266TemperaturHumiditySensor.h"
 #include "config.h"
 
 #ifdef DHT_TYPE
