@@ -81,7 +81,7 @@ ThingDevice environmentalSensor("TemperaturHumiditySensor", "Temperature & Humid
  *   atType: property @type (https://iot.mozilla.org/schemas#properties)
  */
 ThingProperty temperature("temperature", "Temperature", NUMBER, "TemperatureProperty");
-ThingProperty humidity("humidity", "Humidity", NUMBER, "LevelProperty");
+ThingProperty humidity("humidity", "Humidity", NUMBER, nullptr);
 
 
 void setup() {
