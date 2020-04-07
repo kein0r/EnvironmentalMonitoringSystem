@@ -6,6 +6,12 @@
  */
 #define DEBUG
 
+/**
+ * By default, buffers are 256 bytes for small documents, 1024 for larger ones
+ * To use a pre-defined set of larger JSON buffers (4x larger)
+ */
+#define LARGE_JSON_BUFFERS 1
+
 /*
  * #defines in order to make code more readable
  */
