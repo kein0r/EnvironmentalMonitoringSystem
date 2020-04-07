@@ -2,6 +2,7 @@
  *
  */
 #include <Arduino.h>
+#include "Esp8266SoilMoistureSensor.h"
 #include <ArduinoOTA.h>
 #include <ESP8266WiFi.h>
 #include <ESPAsyncWebServer.h>             //Local WebServer used to serve the configuration portal
@@ -9,8 +10,6 @@
 #include <ESP8266mDNS.h>
 #include <Thing.h>
 #include <WebThingAdapter.h>
-
-#include "Esp8266SoilMoistureSensor.h"
 #include "config.h"
 
 bool otaActive = false;
@@ -25,9 +24,8 @@ AsyncWiFiManager wifiManager(&server, &dns);
 WebThingAdapter* adapter;
 
 const char* sensorTypes[] = {"MultiLevelSensor", nullptr};
-ThingDevice environmentalSensor("TemperaturHumiditySensor", "Temperature & Humidity Sensor", sensorTypes);
-ThingProperty temperature("temperature", "Temperature", NUMBER, "TemperatureProperty");
-ThingProperty humidity("humidity", "Humidity", NUMBER, "LevelProperty");
+ThingDevice environmentalSensor("SoilMoistureSensor", "Soil Moisture Sensor", sensorTypes);
+ThingProperty moisture("moisture", "Moisture", NUMBER, "LevelProperty");
 
 
 void setup() {
@@ -110,15 +108,12 @@ void setup() {
 
 
   /* *************** IOT ************************************ */
-  adapter = new WebThingAdapter("Temperature Humidity Sensor", WiFi.localIP());
+  adapter = new WebThingAdapter("Soil Moisture Sensor", WiFi.localIP());
 
-  temperature.unit = "°C";
-  temperature.readOnly = true;
-  humidity.unit = "%";
-  humidity.readOnly = true;
+  moisture.unit = "%";
+  moisture.readOnly = true;
   environmentalSensor.title = thingLocationName;
-  environmentalSensor.addProperty(&temperature);
-  environmentalSensor.addProperty(&humidity);
+  environmentalSensor.addProperty(&moisture);
   adapter->addDevice(&environmentalSensor);
   adapter->begin();
   Serial.println("HTTP server started");
@@ -130,8 +125,6 @@ void setup() {
 
 void loop() {
   static unsigned long nextSensorRun = 0;
-  static unsigned long nextErrorBlink = 0;
-  static int errorBlinkState = LED_OFF;
 
   ThingPropertyValue value;
 
@@ -144,58 +137,24 @@ void loop() {
     int numMoistureSensorReadings = 0;
     float moistureSensorReadings = 0;
 
-    soilMoistureValue = map(analogRead(MOISTURESENSORE_PIN), 0, 200, 0, 100);
+    moistureSensorReadings = map(analogRead(MOISTURESENSORE_PIN), 0, 200, 0, 100);
     numMoistureSensorReadings++;
-    /* Calculate average of temperature and humidity and send out */
+    /* Calculate average of temperature and moisture and send out */
     if (numMoistureSensorReadings > 0)
     {
       /* Calculate averate of all temperature sensor readings */
-      temperatureSensorReadings = temperatureSensorReadings/numTemperatureSensorReadings;
-      value.number = temperatureSensorReadings;
-      temperature.setValue(value);
+      moistureSensorReadings = moistureSensorReadings/numMoistureSensorReadings;
+      value.number = moistureSensorReadings;
+      moisture.setValue(value);
       /* workaround to prevent only second thing being updated */
       adapter->update();
 #ifdef DEBUG
-      Serial.print("Num temperature reading: ");
-      Serial.print(numTemperatureSensorReadings);
+      Serial.print("Num moisture readings: ");
+      Serial.print(numMoistureSensorReadings);
       Serial.print(" value: ");
       Serial.println(value.number);
 #endif
     }
-    if (numHumiditySensorReadings > 0) {
-      humiditySensorReadings = humiditySensorReadings/numHumiditySensorReadings;
-      value.number = humiditySensorReadings;
-      humidity.setValue(value);
-      /* workaround to prevent only second thing being updated */
-      adapter->update();
-#ifdef DEBUG
-      Serial.print("Num humidity reading: ");
-      Serial.print(numHumiditySensorReadings);
-      Serial.print(" value: ");
-      Serial.println(humiditySensorReadings);
-#endif
-    }
   MDNS.update();
   } /* if ((millis() > nextSensorRun) && (otaActive == false)) */
-
-  if (millis() > nextErrorBlink)
-  {
-    nextErrorBlink = millis() + ERROR_BLINK_FREQ/2;
-    if (errorBlinkState == LED_OFF)
-    {
-      /* LED is off, turn on if needed */
-      if (errorBlink > 0)
-      {
-        errorBlinkState = LED_ON;
-        digitalWrite(LED_BUILTIN, errorBlinkState);
-        errorBlink--;
-      }
-    }
-    if (errorBlinkState == LED_ON)
-    {
-      /* LED was on, turn it off and decrement counter */
-      errorBlinkState = LED_OFF;
-      digitalWrite(LED_BUILTIN, errorBlinkState);
-    }
-  } /* if ((millis() > nextSensorRun) */
 }
