@@ -59,8 +59,27 @@ Adafruit_Si7021 si7021 = Adafruit_Si7021();
 
 WebThingAdapter* adapter;
 
-const char* sensorTypes[] = {"MultiLevelSensor", nullptr};
+/**
+ * @type members: Capabilities supported by your Thing
+ * See schemas: https://iot.mozilla.org/schemas#capabilities
+ */
+const char* sensorTypes[] = {"TemperatureSensor", nullptr};
+/**
+ * Description of your Thing
+ * ThingDevice device(id, title, types)
+ * id: unique identifier for Thing (part of URL: http://<IP>/things/<id>)
+ * description: string that shows up in Gateway for your Thing
+ * types: array of @types
+ */
 ThingDevice environmentalSensor("TemperaturHumiditySensor", "Temperature & Humidity Sensor", sensorTypes);
+/**
+ * Define one or more properties supported by your Thing
+ * ThingProperty property(id, description, type, atType)
+ *   id: unique identifier for property
+ *   description: user-readable description of property
+ *   type: NO_STATE, BOOLEAN, NUMBER, or STRING
+ *   atType: property @type (https://iot.mozilla.org/schemas#properties)
+ */
 ThingProperty temperature("temperature", "Temperature", NUMBER, "TemperatureProperty");
 ThingProperty humidity("humidity", "Humidity", NUMBER, "LevelProperty");
 
@@ -166,8 +185,8 @@ void setup() {
   humidity.unit = "%";
   humidity.readOnly = true;
   environmentalSensor.title = thingLocationName;
-  environmentalSensor.addProperty(&temperature);
   environmentalSensor.addProperty(&humidity);
+  environmentalSensor.addProperty(&temperature);
   adapter->addDevice(&environmentalSensor);
   adapter->begin();
   Serial.println("HTTP server started");
