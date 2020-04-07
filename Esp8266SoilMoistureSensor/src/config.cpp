@@ -41,17 +41,17 @@ bool readConfigValues() {
         std::unique_ptr<char[]> buf(new char[size]);
 
         configFile.readBytes(buf.get(), size);
-        DynamicJsonDocument jsonBuffer(size);
-        JsonObject& json = jsonBuffer.parseObject(buf.get());
-        json.printTo(Serial);
-        if (json.success()) {
+        DynamicJsonDocument jsonDocument(size);
+        DeserializationError error = deserializeJson(jsonDocument, buf.get());
+        if (error) {
+          Serial.print("fdeserializeJson failed with code");
+          Serial.println(error.c_str());
+        } else {
           Serial.println("\nparsed json");
-
-          strcpy(thingLocationName, json["thingLocationName"]);
+          serializeJsonPretty(jsonDocument, Serial);
+          strcpy(thingLocationName, jsonDocument["thingLocationName"]);
 
           retVal = true;
-        } else {
-          Serial.println("failed to load json config");
         }
         configFile.close();
       }
@@ -67,9 +67,8 @@ bool writeConfigValues(){
   /* save the custom parameters to FS */
   if (shouldSaveConfig) {
     Serial.println("saving config");
-    DynamicJsonBuffer jsonBuffer;
-    JsonObject& json = jsonBuffer.createObject();
-    json["thingLocationName"] = thingLocationName;
+    DynamicJsonDocument jsonDocument(JSONDOCUMENT_SIZE);
+    jsonDocument["thingLocationName"] = thingLocationName;
 
     File configFile = SPIFFS.open("/config.json", "w");
     if (!configFile) {
@@ -77,8 +76,8 @@ bool writeConfigValues(){
       retVal = false;
     }
 
-    json.printTo(Serial);
-    json.printTo(configFile);
+    serializeJsonPretty(jsonDocument, Serial);
+    serializeJson(jsonDocument, configFile);
     configFile.close();
 
     retVal = true;
