@@ -13,7 +13,7 @@
 #include <Ticker.h>
 #include "config.h"
 
-bool otaActive = false;
+enum sensorState_t {startupActive, otaActive, sensorActive, calibrateAir, calibrateWait, calibrateWater} sensorState = startupActive;
 
 uint statusBlinkerCount = 0;
 Ticker statusBlinkTrigger;
@@ -32,15 +32,15 @@ ThingProperty moisture("moisture", "Moisture", NUMBER, "LevelProperty");
 void statusBlink() {
   if (statusBlinkerCount) {
     if (statusBlinkerCount % 2) {
-      digitalWrite(RED_LED_BUILTIN, LED_ON);
+      digitalWrite(BLUE_LED_BUILTIN, LED_ON);
     }
     else {
-      digitalWrite(RED_LED_BUILTIN, LED_OFF);
+      digitalWrite(BLUE_LED_BUILTIN, LED_OFF);
     }
     statusBlinkerCount--;
   }
   if (statusBlinkerCount == 0) {
-    digitalWrite(RED_LED_BUILTIN, LED_OFF);
+    digitalWrite(BLUE_LED_BUILTIN, LED_OFF);
     statusBlinkTrigger.detach();
   }
 }
@@ -53,8 +53,12 @@ void setStatusBlink(float frequency, uint count) {
 void setup() {
   Serial.begin(115200);
   // Initialize LED and set it LED_OFF
-  pinMode(RED_LED_BUILTIN, OUTPUT);
-  digitalWrite(RED_LED_BUILTIN, LED_OFF);
+  pinMode(BLUE_LED_BUILTIN, OUTPUT);
+  digitalWrite(BLUE_LED_BUILTIN, LED_OFF);
+
+  /* Start blinking, stopped either by reset or by call to detach after
+   * successful connection */
+  setStatusBlink(STARTUP_BLINK_FREQ, STARTUP_BLINK_COUNT);
   // Initialize the pushbutton pin as an input:
   //pinMode(buttonPin, INPUT_PULLUP);
 
@@ -87,10 +91,13 @@ void setup() {
     //reset and try again, or maybe put it to deep sleep
     ESP.reset();
   }
-  wifiManager.autoConnect(thingLocationName);
 
   /* read updated parameters */
   strcpy(thingLocationName, thingLocation.getValue());
+
+  /* Startup finished, stopp blinking and turn off LED */
+  statusBlinkTrigger.detach();
+  digitalWrite(BLUE_LED_BUILTIN, LED_OFF);
 
   if (!writeConfigValues())
   {
@@ -105,11 +112,11 @@ void setup() {
   /* *************** OTA ************************************ */
   // Start OTA
   ArduinoOTA.onStart([]() {
-    otaActive = true;
+    sensorState = otaActive;
     Serial.println("Start");
   });
   ArduinoOTA.onEnd([]() {
-    otaActive = false;
+    sensorState = startupActive;
     Serial.println("\nEnd");
   });
   ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
@@ -146,6 +153,7 @@ void setup() {
   Serial.print(WiFi.localIP());
   Serial.print("/things/");
   Serial.println(environmentalSensor.id);
+  sensorState = sensorActive;
 }
 
 void loop() {
@@ -154,9 +162,8 @@ void loop() {
   ThingPropertyValue value;
 
   ArduinoOTA.handle();
-  adapter->update();
 
-  if ((millis() > nextSensorRun) && (otaActive == false))
+  if ((millis() > nextSensorRun) && (sensorState == sensorActive))
   {
     nextSensorRun = millis() + SENSOR_MEASUREMENTTIMER;
     int numMoistureSensorReadings = 0;
