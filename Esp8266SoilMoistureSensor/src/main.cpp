@@ -13,7 +13,7 @@
 #include <Ticker.h>
 #include "config.h"
 
-enum sensorState_t {startupActive, otaActive, sensorActive, calibrateAir, calibrateWait, calibrateWater} sensorState = startupActive;
+enum sensorState_t {startupActive, otaActive, sensorActive, calibrateAir, calibrateWait, calibrateWater, calibrateEnd} sensorState = startupActive;
 
 uint statusBlinkerCount = 0;
 Ticker statusBlinkTrigger;
@@ -55,6 +55,7 @@ void setup() {
   // Initialize LED and set it LED_OFF
   pinMode(BLUE_LED_BUILTIN, OUTPUT);
   digitalWrite(BLUE_LED_BUILTIN, LED_OFF);
+  pinMode(FLASH_BUTTON, INPUT);
 
   /* Start blinking, stopped either by reset or by call to detach after
    * successful connection */
