@@ -13,9 +13,9 @@
 #include <Ticker.h>
 #include "config.h"
 
-enum sensorState_t {startupActive, otaActive, sensorActive, calibrateAir, calibrateWait, calibrateWater, calibrateEnd} sensorState = startupActive;
+enum sensorState_t {startupActive, otaActive, sensorActive, calibrateAirStart, calibrateAirEnd, calibrateWaterStart, calibrateWaterEnd} sensorState = startupActive;
 
-uint statusBlinkerCount = 0;
+unsigned int statusBlinkerCount = 0;
 Ticker statusBlinkTrigger;
 
 AsyncWebServer server(80);
@@ -32,10 +32,10 @@ ThingProperty moisture("moisture", "Moisture", NUMBER, "LevelProperty");
 void statusBlink() {
   if (statusBlinkerCount) {
     if (statusBlinkerCount % 2) {
-      digitalWrite(BLUE_LED_BUILTIN, LED_ON);
+      digitalWrite(BLUE_LED_BUILTIN, LED_OFF);
     }
     else {
-      digitalWrite(BLUE_LED_BUILTIN, LED_OFF);
+      digitalWrite(BLUE_LED_BUILTIN, LED_ON);
     }
     statusBlinkerCount--;
   }
@@ -45,9 +45,9 @@ void statusBlink() {
   }
 }
 
-void setStatusBlink(float frequency, uint count) {
-  statusBlinkerCount = count;
-  statusBlinkTrigger.attach(frequency, statusBlink);
+void setStatusBlink(float period, uint count) {
+  statusBlinkerCount = count * 2;
+  statusBlinkTrigger.attach_ms(period / 2, statusBlink);
 }
 
 void setup() {
@@ -59,7 +59,7 @@ void setup() {
 
   /* Start blinking, stopped either by reset or by call to detach after
    * successful connection */
-  setStatusBlink(STARTUP_BLINK_FREQ, STARTUP_BLINK_COUNT);
+  setStatusBlink(STARTUP_BLINK_PERIOD, STARTUP_BLINK_COUNT);
   // Initialize the pushbutton pin as an input:
   //pinMode(buttonPin, INPUT_PULLUP);
 
@@ -67,7 +67,7 @@ void setup() {
   if (!readConfigValues())
   {
     /* Reset values if config values could not be read */
-    setStatusBlink(ERROR_BLINK_FREQ, ERROR_BLINK_READ_FAILED);
+    setStatusBlink(ERROR_BLINK_PERIOD, ERROR_BLINK_READ_FAILED);
     Serial.printf("Reading configuration values failed. Resetting config values\n");
     wifiManager.resetSettings();
   }
@@ -102,7 +102,7 @@ void setup() {
 
   if (!writeConfigValues())
   {
-    setStatusBlink(ERROR_BLINK_FREQ, ERROR_BLINK_WRITE_FAILED);
+    setStatusBlink(ERROR_BLINK_PERIOD, ERROR_BLINK_WRITE_FAILED);
     Serial.printf("Writing configuration values failed. Resetting config values\n");
     wifiManager.resetSettings();
   }
@@ -159,18 +159,22 @@ void setup() {
 
 void loop() {
   static unsigned long nextSensorRun = 0;
+  static unsigned int buttonDebounceCounter = 0;
+  static unsigned int sensorCalibrationReadings = 0;
+  static unsigned int sensorCalibrationReadingsCount = 0;
 
   ThingPropertyValue value;
 
   ArduinoOTA.handle();
 
+  /* *************** Sensor readings ************************ */
   if ((millis() > nextSensorRun) && (sensorState == sensorActive))
   {
     nextSensorRun = millis() + SENSOR_MEASUREMENTTIMER;
-    int numMoistureSensorReadings = 0;
+    unsigned int numMoistureSensorReadings = 0;
     float moistureSensorReadings = 0;
 
-    moistureSensorReadings = map(analogRead(MOISTURESENSORE_PIN), 0, 200, 0, 100);
+    moistureSensorReadings = map(analogRead(MOISTURESENSORE_PIN), calibrationWater, calibrationAir, 100, 0);
     numMoistureSensorReadings++;
     /* Calculate average of temperature and moisture and send out */
     if (numMoistureSensorReadings > 0)
@@ -190,4 +194,82 @@ void loop() {
     }
   MDNS.update();
   } /* if ((millis() > nextSensorRun) && (otaActive == false)) */
+
+  /* *************** Sensor calibration ********************* */
+  if (digitalRead(FLASH_BUTTON) == BUTTON_PRESSED) {
+    buttonDebounceCounter++;
+  } else {
+    buttonDebounceCounter = 0;
+  }
+  if ((buttonDebounceCounter > BUTTON_START_CALIBRATION_COUNTER) && (sensorState == sensorActive)) {
+    buttonDebounceCounter = 0;
+    sensorCalibrationReadings = 0;
+    sensorCalibrationReadingsCount = 0;
+    sensorState = calibrateAirStart;
+    setStatusBlink(CALIBRATION_BLINK_PERIOD, (uint)(SENSOR_CALIBRATION_MEASUREMENTTIMER * SENSOR_CALIBRATION_READINGS_MAX) / CALIBRATION_BLINK_PERIOD);
+#ifdef DEBUG
+    Serial.println("Calibration started. Hold dry sensor in the air until LED stops blinking.");
+#endif
+  }
+  if ((millis() > nextSensorRun) && (sensorState == calibrateAirStart))
+  {
+    nextSensorRun = millis() + SENSOR_CALIBRATION_MEASUREMENTTIMER;
+    if (sensorCalibrationReadingsCount < SENSOR_CALIBRATION_READINGS_MAX) {
+      sensorCalibrationReadings += analogRead(MOISTURESENSORE_PIN);
+      sensorCalibrationReadingsCount++;
+#ifdef DEBUG
+      Serial.print("Cumulative air readings: ");
+      Serial.println(sensorCalibrationReadings);
+#endif
+    } else {
+      calibrationAir = sensorCalibrationReadings/sensorCalibrationReadingsCount;
+#ifdef DEBUG
+      Serial.println("Calibrating Air. ");
+      Serial.print(sensorCalibrationReadingsCount);
+      Serial.print(" values read. Average values: ");
+      Serial.println(calibrationAir);
+#endif
+      sensorState = calibrateAirEnd;
+      nextSensorRun = 0;
+    }
+  }
+
+  if ((buttonDebounceCounter > BUTTON_NEXT_CALIBRATION_COUNTER) && (sensorState == calibrateAirEnd)) {
+    buttonDebounceCounter = 0;
+    sensorCalibrationReadings = 0;
+    sensorCalibrationReadingsCount = 0;
+    sensorState = calibrateWaterStart;
+    setStatusBlink(CALIBRATION_BLINK_PERIOD, (uint)(SENSOR_CALIBRATION_MEASUREMENTTIMER * SENSOR_CALIBRATION_READINGS_MAX)/1000 * CALIBRATION_BLINK_PERIOD);
+#ifdef DEBUG
+    Serial.println("Calibration started. Place sensor in water until LED stops blinking.");
+#endif
+  }
+
+  if ((millis() > nextSensorRun) && (sensorState == calibrateWaterStart))
+  {
+    nextSensorRun = millis() + SENSOR_CALIBRATION_MEASUREMENTTIMER;
+    if (sensorCalibrationReadingsCount < SENSOR_CALIBRATION_READINGS_MAX) {
+      sensorCalibrationReadings += analogRead(MOISTURESENSORE_PIN);
+      sensorCalibrationReadingsCount++;
+#ifdef DEBUG
+      Serial.print("Cumulative water readings: ");
+      Serial.println(sensorCalibrationReadings);
+#endif
+    } else {
+      calibrationWater = sensorCalibrationReadings/sensorCalibrationReadingsCount;
+#ifdef DEBUG
+      Serial.println("Calibrating Water. ");
+      Serial.print(sensorCalibrationReadingsCount);
+      Serial.print(" values read. Average values: ");
+      Serial.println(calibrationWater);
+#endif
+      sensorState = calibrateWaterEnd;
+      nextSensorRun = 0;
+    }
+  }
+
+  if (sensorState == calibrateWaterEnd) {
+    saveConfigCallback();
+    sensorState = sensorActive;
+  }
 }
