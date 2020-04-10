@@ -10,15 +10,22 @@
  * Build-in LEDs
  * - blue LED on ESP-12E connected to GPIO0
  * - LED connected to LED_BUILTIN mounted on PCB
+ * Reference: https://github.com/nodemcu/nodemcu-devkit-v1.0/blob/master/NODEMCU_DEVKIT_V1.0.PDF
+ * Reference: https://components101.com/sites/default/files/component_datasheet/ESP12E%20Datasheet.pdf
  */
 #define BLUE_LED_BUILTIN              LED_BUILTIN
 #define PCB_LED_BUILTIN               GPIO2
-
-/*
- * #defines in order to make code more readable
- */
 #define LED_OFF                       HIGH
 #define LED_ON                        LOW
+
+/**
+ * Push button marked as flash connected to GPIO0
+ * Reference: See above
+ */
+#define FLASH_BUTTON                  0
+#define BUTTON_PRESSED                LOW
+#define BUTTON_RELEASED               HIGH
+
 
 /**
  * IP, Gateway and netmask for configuration mode
@@ -31,14 +38,6 @@
  * Capacitive moisture sensore port
 */
 #define MOISTURESENSORE_PIN           A0
-
-/**
- * Default min/max values without calibration done
- * Calibration is done by placing the dry sensor in air and then
- * putting covering it in water.
- */
-#define CALIBRATION_AIR_MAX         (int)1024
-#define CALIBRATION_WATER_MIN       (int)0
 
 /**
  */
