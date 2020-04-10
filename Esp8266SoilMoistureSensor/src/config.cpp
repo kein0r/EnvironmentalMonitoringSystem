@@ -10,8 +10,8 @@
 #include "config.h"
 
 char thingLocationName[MAX_SENSOR_LOCATION_LENGTH];
-int calibrationAir = CALIBRATION_AIR_MAX;
-int calibrationWater = CALIBRATION_WATER_MIN;
+unsigned int calibrationAir = CALIBRATION_AIR_MAX;
+unsigned int calibrationWater = CALIBRATION_WATER_MIN;
 
 static bool shouldSaveConfig = false;
 

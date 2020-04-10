@@ -26,6 +26,21 @@
 #define BUTTON_PRESSED                LOW
 #define BUTTON_RELEASED               HIGH
 
+/**
+ * Counter for button debouncing to enable calibration
+ */
+#define BUTTON_START_CALIBRATION_COUNTER   (unsigned int)40000
+#define BUTTON_NEXT_CALIBRATION_COUNTER   (unsigned int)20000
+
+/**
+ * Time between to sensor measurements during calibration in milli seconds
+ */
+#define SENSOR_CALIBRATION_MEASUREMENTTIMER (unsigned long)(1*200)
+
+/**
+ * Maximum of sensor readings for calibration
+ */
+#define SENSOR_CALIBRATION_READINGS_MAX     (unsigned int)20
 
 /**
  * IP, Gateway and netmask for configuration mode
@@ -40,27 +55,26 @@
 #define MOISTURESENSORE_PIN           A0
 
 /**
+ * Time between to sensor measurements in milli seconds
  */
 #define SENSOR_MEASUREMENTTIMER (unsigned long)(1*1000)
 
 /*
- * LED blink and during startup
+ * LED blink and during startup (period in ms)
  */
 #define STARTUP_BLINK_COUNT         (int)0xff
-#define STARTUP_BLINK_FREQ          (float)0.5
+#define STARTUP_BLINK_PERIOD        (int)500
 
 /*
- * Number of LED error blink and frequency, actualel freq/2
+ * Number of LED error blink and period in ms
  */
-#define CALIBRATION_LOWER_COUNT     (int)3
-#define CALIBRATION_UPPER_COUNT     (int)4
-#define CALIBRATION_BLINK_FREQ      (float)2.0
+#define CALIBRATION_BLINK_PERIOD    (int)1000
 
 /*
- * Number of LED error blink and frequency, actualel freq/2
+ * Number of LED error blink and period in ms
  */
 #define ERROR_BLINK_READ_FAILED     (int)3
 #define ERROR_BLINK_WRITE_FAILED    (int)4
-#define ERROR_BLINK_FREQ            (float)1.0
+#define ERROR_BLINK_PERIOD          (int)1000
 
 #endif /* ESP8266SOILMOISTURESENSOR_H */

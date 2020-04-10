@@ -27,8 +27,8 @@ extern char thingLocationName[MAX_SENSOR_LOCATION_LENGTH];
  */
 #define CALIBRATION_AIR_MAX         (int)1024
 #define CALIBRATION_WATER_MIN       (int)0
-extern int calibrationAir;
-extern int calibrationWater;
+extern unsigned int calibrationAir;
+extern unsigned int calibrationWater;
 
 void saveConfigCallback();
 bool readConfigValues();
