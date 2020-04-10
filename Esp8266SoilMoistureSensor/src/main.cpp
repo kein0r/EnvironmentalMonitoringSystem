@@ -239,7 +239,7 @@ void loop() {
     sensorCalibrationReadings = 0;
     sensorCalibrationReadingsCount = 0;
     sensorState = calibrateWaterStart;
-    setStatusBlink(CALIBRATION_BLINK_PERIOD, (uint)(SENSOR_CALIBRATION_MEASUREMENTTIMER * SENSOR_CALIBRATION_READINGS_MAX)/1000 * CALIBRATION_BLINK_PERIOD);
+    setStatusBlink(CALIBRATION_BLINK_PERIOD, (uint)(SENSOR_CALIBRATION_MEASUREMENTTIMER * SENSOR_CALIBRATION_READINGS_MAX) / CALIBRATION_BLINK_PERIOD);
 #ifdef DEBUG
     Serial.println("Calibration started. Place sensor in water until LED stops blinking.");
 #endif
@@ -270,6 +270,7 @@ void loop() {
 
   if (sensorState == calibrateWaterEnd) {
     saveConfigCallback();
+    writeConfigValues();
     sensorState = sensorActive;
   }
 }
