@@ -4,7 +4,7 @@
 /*
  * Enables printf debug messages
  */
-#define DEBUG
+//#define DEBUG
 
 /**
  * Build-in LEDs
@@ -57,7 +57,7 @@
 /**
  * Time between to sensor measurements in milli seconds
  */
-#define SENSOR_MEASUREMENTTIMER (unsigned long)(1*1000)
+#define SENSOR_MEASUREMENTTIMER (unsigned long)(1*20*1000)
 
 /*
  * LED blink and during startup (period in ms)

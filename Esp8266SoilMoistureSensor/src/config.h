@@ -6,7 +6,7 @@
  * this file
  */
 
-#define DEBUG
+//#define DEBUG
 
 /**
  * Sizeof the json buffer during write. Not entirely sure how this is to be
