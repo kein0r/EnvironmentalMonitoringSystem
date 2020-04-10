@@ -10,6 +10,8 @@
 #include "config.h"
 
 char thingLocationName[MAX_SENSOR_LOCATION_LENGTH];
+int calibrationAir = CALIBRATION_AIR_MAX;
+int calibrationWater = CALIBRATION_WATER_MIN;
 
 static bool shouldSaveConfig = false;
 
@@ -51,8 +53,18 @@ bool readConfigValues() {
 #ifdef DEBUG
           serializeJsonPretty(jsonDocument, Serial);
 #endif
+          /* According to https://arduinojson.org/v6/api/jsonobject/containskey/
+           * ArduinoJson implements Null Object Pattern when the requested key
+           * is not available */
           strcpy(thingLocationName, jsonDocument["thingLocationName"]);
-
+          calibrationAir = jsonDocument["calibrationAir"];
+          if (!calibrationAir) {
+            calibrationAir = CALIBRATION_AIR_MAX;
+          }
+          calibrationWater = jsonDocument["calibrationWater"];
+          if (!calibrationWater) {
+            calibrationWater = CALIBRATION_WATER_MIN;
+          }
           retVal = true;
         }
         configFile.close();
@@ -71,6 +83,8 @@ bool writeConfigValues(){
     Serial.println("saving config");
     DynamicJsonDocument jsonDocument(JSONDOCUMENT_SIZE);
     jsonDocument["thingLocationName"] = thingLocationName;
+    jsonDocument["calibrationAir"] = calibrationAir;
+    jsonDocument["calibrationWater"] = calibrationWater;
 
     File configFile = SPIFFS.open("/config.json", "w");
     if (!configFile) {
