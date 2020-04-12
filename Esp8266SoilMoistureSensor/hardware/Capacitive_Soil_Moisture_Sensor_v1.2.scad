@@ -6,7 +6,7 @@
 
 /* Housing related parameter */
 PCBWiggleRoom = 1.0;
-HousingWiggleRoom = 0.5;
+HousingWiggleRoom = 0.3;
 
 HousingWidth = 29.0;
 HousingDepth = HousingWidth;
@@ -32,7 +32,7 @@ PCBConnectorPinsHeight = 2.0;
 PCBConnectorPins_y = 5.0; /* center of pins */
 
 
-translate([0, 0, 8])
+translate([0, 0, 5])
 color("LawnGreen")
 sensorHousingUpper($fn=100); 
 
@@ -71,9 +71,9 @@ module sensorHousingUpper()
         translate([(HousingWidth + HousingWallWidth)/2, 0, HousingWallWidth])
             cube([HousingWallWidth, HousingDepth, SpaceAbovePCB], center = true);
 
-        translate([(HousingWidth - PCBWidth)/4 + PCBWidth/2, 0, -SpaceAbovePCB/2 + HousingHeight - HousingWallWidth])
+        translate([(HousingWidth - PCBWidth)/4 + PCBWidth/2, - HousingWiggleRoom, -SpaceAbovePCB/2 + HousingHeight - HousingWallWidth])
             cube([(HousingWidth - PCBWidth)/2 + HousingWiggleRoom, HousingDepth, SpaceAbovePCB], center = true);
-        translate([-((HousingWidth - PCBWidth)/4 + PCBWidth/2), 0, -SpaceAbovePCB/2 + HousingHeight - HousingWallWidth])
+        translate([-((HousingWidth - PCBWidth)/4 + PCBWidth/2), - HousingWiggleRoom, -SpaceAbovePCB/2 + HousingHeight - HousingWallWidth])
             cube([(HousingWidth - PCBWidth)/2 + HousingWiggleRoom, HousingDepth, SpaceAbovePCB], center = true);
         translate([0, (HousingDepth - HousingWallWidth)/2,  -SpaceAbovePCB/2 + HousingHeight - HousingWallWidth])
             cube([HousingWidth, HousingWallWidth + HousingWiggleRoom, SpaceAbovePCB], center = true);
