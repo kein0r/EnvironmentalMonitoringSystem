@@ -4,7 +4,9 @@
  height = z
 */
 
-/* Housing related parameter */
+/* General model parameter. Change according to you printer and needs. */
+createUpperSTL = true;
+createLowerSTL = true;
 PCBWiggleRoom = 1.0;
 HousingWiggleRoom = 0.3;
 
@@ -31,14 +33,18 @@ PCBConnectorPinsDepth = 7.0;
 PCBConnectorPinsHeight = 2.0;
 PCBConnectorPins_y = 5.0; /* center of pins */
 
+if (createUpperSTL)
+{
+    translate([0, 0, 5])
+    color("LawnGreen")
+    sensorHousingUpper($fn=100); 
+}
 
-translate([0, 0, 5])
-color("LawnGreen")
-sensorHousingUpper($fn=100); 
-
-
-color("DeepSkyBlue")
-sensorHousingLower($fn=100);
+if (createLowerSTL)
+{
+    color("DeepSkyBlue")
+    sensorHousingLower($fn=100);
+}
 
 //translate([0, -PCBDepth/2 + HousingDepth/2 - HousingWallWidth, HousingWallWidth + HousingPCBHeightOffset])
 //    capacitiveSoilSensor();
@@ -71,9 +77,9 @@ module sensorHousingUpper()
         translate([(HousingWidth + HousingWallWidth)/2, 0, HousingWallWidth])
             cube([HousingWallWidth, HousingDepth, SpaceAbovePCB], center = true);
 
-        translate([(HousingWidth - PCBWidth)/4 + PCBWidth/2, - HousingWiggleRoom, -SpaceAbovePCB/2 + HousingHeight - HousingWallWidth])
+        translate([(HousingWidth - PCBWidth)/4 + PCBWidth/2, - 2 * HousingWiggleRoom, -SpaceAbovePCB/2 + HousingHeight - HousingWallWidth])
             cube([(HousingWidth - PCBWidth)/2 + HousingWiggleRoom, HousingDepth, SpaceAbovePCB], center = true);
-        translate([-((HousingWidth - PCBWidth)/4 + PCBWidth/2), - HousingWiggleRoom, -SpaceAbovePCB/2 + HousingHeight - HousingWallWidth])
+        translate([-((HousingWidth - PCBWidth)/4 + PCBWidth/2), -  2 * HousingWiggleRoom, -SpaceAbovePCB/2 + HousingHeight - HousingWallWidth])
             cube([(HousingWidth - PCBWidth)/2 + HousingWiggleRoom, HousingDepth, SpaceAbovePCB], center = true);
         translate([0, (HousingDepth - HousingWallWidth)/2,  -SpaceAbovePCB/2 + HousingHeight - HousingWallWidth])
             cube([HousingWidth, HousingWallWidth + HousingWiggleRoom, SpaceAbovePCB], center = true);
