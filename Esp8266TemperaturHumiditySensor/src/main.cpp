@@ -8,6 +8,7 @@
 #include <ESPAsyncWebServer.h>             //Local WebServer used to serve the configuration portal
 #include <ESPAsyncWiFiManager.h>           //https://github.com/tzapu/WiFiManager WiFi Configuration Magic
 #include <ESP8266mDNS.h>
+#define DEBUG
 #include <Thing.h>
 #include <WebThingAdapter.h>
 
@@ -178,7 +179,7 @@ void setup() {
 
 
   /* *************** IOT ************************************ */
-  adapter = new WebThingAdapter("Temperature Humidity Sensor", WiFi.localIP());
+  adapter = new WebThingAdapter(thingLocationName, WiFi.localIP());
 
   temperature.unit = "°C";
   temperature.readOnly = true;
