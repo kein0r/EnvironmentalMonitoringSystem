@@ -9,6 +9,7 @@
 #include <ArduinoJson.h>
 #include "config.h"
 
+int configSchemaVersion = 0;
 char thingLocationName[MAX_SENSOR_LOCATION_LENGTH];
 
 static bool shouldSaveConfig = false;
@@ -44,16 +45,24 @@ bool readConfigValues() {
         DynamicJsonDocument jsonDocument(size);
         DeserializationError error = deserializeJson(jsonDocument, buf.get());
         if (error) {
-          Serial.print("fdeserializeJson failed with code");
+          Serial.print("deserialize Json failed with code");
           Serial.println(error.c_str());
         } else {
           Serial.println("\nparsed json");
 #ifdef DEBUG
           serializeJsonPretty(jsonDocument, Serial);
 #endif
-          strcpy(thingLocationName, jsonDocument["thingLocationName"]);
-
-          retVal = true;
+          configSchemaVersion = jsonDocument["configSchemaVersion"];
+          /* stop reading more data when config schema version does not match */
+          if (configSchemaVersion != CONFIGSCHEMAVERSION)
+          {
+            retVal = false;
+          }
+          else
+          {
+            strcpy(thingLocationName, jsonDocument["thingLocationName"]);
+            retVal = true;
+          }
         }
         configFile.close();
       }
@@ -70,6 +79,7 @@ bool writeConfigValues(){
   if (shouldSaveConfig) {
     Serial.println("saving config");
     DynamicJsonDocument jsonDocument(JSONDOCUMENT_SIZE);
+    jsonDocument["configSchemaVersion"] = CONFIGSCHEMAVERSION;
     jsonDocument["thingLocationName"] = thingLocationName;
 
     File configFile = SPIFFS.open("/config.json", "w");
