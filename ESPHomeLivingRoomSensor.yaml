@@ -1,0 +1,43 @@
+# Needs a separate file secrets.yaml with the following content
+# wifi_ssid: SSID 
+# wifi_password: KEY
+
+esphome:
+  name: livingroomsensor 
+  platform: ESP8266
+  board: huzzah
+  build_path: ESPHomeLivingRoomSensor
+
+wifi:
+  ssid: !secret wifi_ssid 
+  password: !secret wifi_password
+  use_address: LivingRoomSensor.local
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Temperaturehumiditysensor"
+    password: "cvTkuSHWqSIe"
+
+captive_portal:
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+
+ota:
+
+i2c:
+  sda: 4
+  scl: 5
+  scan: True
+  id: bus_a
+
+sensor:
+  - platform: htu21d
+    temperature:
+      name: "Living Room Temperature"
+    humidity:
+      name: "Living Room Humidity"
+    update_interval: 10s
