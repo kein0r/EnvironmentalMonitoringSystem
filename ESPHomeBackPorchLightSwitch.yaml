@@ -3,7 +3,7 @@
 # wifi_pasisword: KEY
 
 substitutions:
-  device_name: BackporchLightSwitch
+  device_name: BackPorchLightSwitch
 
 esphome:
   name: backporchlightswitch 
