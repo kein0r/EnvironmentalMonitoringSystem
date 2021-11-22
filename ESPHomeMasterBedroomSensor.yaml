@@ -28,12 +28,6 @@ api:
 
 ota:
 
-i2c:
-  sda: 4
-  scl: 5
-  scan: True
-  id: bus_a
-
 sensor:
   - platform: htu21d
     temperature:
