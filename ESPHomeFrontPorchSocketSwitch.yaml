@@ -3,10 +3,11 @@
 # wifi_pasisword: KEY
 
 substitutions:
-  device_name: FrontPorchLightSwitch
+  device_name: FrontPorchSocketSwitch
+  friendly_name: Front Porch Socket Switch
 
 esphome:
-  name: frontporchlightswitch 
+  name: frontporchsocketswitch 
   platform: ESP8266
   board: esp8285 
   build_path: ESPHome${device_name}
@@ -73,7 +74,7 @@ binary_sensor:
 switch:
   - platform: gpio
     name: ${device_name}_switch
-    icon: "mdi: lightbulb_outline"
+    icon: "mdi:lightbulb_outline"
     pin: GPIO12
     id: relay_1
     restore_mode: restore_default_off

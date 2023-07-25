@@ -35,3 +35,9 @@ sensor:
     humidity:
       name: "Master Bedroom Humidity"
     update_interval: 60s
+
+i2c:
+# D4,D5 are brocken on this board, need to switch to different pins
+  sda: D12
+  scl: D14
+  scan: true

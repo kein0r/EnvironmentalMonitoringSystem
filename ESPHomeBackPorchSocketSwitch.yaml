@@ -3,11 +3,11 @@
 # wifi_pasisword: KEY
 
 substitutions:
-  device_name: BackPorchLightSwitch
-  friendly_name: Back Porch Light Switch
+  device_name: BackPorchSocketSwitch
+  friendly_name: Back Porch Socket Switch
 
 esphome:
-  name: backporchlightswitch 
+  name: backporchsocketswitch 
   platform: ESP8266
   board: esp8285 
   build_path: ESPHome${device_name}
