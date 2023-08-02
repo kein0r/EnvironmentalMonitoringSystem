@@ -3,11 +3,11 @@
 # wifi_pasisword: KEY
 
 substitutions:
-  device_name: BasementSumpPump
-  friendly_name: Basement Sump Pump
+  device_name: SonoffS31Template
+  friendly_name: Sonoff S31 Template
 
 esphome:
-  name: basementsumppump
+  name: sonoffs31template
   platform: ESP8266
   board: esp8285 
   build_path: ESPHome${device_name}
@@ -16,6 +16,7 @@ wifi:
   ssid: !secret wifi_ssid 
   password: !secret wifi_password
   use_address: ${device_name}.local
+#  use_address: 10.0.0.211
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
