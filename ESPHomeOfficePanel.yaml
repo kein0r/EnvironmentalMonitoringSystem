@@ -1,0 +1,35 @@
+# Needs a separate file secrets.yaml with the following content
+# wifi_ssid: SSID 
+# wifi_pasisword: KEY
+
+###### CHANGE ME START ######
+
+substitutions:
+  device_name: officepanel
+  friendly_name: Office Panel
+  wifi_ssid: !secret wifi_ssid
+  wifi_password: !secret wifi_password
+
+#  nextion_update_url: "http://10.0.0.8:8123/local/nspanel_us.tft" # URL to local tft File
+  nextion_update_url: "https://raw.githubusercontent.com/Blackymas/NSPanel_HA_Blueprint/main/nspanel_eu.tft" # URL to Github
+
+##### CHANGE ME END #####
+
+
+##### DO NOT CHANGE ANYTHING! #####
+
+packages:
+  ##### download esphome code from Github
+  remote_package:
+    url: https://github.com/Blackymas/NSPanel_HA_Blueprint
+#    ref: main
+    ref: tft-transfer
+    files:
+       - nspanel_esphome.yaml # Core package
+      # - nspanel_esphome_upload_tft.yaml # Temporary alternative code for uploading TFT to a new panel
+      # - nspanel_esphome_advanced.yaml # activate advanced (legacy) elements - can be useful for troubleshooting
+      # - nspanel_esphome_addon_climate_cool.yaml # activate for local climate (cooling) control
+      # - nspanel_esphome_addon_climate_heat.yaml # activate for local climate (heater) control
+    refresh: 1s
+
+##### DO NOT CHANGE ANYTHING! #####
