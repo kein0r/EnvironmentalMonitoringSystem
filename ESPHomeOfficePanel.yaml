@@ -22,14 +22,14 @@ packages:
   ##### download esphome code from Github
   remote_package:
     url: https://github.com/Blackymas/NSPanel_HA_Blueprint
-#    ref: main
-    ref: tft-transfer
+    ref: main
+#    ref: tft-transfer
     files:
-       - nspanel_esphome.yaml # Core package
-      # - nspanel_esphome_upload_tft.yaml # Temporary alternative code for uploading TFT to a new panel
-      # - nspanel_esphome_advanced.yaml # activate advanced (legacy) elements - can be useful for troubleshooting
-      # - nspanel_esphome_addon_climate_cool.yaml # activate for local climate (cooling) control
-      # - nspanel_esphome_addon_climate_heat.yaml # activate for local climate (heater) control
-    refresh: 1s
+      - nspanel_esphome.yaml # Core package
+      #- nspanel_esphome_upload_tft.yaml # Temporary alternative code for uploading TFT to a new panel
+      #- nspanel_esphome_advanced.yaml # activate advanced (legacy) elements - can be useful for troubleshooting
+      #- nspanel_esphome_addon_climate_cool.yaml # activate for local climate (cooling) control
+      #- nspanel_esphome_addon_climate_heat.yaml # activate for local climate (heater) control
+    refresh: 300s
 
 ##### DO NOT CHANGE ANYTHING! #####
