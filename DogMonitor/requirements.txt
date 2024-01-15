@@ -1,8 +1,0 @@
-# Use pip3 install -r requirements.txt to install all required modules
-tensorflow
-python-telegram-bot
-#
-# The following packages also have to be installed
-#sudo apt install python3-picamera
-#sudo apt-get install python3-numpy
-#sudo apt-get install python3-pil

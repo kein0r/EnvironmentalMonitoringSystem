@@ -1,1 +1,0 @@
-telegramBotToken = 'YourTokenHere'
