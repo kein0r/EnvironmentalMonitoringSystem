@@ -95,9 +95,7 @@ sensor:
     power_id: my_power
     filters:
       - heartbeat: 60s
-      # Multiplication factor from W to kW is 0.001
-      - multiply: 0.001
-    unit_of_measurement: kW
+    unit_of_measurement: W
 
 switch:
   - platform: gpio
