@@ -3,15 +3,18 @@
 # wifi_pasisword: KEY
 
 ###### CHANGE ME START ######
-
 substitutions:
-  device_name: officepanel
-  friendly_name: Office Panel
+  device_name: "ControlPanel"
+  friendly_name: "Control Panel"
   wifi_ssid: !secret wifi_ssid
   wifi_password: !secret wifi_password
 
 #  nextion_update_url: "http://10.0.0.8:8123/local/nspanel_us.tft" # URL to local tft File
-  nextion_update_url: "https://raw.githubusercontent.com/Blackymas/NSPanel_HA_Blueprint/main/nspanel_eu.tft" # URL to Github
+  nextion_update_url: "https://raw.githubusercontent.com/Blackymas/NSPanel_HA_Blueprint/main/nspanel_us.tft" # URL to Github
+
+esphome:
+  name: controlpanel 
+  build_path: ESPHome${device_name}
 
 ##### CHANGE ME END #####
 
