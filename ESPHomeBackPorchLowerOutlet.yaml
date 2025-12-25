@@ -3,14 +3,15 @@
 # wifi_pasisword: KEY
 
 substitutions:
-  device_name: BackPorchLightSwitch
-  friendly_name: Back Porch Light Switch
+  device_name: BackPorchLowerOutlet
+  friendly_name: Back Porch Lower Outlet
 
 esphome:
-  name: backporchlightswitch 
-  platform: ESP8266
-  board: esp8285 
+  name: backporchloweroutlet 
   build_path: ESPHome${device_name}
+
+esp8266:
+  board: esp8285
 
 wifi:
   ssid: !secret wifi_ssid 
@@ -31,6 +32,8 @@ logger:
 api:
 
 ota:
+  - platform: esphome
+    password: !secret ota_password
 
 web_server:
   port: 80
@@ -74,7 +77,7 @@ binary_sensor:
 switch:
   - platform: gpio
     name: ${device_name}_switch
-    icon: "mdi:lightbulb_outline"
+    icon: "mdi:power-socket-us"
     pin: GPIO12
     id: relay_1
     restore_mode: restore_default_off
@@ -82,12 +85,15 @@ switch:
 status_led:
   pin:
     number: GPIO13
+    allow_other_uses: true
     inverted: true
 
 output:
   - platform: esp8266_pwm
     id: blue_led
-    pin: GPIO13
+    pin:
+      number: GPIO13
+      allow_other_uses: true
     inverted: True
 
 light:
