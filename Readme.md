@@ -1,14 +1,15 @@
 # Preparation
-0. Create a backup through home assistant and download it to PC. Note down serial numbers of Matter devices found in home assistant.
-1. Run `curl -sSL https://get.docker.com | sh`
+0. Create a backup through home assistant and download it 
+1. Install docker on raspberry pi by running `curl -sSL https://get.docker.com | sh`
 2. Create compose.yaml based on below snippeds
-3. Copy files from add-on backup, e.g. core_matter_server.tar.gz, to their original location
+3. Optional: copy files from add-on backup, e.g. core_matter_server.tar.gz, to their original location
 4. Run `sudo docker compose up -d`
 
 # Clean-up
 1. Change device for zigbee stick. Home assistant will automatically move devices over
 2. Re-register signal through http://homeassistant.local:8080/v1/qrcodelink?device_name=signal-api
 3. It might be possible to retain matter devices by stopping the matter-server and replacing the newly created /usr/share/hassio/addons/data/core_matter_server/SomeNumber.json with the one from backup
+4. Ensure to add /usr/share/signal-cli-config, /usr/share/hassio/addons/data/core_matter_server /usr/share/hassio/addons/config/core_matter_server etc. to a backup
 
 # Debugging
 - run `sudo docker ps` and then `sudo docker exec -it ContainerID bash`
@@ -62,8 +63,8 @@ services:
 ```
 
 # References
-Docker compose for HA from https://www.home-assistant.io/installation/raspberrypi-other
-Docker compose for whisper and piper from https://community.home-assistant.io/t/using-add-ons-with-home-assistant-core/567369/8
-Docker compose for matter etc. from https://community.home-assistant.io/t/using-matter-and-thread-in-a-dockerized-ha-instance/721088/7
-Note: Ports for wyoming below don't seem to be necessary if "they are on the same docker network"
-Great wrtie up found at https://blog.maxaller.name/engineering/2025/08/10/thread-matter-home-assistant-docker.html
+- Docker compose for HA from https://www.home-assistant.io/installation/raspberrypi-other
+- Docker compose for whisper and piper from https://community.home-assistant.io/t/using-add-ons-with-home-assistant-core/567369/8
+- Docker compose for matter etc. from https://community.home-assistant.io/t/using-matter-and-thread-in-a-dockerized-ha-instance/721088/7
+- Note: Ports for wyoming below don't seem to be necessary if "they are on the same docker network"
+- Great write up found at https://blog.maxaller.name/engineering/2025/08/10/thread-matter-home-assistant-docker.html
