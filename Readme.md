@@ -14,13 +14,7 @@
 - run `sudo docker ps` and then `sudo docker exec -it ContainerID bash`
 - Run `sudo docker logs -f matter-server`
 
-# References
-Docker compose for HA from https://www.home-assistant.io/installation/raspberrypi-other
-Docker compose for whisper and piper from https://community.home-assistant.io/t/using-add-ons-with-home-assistant-core/567369/8
-Docker compose for matter etc. from https://community.home-assistant.io/t/using-matter-and-thread-in-a-dockerized-ha-instance/721088/7
-Note: Ports for wyoming below don't seem to be necessary if "they are on the same docker network"
-Great wrtie up found at https://blog.maxaller.name/engineering/2025/08/10/thread-matter-home-assistant-docker.html
-
+# Docker Compose.yaml
 ```
 services:
   homeassistant:
@@ -66,3 +60,10 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /dev/hci0  # bluetooth device, might not be necessary, just in case
 ```
+
+# References
+Docker compose for HA from https://www.home-assistant.io/installation/raspberrypi-other
+Docker compose for whisper and piper from https://community.home-assistant.io/t/using-add-ons-with-home-assistant-core/567369/8
+Docker compose for matter etc. from https://community.home-assistant.io/t/using-matter-and-thread-in-a-dockerized-ha-instance/721088/7
+Note: Ports for wyoming below don't seem to be necessary if "they are on the same docker network"
+Great wrtie up found at https://blog.maxaller.name/engineering/2025/08/10/thread-matter-home-assistant-docker.html
